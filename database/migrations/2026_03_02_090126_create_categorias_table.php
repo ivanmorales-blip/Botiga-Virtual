@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('categorias', function (Blueprint $table) {
             $table->id('categoria_id');
             $table->string('tipo');
+            
             $table->timestamps();
         });
     }
