@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tipo-caracteristicas', function (Blueprint $table) {
+        Schema::create('tipo_caracteristicas', function (Blueprint $table) {
             $table->id();
             $table->text('Descripcio');
             $table->string('tipo', 255);

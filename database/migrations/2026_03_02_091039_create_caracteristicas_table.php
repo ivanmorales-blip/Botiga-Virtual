@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('caracteristicas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('tipo_id')->nullable();
-            $table->foreign('tipo_id')->references('id')->on('tipo')->onDelete('cascade');
+            $table->foreign('tipo_id')->references('id')->on('tipo_caracteristicas')->onDelete('cascade');
             $table->text('descripcio');
             $table->timestamps();
         });
