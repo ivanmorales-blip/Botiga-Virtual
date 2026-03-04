@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('productos_pack', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('packs_id');
-            $table->foreign('caracteristica_id')->references('id')->on('packs')->onDelete('cascade');
+            $table->foreign('packs_id')->references('id')->on('packs')->onDelete('cascade');
             $table->unsignedBigInteger('producte_id');
             $table->foreign('producte_id')->references('id')->on('producte')->onDelete('cascade');
             $table->timestamps();
