@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProductoController;
 
 // Redirigir la raíz al dashboard del admin
 Route::get('/', function () {
@@ -21,3 +22,9 @@ Route::get('/db-test', function () {
         return 'Error: ' . $e->getMessage();
     }
 });
+
+// Categorías
+    Route::resource('categorias', \App\Http\Controllers\Admin\CategoryController::class);
+
+    // Productos
+    Route::resource('productos', \App\Http\Controllers\Admin\ProductoController::class);

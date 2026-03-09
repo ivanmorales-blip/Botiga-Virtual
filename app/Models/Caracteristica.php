@@ -4,17 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Categoria extends Model
+class Caracteristica extends Model
 {
-    protected $table = 'categorias';
+    protected $table = 'caracteristicas';
 
     protected $fillable = [
-        'nombre',
+        'tipo_id',
         'descripcion',
     ];
 
     public function productos()
     {
-        return $this->hasMany(Producto::class, 'categoria_id');
+        return $this->belongsToMany(Producto::class, 'producto_caracteristica');
     }
 }
