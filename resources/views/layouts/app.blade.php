@@ -43,32 +43,28 @@
                     </div>
                 </div>
 
-                <!-- Características desplegable -->
-                <div x-data="{ open: false }" class="relative mt-2">
-                    <button @click="open = !open" class="w-full text-left text-white hover:text-orange-200 font-medium flex justify-between items-center">
-                        Características
-                        <svg class="w-4 h-4 transform" :class="{'rotate-90': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                        <a href="{{ route('caracteristicas.create') }}" class="text-orange-200 hover:text-white text-sm">Alta Característica</a>
-                        <a href="{{ route('caracteristicas.index') }}" class="text-orange-200 hover:text-white text-sm">Listar Características</a>
-                    </div>
+            <div x-data="{ open: false }" class="relative mt-2">
+                <button @click="open = !open" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
+                    Características
+                    <svg class="w-4 h-4 transform" :class="{'rotate-90': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
+                    <a href="{{ route('caracteristica.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Característica</a>
+                    <a href="{{ route('caracteristica.index') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Características</a>
                 </div>
 
-                <!-- Packs desplegable -->
-                <div x-data="{ open: false }" class="relative mt-2">
-                    <button @click="open = !open" class="w-full text-left text-white hover:text-orange-200 font-medium flex justify-between items-center">
-                        Packs
-                        <svg class="w-4 h-4 transform" :class="{'rotate-90': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                        <a href="{{ route('packs.create') }}" class="text-orange-200 hover:text-white text-sm">Alta Pack</a>
-                        <a href="{{ route('packs.index') }}" class="text-orange-200 hover:text-white text-sm">Listar Packs</a>
-                    </div>
+            <div x-data="{ open: false }" class="relative mt-2">
+                <button @click="open = !open" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
+                    Packs
+                    <svg class="w-4 h-4 transform" :class="{'rotate-90': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
+                    <a href="{{ route('packs.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Pack</a>
+                    <a href="{{ route('packs.index') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Packs</a>
                 </div>
 
             </nav>

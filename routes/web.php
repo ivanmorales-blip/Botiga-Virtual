@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProductoController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\PackController;
 
 // Redirigir la raíz al dashboard del admin
 Route::get('/', function () {
@@ -14,6 +16,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
+// Test conexión base de datos
 Route::get('/db-test', function () {
     try {
         \DB::connection()->getPdo();
@@ -24,13 +27,10 @@ Route::get('/db-test', function () {
 });
 
 // Categorías
-    Route::resource('categorias', \App\Http\Controllers\Admin\CategoryController::class);
+Route::resource('categorias', CategoriaController::class);
 
-    // Productos
-    Route::resource('productos', \App\Http\Controllers\Admin\ProductoController::class);
+// Productos
+Route::resource('productos', ProductoController::class);
 
-    // Características
-    Route::resource('caracteristicas', \App\Http\Controllers\CaracteristicaController::class);
-
-    // Packs
-    Route::resource('packs', \App\Http\Controllers\PackController::class);
+// Packs
+Route::resource('packs', PackController::class);

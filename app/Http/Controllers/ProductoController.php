@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Producte;
+use App\Models\Producto;
 use App\Models\Categoria;
 
-class ProductController extends Controller
+class ProductoController extends Controller
 {
     /**
      * Display a listing of products.
@@ -85,7 +85,7 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = Producte::findOrFail($id);
+        $product = Producto::findOrFail($id);
         $product->delete();
 
         return response()->json([
