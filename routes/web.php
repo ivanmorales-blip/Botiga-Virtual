@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\PackController;
+use App\Http\Controllers\CaracteristicaController;
 
 // Redirigir la raíz al dashboard del admin
 Route::get('/', function () {
@@ -34,3 +35,6 @@ Route::resource('productos', ProductoController::class);
 
 // Packs
 Route::resource('packs', PackController::class);
+
+// Caracteristicas
+Route::resource('caracteristicas', CaracteristicaController::class);

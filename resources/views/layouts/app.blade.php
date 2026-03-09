@@ -51,8 +51,8 @@
                     </svg>
                 </button>
                 <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                    <a href="{{ route('caracteristica.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Característica</a>
-                    <a href="{{ route('caracteristica.index') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Características</a>
+                    <a href="{{ route('caracteristicas.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Característica</a>
+                    <a href="{{ route('caracteristicas.index') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Características</a>
                 </div>
 
             <div x-data="{ open: false }" class="relative mt-2">

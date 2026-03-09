@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PackController;
 
 Route::get('/ping', function (Request $request) {
     return response()->json([
@@ -11,6 +10,9 @@ Route::get('/ping', function (Request $request) {
 
 });
 
-Route::apiResource('packs', PackController::class);
+
+use App\Http\Controllers\Api\PackController as PackApiController;
+
+Route::apiResource('packs', PackApiController::class);
 
 ?>
