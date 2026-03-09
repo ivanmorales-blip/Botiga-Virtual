@@ -3,85 +3,81 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Category;
+use Illuminate\Support\Facades\Http;
 
-class CategoryController extends Controller
+class CategoriaController extends Controller
 {
-    /**
-     * Mostrar la lista de categorías
-     */
+    private $apiUrl = "http://localhost:8000/api"; // change if needed
+
     public function index()
     {
-        $categories = Category::all();
-        return view('categorias.index', compact('categories'));
+        $response = Http::get($this->apiUrl . "/categorias");
+
+        $categoria = $response->json();
+
+        return view("categorias.listar", ["categorias" => $categoria]);
     }
 
-    /**
-     * Mostrar el formulario de alta de categoría
-     */
     public function create()
     {
-        return view('categorias.create');
+        return view("categorias.alta");
     }
 
-    /**
-     * Guardar una nueva categoría
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'tipo' => 'required|string|max:255'
         ]);
 
-        Category::create([
-            'name' => $request->name,
-        ]);
+        $data = [
+            'tipo' => $request->tipo
+        ];
 
-        return redirect()->route('admin.categorias.index')
-                         ->with('success', 'Categoría creada correctamente');
+        Http::post($this->apiUrl . "/categorias", $data);
+
+        return redirect()->route('menu');
     }
 
-    /**
-     * Mostrar una categoría específica (opcional)
-     */
-    public function show(Category $categoria)
+    public function show($id)
     {
+        $response = Http::get($this->apiUrl . "/categorias/" . $id);
+
+        $categoria = $response->json();
+
         return view('categorias.show', compact('categoria'));
     }
 
-    /**
-     * Mostrar el formulario de edición de categoría
-     */
-    public function edit(Category $categoria)
+    public function edit($id)
     {
-        return view('categorias.edit', compact('categoria'));
+        $Response = Http::get($this->apiUrl . "/categorias/" . $id);
+
+        $categoria = $Response->json();
+
+        return view('categorias.editar', compact('categoria'));
     }
 
-    /**
-     * Actualizar una categoría
-     */
-    public function update(Request $request, Category $categoria)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'tipo' => 'sometimes|string|max:255'
         ]);
 
-        $categoria->update([
-            'name' => $request->name,
-        ]);
+        $data = $request->only(['tipo']);
 
-        return redirect()->route('admin.categorias.index')
-                         ->with('success', 'Categoría actualizada correctamente');
+        Http::put($this->apiUrl . "/categorias/" . $id, $data);
+
+        return redirect()->route('categoria.listar');
     }
 
     /**
-     * Eliminar una categoría
+     * Delete pack
      */
-    public function destroy(Category $categoria)
+    public function destroy($id)
     {
-        $categoria->delete();
+        Http::delete($this->apiUrl . "/categorias/" . $id);
 
-        return redirect()->route('admin.categorias.index')
-                         ->with('success', 'Categoría eliminada correctamente');
+        return response()->json([
+            'message' => 'Categoria deleted successfully'
+        ]);
     }
 }

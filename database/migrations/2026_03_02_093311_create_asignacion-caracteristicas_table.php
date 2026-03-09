@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('productos_pack', function (Blueprint $table) {
+        Schema::create('asignaciom-caracteristicas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('packs_id');
-            $table->foreign('packs_id')->references('id')->on('packs')->onDelete('cascade');
+            $table->unsignedBigInteger('caracteristica_id');
+            $table->foreign('caracteristica_id')->references('id')->on('caracteristicas')->onDelete('cascade');
             $table->unsignedBigInteger('producte_id');
             $table->foreign('producte_id')->references('id')->on('productos')->onDelete('cascade');
             $table->timestamps();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('productos_pack');
+        //
     }
 };

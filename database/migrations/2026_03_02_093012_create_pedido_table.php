@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->dateTime('data');
             $table->integer('total');
-            $table->unsignedBigInteger('usuario_id')->nullable();
-            $table->foreign('usuario_id')->references('id')->on('usuario')->onDelete('cascade');
+            $table->unsignedBigInteger('usuari_id')->nullable();
+            $table->foreign('usuari_id')->references('id')->on('usuario')->onDelete('cascade');
             $table->text('estat');
             $table->text('direccio');
             $table->integer('telefon')->nullable();

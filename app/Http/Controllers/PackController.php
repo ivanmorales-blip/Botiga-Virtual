@@ -3,25 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Pack;
-use App\Models\Producte;
+use Illuminate\Support\Facades\Http;
 
 class PackController extends Controller
 {
+    private $apiUrl = "http://localhost:8000/api"; // change if needed
+
     /**
      * Display a listing of packs
      */
     public function index()
     {
-        $packs = Pack::with('productes')->get();
-        return view(
-            "pack.listar", ["packs" =>$packs]
-        );
+        $response = Http::get($this->apiUrl . "/packs");
+
+        $packs = $response->json();
+
+        return view("pack.listar", ["packs" => $packs]);
     }
 
+    /**
+     * Show form to create pack
+     */
     public function create()
     {
-        $productes = Producte::get();
+        $response = Http::get($this->apiUrl . "/productes");
+
+        $productes = $response->json();
+
         return view("pack.alta", ['productes' => $productes]);
     }
 
@@ -36,102 +44,68 @@ class PackController extends Controller
             'preu' => 'required|integer',
         ]);
 
-        $pack = Pack::create([
+        $data = [
             'nom' => $request->nom,
             'Descripcio' => $request->Descripcio,
-            'preu' => $request->preu
-        ]);
+            'preu' => $request->preu,
+            'productes' => $request->productes
+        ];
 
-        // Save pack products
-        if ($request->productes) {
-
-            $productes = json_decode($request->productes);
-
-            foreach ($productes as $productId) {
-
-                DB::table('productos_pack')->insert([
-                    'packs_id' => $pack->id,
-                    'producte_id' => $productId,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-
-            }
-        }
+        Http::post($this->apiUrl . "/packs", $data);
 
         return redirect()->route('menu');
     }
 
     /**
-     * Display the specified pack
+     * Show specific pack
      */
-    public function show(Pack $pack)
+    public function show($id)
     {
+        $response = Http::get($this->apiUrl . "/packs/" . $id);
+
+        $pack = $response->json();
+
         return view('pack.show', compact('pack'));
     }
 
+    /**
+     * Edit pack
+     */
     public function edit($id)
     {
-        $pack = Pack::findOrFail($id);
+        $packResponse = Http::get($this->apiUrl . "/packs/" . $id);
+        $productsResponse = Http::get($this->apiUrl . "/productes");
 
-        $products = Producto::with('categoria')->get();
+        $pack = $packResponse->json();
+        $products = $productsResponse->json();
 
-        $packProducts = DB::table('productos_pack')
-            ->join('productos','productos_pack.producte_id','=','productos.id')
-            ->where('packs_id',$id)
-            ->select('productos.*')
-            ->get();
-
-        return view('pack.editar',compact('pack','products','packProducts'));
+        return view('pack.editar', compact('pack','products'));
     }
 
     /**
-     * Update the specified pack
+     * Update pack
      */
     public function update(Request $request, $id)
     {
-        $pack = Pack::findOrFail($id);
-
         $request->validate([
             'nom' => 'sometimes|string|max:255',
             'Descripcio' => 'sometimes|string',
             'preu' => 'sometimes|integer'
         ]);
 
-        $pack->update($request->only(['nom','Descripcio','preu']));
+        $data = $request->only(['nom','Descripcio','preu','productes']);
 
-        // Remove old products
-        DB::table('productos_pack')
-            ->where('packs_id',$pack->id)
-            ->delete();
-
-        // Insert new ones
-        if($request->productes){
-
-            $products=json_decode($request->productes);
-
-            foreach($products as $productId){
-
-                DB::table('productos_pack')->insert([
-                    'packs_id'=>$pack->id,
-                    'producte_id'=>$productId,
-                    'created_at'=>now(),
-                    'updated_at'=>now()
-                ]);
-
-            }
-        }
+        Http::put($this->apiUrl . "/packs/" . $id, $data);
 
         return redirect()->route('packs.listar');
     }
 
     /**
-     * Remove the specified pack
+     * Delete pack
      */
     public function destroy($id)
     {
-        $pack = Pack::findOrFail($id);
-        $pack->delete();
+        Http::delete($this->apiUrl . "/packs/" . $id);
 
         return response()->json([
             'message' => 'Pack deleted successfully'
