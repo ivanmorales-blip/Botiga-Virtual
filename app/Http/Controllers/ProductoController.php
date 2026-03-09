@@ -14,8 +14,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Producte::with('categoria')->paginate(10);
-        return view('admin.products.index', compact('products'));
+        $products = Producto::with('categoria')->paginate(10);
+        return view('producto.index', compact('products'));
     }
 
     /**
@@ -24,7 +24,7 @@ class ProductController extends Controller
     public function create()
     {
         $categorias = Categoria::all();
-        return view('admin.products.create', compact('categorias'));
+        return view('producto.create', compact('categorias'));
     }
 
     /**
@@ -38,13 +38,13 @@ class ProductController extends Controller
             'categoria_id' => 'required|exists:categorias,id'
         ]);
 
-        Producte::create([
+        Producto::create([
             'nom' => $request->nom,
             'preu' => $request->preu,
             'categoria_id' => $request->categoria_id
         ]);
 
-        return redirect()->route('admin.products.index')->with('success', 'Producto creado correctamente');
+        return redirect()->route('producto.index')->with('success', 'Producto creado correctamente');
     }
 
     /**
@@ -52,10 +52,10 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Producte::findOrFail($id);
+        $product = Producto::findOrFail($id);
         $categorias = Categoria::all();
 
-        return view('admin.products.edit', compact('product', 'categorias'));
+        return view('producto.edit', compact('product', 'categorias'));
     }
 
     /**
@@ -63,7 +63,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $product = Producte::findOrFail($id);
+        $product = Producto::findOrFail($id);
 
         $request->validate([
             'nom' => 'required|string|max:255',
@@ -77,7 +77,7 @@ class ProductController extends Controller
             'categoria_id' => $request->categoria_id
         ]);
 
-        return redirect()->route('admin.products.index')->with('success', 'Producto actualizado correctamente');
+        return redirect()->route('producto.index')->with('success', 'Producto actualizado correctamente');
     }
 
     /**

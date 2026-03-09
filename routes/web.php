@@ -28,3 +28,9 @@ Route::get('/db-test', function () {
 
     // Productos
     Route::resource('productos', \App\Http\Controllers\Admin\ProductoController::class);
+
+    // Características
+    Route::resource('caracteristicas', \App\Http\Controllers\CaracteristicaController::class);
+
+    // Packs
+    Route::resource('packs', \App\Http\Controllers\PackController::class);
