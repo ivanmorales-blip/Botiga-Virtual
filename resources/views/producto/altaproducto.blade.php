@@ -6,14 +6,17 @@
     <h1 class="text-3xl font-semibold text-gray-900 mb-8">Alta de Producto</h1>
 
     <div class="bg-white rounded-2xl shadow-sm p-8 max-w-3xl">
-        <form action="{{ route('admin.productos.store') }}" method="POST">
+        <form action="{{ route('productos.store') }}" method="POST">
             @csrf
 
             <!-- Nombre del producto -->
             <div class="mb-4">
-                <label for="name" class="block text-gray-700 font-medium mb-2">Nombre del Producto</label>
-                <input type="text" name="name" id="name" value="{{ old('name') }}"
+                <label for="nombre" class="block text-gray-700 font-medium mb-2">Nombre del Producto</label>
+                <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}"
                     class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('nombre')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Descripción -->
@@ -22,13 +25,29 @@
                 <textarea name="descripcion" id="descripcion"
                     class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows="4">{{ old('descripcion') }}</textarea>
+                @error('descripcion')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Precio -->
             <div class="mb-4">
                 <label for="precio" class="block text-gray-700 font-medium mb-2">Precio</label>
-                <input type="number" name="precio" id="precio" value="{{ old('precio') }}"
+                <input type="number" name="precio" id="precio" value="{{ old('precio') }}" step="0.01"
                     class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('precio')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Stock -->
+            <div class="mb-4">
+                <label for="stock" class="block text-gray-700 font-medium mb-2">Stock</label>
+                <input type="number" name="stock" id="stock" value="{{ old('stock', 0) }}"
+                    class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('stock')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Categoría -->
@@ -39,7 +58,7 @@
                     <option value="">-- Selecciona una categoría --</option>
                     @foreach($categorias as $categoria)
                         <option value="{{ $categoria->id }}" {{ old('categoria_id') == $categoria->id ? 'selected' : '' }}>
-                            {{ $categoria->name }}
+                            {{ $categoria->nombre }}
                         </option>
                     @endforeach
                 </select>
@@ -47,7 +66,7 @@
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
-
+            
             <!-- Botón Guardar -->
             <div class="mt-6">
                 <button type="submit"

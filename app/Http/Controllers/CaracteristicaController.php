@@ -3,50 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Models\Caracteristica;
+use App\Models\TipoCaracteristica;
 use Illuminate\Http\Request;
 
 class CaracteristicaController extends Controller
 {
-    /**
-     * Mostrar la lista de características
-     */
     public function index()
     {
-        // Traemos todas las características (puedes paginar si quieres)
-        $caracteristicas = Caracteristica::all();
-
-        // Retornamos la vista index.blade.php dentro de resources/views/caracteristicas
-        return view('caracteristicas.index', compact('caracteristicas'));
+        $caracteristicas = Caracteristica::with('tipo')->get();
+        return view('caracteristicas.listaCaracteristica', compact('caracteristicas'));
     }
 
-    /**
-     * Mostrar el formulario para crear una nueva característica
-     */
     public function create()
     {
-        // Retornamos la vista create.blade.php dentro de resources/views/caracteristicas
-        return view('caracteristicas.create');
+        $tipos = TipoCaracteristica::all();
+        return view('caracteristicas.altaCaracteristica', compact('tipos'));
     }
 
-    /**
-     * Guardar una nueva característica en la base de datos
-     */
     public function store(Request $request)
     {
-        // Validar datos
         $request->validate([
-            'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
+            'descripcio' => 'required|string',
+            'id_tipo' => 'nullable|exists:tipo_caracteristica,id',
         ]);
 
-        // Crear la nueva característica
         Caracteristica::create([
-            'nombre' => $request->nombre,
-            'descripcion' => $request->descripcion,
+            'descripcio' => $request->descripcio,
+            'id_tipo' => $request->id_tipo,
         ]);
 
-        // Redirigir a la lista con un mensaje de éxito
         return redirect()->route('caracteristicas.index')
             ->with('success', 'Característica creada correctamente.');
+    }
+
+    public function destroy($id)
+    {
+        $caracteristica = Caracteristica::findOrFail($id);
+        $caracteristica->delete();
+
+        return redirect()->route('caracteristicas.index')
+            ->with('success', 'Característica eliminada correctamente.');
     }
 }
