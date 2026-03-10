@@ -38,8 +38,7 @@
                         </svg>
                     </button>
                     <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                        <a href="{{ route('categorias.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Categoría</a>
-                        <a href="{{ route('categorias.index') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Categorías</a>
+                        <a href="{{ route('categorias.index') }}" class="text-orange-200 hover:text-white text-sm">Listar Categorías</a>
                     </div>
                 </div>
 

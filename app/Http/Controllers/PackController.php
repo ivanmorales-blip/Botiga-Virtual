@@ -16,8 +16,8 @@ class PackController extends Controller
 
     public function create()
     {
-        $productes = Producto::all();
-        return view('packs.alta', compact('productes'));
+        $products = Producto::all();
+        return view('packs.alta', compact('products'));
     }
 
     public function store(Request $request)

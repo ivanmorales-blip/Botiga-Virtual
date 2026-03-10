@@ -1,6 +1,6 @@
-@extends('layouts.template')
+@extends('layouts.app')
 
-@section('contingut')
+@section('content')
 <div class="p-8 bg-gray-50 min-h-screen">
 
     <h1 class="text-3xl font-bold mb-8 text-orange-500 text-center">
@@ -8,8 +8,7 @@
     </h1>
 
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-
-        @foreach($packs as $pack)
+            @forelse($packs as $pack)
 
         <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl hover:-translate-y-1 transition">
 
@@ -71,13 +70,18 @@
 
         </div>
 
-        @endforeach
+        @empty
 
+        <div class="col-span-full text-center text-gray-500">
+            No hi ha packs disponibles
+        </div>
+
+@endforelse
     </div>
 
     <!-- Back button -->
     <div class="mt-10 text-center">
-        <a href="{{ route('menu') }}"
+        <a href="{{ route('packs.create') }}"
            class="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl shadow-lg transition">
             Tornar al menú
         </a>

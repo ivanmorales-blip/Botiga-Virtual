@@ -3,81 +3,68 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Models\Categoria;
 
 class CategoriaController extends Controller
 {
-    private $apiUrl = "http://localhost:8000/api"; // change if needed
-
     public function index()
     {
-        $response = Http::get($this->apiUrl . "/categorias");
-
-        $categoria = $response->json();
-
-        return view("categorias.listar", ["categorias" => $categoria]);
+        $categorias = Categoria::all();
+        return view('categorias.listar', compact('categorias'));
     }
 
     public function create()
     {
-        return view("categorias.alta");
+        return view('categorias.alta');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'tipo' => 'required|string|max:255'
-        ]);
+public function store(Request $request)
+{
+    // Validate input
+    $request->validate([
+        'tipo' => 'required|string|max:255',
+    ]);
 
-        $data = [
-            'tipo' => $request->tipo
-        ];
+    // Create category
+    Categoria::create($request->only(['tipo']));
 
-        Http::post($this->apiUrl . "/categorias", $data);
-
-        return redirect()->route('menu');
-    }
+    // Redirect back to the categories page (or wherever you want)
+    return redirect()->route('categorias.index')
+                     ->with('success', 'Categoria creada correctament!');
+}
 
     public function show($id)
     {
-        $response = Http::get($this->apiUrl . "/categorias/" . $id);
-
-        $categoria = $response->json();
-
+        $categoria = Categoria::findOrFail($id);
         return view('categorias.show', compact('categoria'));
     }
 
     public function edit($id)
     {
-        $Response = Http::get($this->apiUrl . "/categorias/" . $id);
-
-        $categoria = $Response->json();
-
+        $categoria = Categoria::findOrFail($id);
         return view('categorias.editar', compact('categoria'));
     }
 
     public function update(Request $request, $id)
     {
+        $categoria = Categoria::findOrFail($id);
+
         $request->validate([
-            'tipo' => 'sometimes|string|max:255'
+            'tipo' => 'required|string|max:255',
         ]);
 
-        $data = $request->only(['tipo']);
+        $categoria->update($request->only(['tipo']));
 
-        Http::put($this->apiUrl . "/categorias/" . $id, $data);
-
-        return redirect()->route('categoria.listar');
+        return redirect()->route('categorias.index')
+            ->with('success', 'Categoria actualitzada correctament!');
     }
 
-    /**
-     * Delete pack
-     */
     public function destroy($id)
     {
-        Http::delete($this->apiUrl . "/categorias/" . $id);
+        $categoria = Categoria::findOrFail($id);
+        $categoria->delete();
 
-        return response()->json([
-            'message' => 'Categoria deleted successfully'
-        ]);
+        return redirect()->route('categorias.index')
+            ->with('success', 'Categoria eliminada correctament!');
     }
 }
