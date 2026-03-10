@@ -19,17 +19,21 @@
                     Pack
                 </span>
 
-                <!-- Edit Button -->
-                <a href="{{ route('packs.edit', $pack->id) }}"
-                   class="flex items-center gap-1 text-orange-500 hover:text-orange-700 text-sm font-semibold"
-                   title="Editar Pack">
+                <!-- Delete Button -->
+                <form action="{{ route('packs.destroy', $pack->id) }}" method="POST" onsubmit="return confirm('Segur que vols eliminar aquest pack?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm font-semibold"
+                            title="Eliminar Pack">
 
-                    <svg class="h-4 w-4">
-                        <use href="{{ asset('icons/sprite.svg#icon-edit') }}"></use>
-                    </svg>
+                        <svg class="h-4 w-4">
+                            <use href="{{ asset('icons/sprite.svg#icon-trash') }}"></use>
+                        </svg>
 
-                    Editar
-                </a>
+                        Eliminar
+                    </button>
+                </form>
 
             </div>
 

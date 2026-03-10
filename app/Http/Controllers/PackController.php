@@ -26,16 +26,27 @@ class PackController extends Controller
             'nom' => 'required|string|max:255',
             'Descripcio' => 'required|string',
             'preu' => 'required|integer',
-            'productes' => 'array'
+            'productes' => 'nullable|array'
         ]);
 
+        // Save the pack data
         $pack = Pack::create($request->only(['nom', 'Descripcio', 'preu']));
 
+        // Insert products manually (duplicates allowed)
         if ($request->has('productes')) {
-            $pack->productes()->sync($request->productes);
+            $rows = collect($request->productes)->map(function($productId) use ($pack) {
+                return [
+                    'packs_id' => $pack->id,
+                    'producte_id' => $productId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            })->toArray();
+
+            \DB::table('productos_pack')->insert($rows);
         }
 
-        return redirect()->route('packs.index');
+        return redirect()->route('packs.index')->with('success', 'Pack guardado correctamente.');
     }
 
     public function show($id)
@@ -44,31 +55,40 @@ class PackController extends Controller
         return view('packs.show', compact('pack'));
     }
 
-    public function edit($id)
-    {
-        $pack = Pack::findOrFail($id);
-        $productes = Producto::all();
-        return view('packs.editar', compact('pack','productes'));
-    }
+    public function edit(Pack $pack)
+{
+    $products = Producto::all();
+    return view('packs.alta', compact('pack', 'products'));
+}
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Pack $pack)
     {
-        $pack = Pack::findOrFail($id);
-
         $request->validate([
-            'nom' => 'sometimes|string|max:255',
-            'Descripcio' => 'sometimes|string',
-            'preu' => 'sometimes|integer',
-            'productes' => 'array'
+            'nom' => 'required|string|max:255',
+            'Descripcio' => 'required|string',
+            'preu' => 'required|integer',
+            'productes' => 'nullable|array'
         ]);
 
-        $pack->update($request->only(['nom','Descripcio','preu']));
+        $pack->update($request->only(['nom', 'Descripcio', 'preu']));
+
+        // Delete old pivot rows and insert new ones manually to allow duplicates
+        \DB::table('productos_pack')->where('packs_id', $pack->id)->delete();
 
         if ($request->has('productes')) {
-            $pack->productes()->sync($request->productes);
+            $rows = collect($request->productes)->map(function($productId) use ($pack) {
+                return [
+                    'packs_id' => $pack->id,
+                    'producte_id' => $productId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            })->toArray();
+
+            \DB::table('productos_pack')->insert($rows);
         }
 
-        return redirect()->route('packs.index');
+        return redirect()->route('packs.index')->with('success', 'Pack actualitzat correctament.');
     }
 
     public function destroy($id)

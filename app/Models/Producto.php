@@ -16,6 +16,16 @@ class Producto extends Model
         'categoria_id',
     ];
 
+    public function productes()
+    {
+        return $this->belongsToMany(
+            \App\Models\Producto::class,
+            'productos_pack', // pivot table
+            'packs_id',       // foreign key on pivot for this model
+            'producte_id'     // foreign key on pivot for related model
+        );
+    }
+
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);

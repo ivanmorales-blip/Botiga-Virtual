@@ -20,7 +20,7 @@ class Pack extends Model
     public function productes()
     {
         return $this->belongsToMany(
-            Producte::class,
+            Producto::class,
             'productos_pack',
             'packs_id',
             'producte_id'
