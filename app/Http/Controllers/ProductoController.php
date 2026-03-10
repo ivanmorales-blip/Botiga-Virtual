@@ -26,7 +26,7 @@ class ProductoController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:255',
             'precio' => 'required|numeric',
-            'stock' => 'nullable|integer',
+            'stock' => 'required|integer|min:0', 
             'descripcion' => 'nullable|string',
             'categoria_id' => 'nullable|exists:categorias,id',
         ]);

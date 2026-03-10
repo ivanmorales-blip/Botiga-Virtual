@@ -19,8 +19,8 @@
                         <th class="px-6 py-3 text-left font-semibold text-gray-700 uppercase text-sm">Nom</th>
                         <th class="px-6 py-3 text-left font-semibold text-gray-700 uppercase text-sm">Descripció</th>
                         <th class="px-6 py-3 text-left font-semibold text-gray-700 uppercase text-sm">Preu</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-700 uppercase text-sm">Categoria</th>
                         <th class="px-6 py-3 text-left font-semibold text-gray-700 uppercase text-sm">Stock</th>
+                        <th class="px-6 py-3 text-left font-semibold text-gray-700 uppercase text-sm">Categoria</th>
                         <th class="px-6 py-3 text-left font-semibold text-gray-700 uppercase text-sm">Estat</th>
                         <th class="px-6 py-3 text-left font-semibold text-gray-700 uppercase text-sm">Accions</th>
                     </tr>
@@ -34,17 +34,20 @@
                             <!-- ID -->
                             <td class="px-6 py-4 text-gray-600 font-medium">{{ $product->id }}</td>
 
-                            <!-- Nom -->
-                            <td class="px-6 py-4 text-gray-700">{{ $product->nom }}</td>
+                            <!-- Nombre -->
+                            <td class="px-6 py-4 text-gray-700">{{ $product->nombre }}</td>
 
-                            <!-- Descripció -->
+                            <!-- Descripción -->
                             <td class="px-6 py-4 text-gray-700">{{ $product->descripcion ?? 'N/A' }}</td>
 
-                            <!-- Preu -->
-                            <td class="px-6 py-4 text-gray-700">{{ number_format($product->preu, 2) }} €</td>
+                            <!-- Precio -->
+                            <td class="px-6 py-4 text-gray-700">{{ number_format($product->precio, 2) }} €</td>
 
-                            <!-- Categoria -->
-                            <td class="px-6 py-4 text-gray-700">{{ $product->categoria->nom ?? 'N/A' }}</td>
+                            <!-- Stock -->
+                           <td class="px-6 py-4 text-gray-700">{{ $product->stock }}</td>
+
+                            <!-- Categoría -->
+                            <td class="px-6 py-4 text-gray-700">{{ $product->categoria->nombre ?? 'N/A' }}</td>
 
                             <!-- Estat -->
                             <td class="px-6 py-4">
@@ -78,7 +81,7 @@
                                     </button>
                                 </form>
 
-                                <!-- Activar / Desactivar -->
+                                {{--
                                 <form action="{{ route('productos.active', $product->id) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
@@ -90,6 +93,7 @@
                                         </svg>
                                     </button>
                                 </form>
+                                --}}
 
                             </td>
 
