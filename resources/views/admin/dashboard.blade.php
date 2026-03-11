@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-[#f5f5f7] p-10">
+<div class="min-h-screen bg-[#FFF3E0] p-10"> 
 
     <h1 class="text-4xl font-semibold text-gray-900 mb-10">
         Pantalla de inicio

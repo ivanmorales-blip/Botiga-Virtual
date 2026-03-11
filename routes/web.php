@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\CaracteristicaController;
 use App\Http\Controllers\PackController;
 use App\Http\Controllers\CaracteristicaController;
 
@@ -40,4 +41,3 @@ Route::resource('packs', PackController::class);
 
 // Caracteristicas
 Route::resource('caracteristicas', CaracteristicaController::class);
-
