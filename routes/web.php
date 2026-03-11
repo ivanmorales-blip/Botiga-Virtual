@@ -6,7 +6,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\CaracteristicaController;
 use App\Http\Controllers\PackController;
-use App\Http\Controllers\CaracteristicaController;
+
 
 // Redirigir la raíz al dashboard del admin
 Route::get('/', function () {
