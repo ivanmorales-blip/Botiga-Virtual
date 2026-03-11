@@ -32,9 +32,12 @@ Route::resource('categorias', CategoriaController::class);
 
 // Productos
 Route::resource('productos', ProductoController::class);
+Route::patch('productos/{producto}/active', [App\Http\Controllers\ProductoController::class, 'toggleActive'])
+    ->name('productos.active');
 
 // Packs
 Route::resource('packs', PackController::class);
 
 // Caracteristicas
 Route::resource('caracteristicas', CaracteristicaController::class);
+

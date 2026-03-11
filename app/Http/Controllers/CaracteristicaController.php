@@ -24,12 +24,12 @@ class CaracteristicaController extends Controller
     {
         $request->validate([
             'descripcio' => 'required|string',
-            'id_tipo' => 'nullable|exists:tipo_caracteristica,id',
+            'tipo_id' => 'nullable|exists:tipo_caracteristica,id',
         ]);
 
         Caracteristica::create([
             'descripcio' => $request->descripcio,
-            'id_tipo' => $request->id_tipo,
+            'tipo_id' => $request->tipo_id,
         ]);
 
         return redirect()->route('caracteristicas.index')

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('precio');
             $table->integer('stock');
             $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('cascade');
+            $table->boolean('actiu')->default(true);
             $table->timestamps();
         });
     }

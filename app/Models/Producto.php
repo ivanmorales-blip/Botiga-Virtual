@@ -14,6 +14,7 @@ class Producto extends Model
         'precio',
         'stock',
         'categoria_id',
+        'actiu',
     ];
 
     public function productes()
@@ -23,6 +24,7 @@ class Producto extends Model
             'productos_pack', // pivot table
             'packs_id',       // foreign key on pivot for this model
             'producte_id'     // foreign key on pivot for related model
+            
         );
     }
 

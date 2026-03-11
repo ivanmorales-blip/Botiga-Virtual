@@ -40,7 +40,7 @@ class ProductoController extends Controller
     {
         $product = Producto::findOrFail($id);
         $categorias = Categoria::all();
-        return view('producto.edit', compact('product','categorias'));
+        return view('producto.editarproducto', compact('product','categorias'));
     }
 
     public function update(Request $request, $id)
@@ -67,4 +67,14 @@ class ProductoController extends Controller
 
         return response()->json(['message' => 'Producto eliminado correctamente']);
     }
+
+    public function toggleActive($id)
+{
+    $product = Producto::findOrFail($id);
+    $product->actiu = !$product->actiu; 
+    $product->save();
+
+    return redirect()->route('productos.index')
+                     ->with('success', 'Estado del producto actualizado correctamente.');
+}
 }
