@@ -14,7 +14,7 @@ class CategoriaController extends Controller
     public function index()
     {
         $categorias = Categoria::all();
-        return response()->json($categorias);
+        return response()->json($categorias, 200);
     }
 
     /**
@@ -28,6 +28,7 @@ class CategoriaController extends Controller
 
         $categoria = Categoria::create([
             'tipo' => $request->tipo,
+            'estat' => true, // always true on creation
         ]);
 
         return response()->json($categoria, 201);
@@ -39,7 +40,7 @@ class CategoriaController extends Controller
     public function show($id)
     {
         $categoria = Categoria::findOrFail($id);
-        return response()->json($categoria);
+        return response()->json($categoria, 200);
     }
 
     /**
@@ -51,23 +52,42 @@ class CategoriaController extends Controller
 
         $request->validate([
             'tipo' => 'sometimes|string|max:255',
+            'estat' => 'sometimes|boolean',
         ]);
 
-        $categoria->update($request->only(['tipo']));
+        $categoria->update($request->only(['tipo', 'estat']));
 
-        return response()->json($categoria);
+        return response()->json($categoria, 200);
     }
 
     /**
-     * Delete a category
+     * Deactivate a category (set estat = false)
+     */
+    public function deactivate($id)
+    {
+        $categoria = Categoria::findOrFail($id);
+        $categoria->update(['estat' => false]);
+
+        return response()->json($categoria, 200);
+    }
+
+    /**
+     * Delete a category (only if estat = false)
      */
     public function destroy($id)
     {
         $categoria = Categoria::findOrFail($id);
+
+        if ($categoria->estat) {
+            return response()->json([
+                'message' => 'Cannot delete active category. Deactivate first.'
+            ], 403);
+        }
+
         $categoria->delete();
 
         return response()->json([
             'message' => 'Categoria deleted successfully'
-        ]);
+        ], 200);
     }
 }

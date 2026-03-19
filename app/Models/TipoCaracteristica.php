@@ -9,7 +9,7 @@ class TipoCaracteristica extends Model
     protected $table = 'tipo_caracteristicas';
 
     protected $fillable = [
-        'descripcion',
+        'Descripcio',
         'tipo',
     ];
 

@@ -2,25 +2,18 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PackController as PackApiController;
-use App\Http\Controllers\Api\CategoriaController as CategoriaApiController;
+use App\Http\Controllers\Api\PackController;
+use App\Http\Controllers\Api\CategoriaController;
+use App\Http\Controllers\Api\ProductoController;
+use App\Http\Controllers\Api\CaracteristicaController;
 
-
-Route::get('/ping', function (Request $request) {
-    return response()->json([
-        'message' => 'pong del laravel'
-    ]);
-
+// Health check
+Route::get('/ping', function () {
+    return response()->json(['message' => 'pong del laravel']);
 });
 
-Route::prefix('api')->group(function () {
-    Route::apiResource('categorias', CategoriaApiController::class)
-         ->names('api.categorias');
-    Route::apiResource('packs', PackApiController::class)
-         ->names('api.packs');
-});
-
-Route::apiResource('categorias', CategoriaApiController::class)
+// API resources (all under /api automatically)
+Route::apiResource('categorias', CategoriaController::class)
      ->names([
          'index' => 'api.categorias.index',
          'store' => 'api.categorias.store',
@@ -29,7 +22,7 @@ Route::apiResource('categorias', CategoriaApiController::class)
          'destroy' => 'api.categorias.destroy',
      ]);
 
-Route::apiResource('packs', PackApiController::class)
+Route::apiResource('packs', PackController::class)
      ->names([
          'index' => 'api.packs.index',
          'store' => 'api.packs.store',
@@ -37,4 +30,31 @@ Route::apiResource('packs', PackApiController::class)
          'update' => 'api.packs.update',
          'destroy' => 'api.packs.destroy',
      ]);
+
+Route::apiResource('productos', ProductoController::class)
+     ->names([
+         'index' => 'api.productos.index',
+         'store' => 'api.productos.store',
+         'show' => 'api.productos.show',
+         'update' => 'api.productos.update',
+         'destroy' => 'api.productos.destroy',
+     ]);
+
+    Route::post('productos/{id}/deactivate', [ProductoController::class, 'deactivate']);
+    Route::post('productos/{id}/activate', [ProductoController::class, 'activate']);
+
+use App\Http\Controllers\Api\TipoCaracteristicasController;
+
+Route::get('/caracteristicas/tipos', [TipoCaracteristicasController::class, 'index']);
+Route::post('/tipo-caracteristicas', [TipoCaracteristicasController::class, 'store']);
+
+Route::apiResource('caracteristicas', CaracteristicaController::class)
+     ->names([
+         'index' => 'api.caracteristicas.index',
+         'store' => 'api.caracteristicas.store',
+         'update' => 'api.caracteristicas.update',
+         'destroy' => 'api.caracteristicas.destroy',
+     ]);
+
+
 ?>

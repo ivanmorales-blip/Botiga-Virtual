@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nom', 255);
             $table->text('Descripcio');
             $table->integer('preu');
+            $table->boolean('estat')->default(true);
             $table->timestamps();
         });
     }

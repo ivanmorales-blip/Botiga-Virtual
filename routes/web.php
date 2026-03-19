@@ -2,39 +2,50 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\PackController;
-use App\Http\Controllers\CaracteristicaController;
 
-// Redirigir la raíz al dashboard del admin
-Route::get('/', function () {
-    return redirect()->route('admin.dashboard');
-});
+// Redirect root to admin dashboard
+Route::get('/', fn() => redirect()->route('admin.dashboard'));
 
-// Rutas del panel de administración
+// Admin dashboard
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
-// Test conexión base de datos
+// DB test
 Route::get('/db-test', function () {
     try {
         \DB::connection()->getPdo();
-        return 'Conexión a la base de datos correcta!';
+        return 'Conexión correcta!';
     } catch (\Exception $e) {
         return 'Error: ' . $e->getMessage();
     }
 });
 
-// Categorías
-Route::resource('categorias', CategoriaController::class);
+// --------------------
+// React pages
+// --------------------
 
-// Productos
-Route::resource('productos', ProductoController::class);
+// Products
+Route::get('/products-react', fn() => view('producto.products-list'))
+    ->name('products.react.list');
+
+Route::get('/products-react/create', fn() => view('producto.product-create'))
+    ->name('products.react.create');
 
 // Packs
-Route::resource('packs', PackController::class);
+Route::get('/packs-react', fn() => view('packs.packslista-react'))
+    ->name('packs.react.list');
+
+Route::get('/packs-react/create', fn() => view('packs.packcreate-react'))
+    ->name('packs.react.create');
+
+Route::get('/packs-react/{id}/edit', fn($id) => view('packs.packedit-react', ['id' => $id]))
+    ->name('packs.react.edit');
+
+// Categorias
+Route::get('/categorias-react', fn() => view('categorias.categorias-react'))
+    ->name('categorias.react.list');
 
 // Caracteristicas
-Route::resource('caracteristicas', CaracteristicaController::class);
+Route::get('/caracteristicas-react', fn() => view('caracteristicas.caracteristicalist-react'))
+    ->name('caracteristicas.react.list');

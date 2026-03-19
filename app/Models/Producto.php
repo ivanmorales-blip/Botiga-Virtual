@@ -14,6 +14,7 @@ class Producto extends Model
         'precio',
         'stock',
         'categoria_id',
+        'estat'
     ];
 
     public function productes()

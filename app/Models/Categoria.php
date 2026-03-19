@@ -9,7 +9,8 @@ class Categoria extends Model
     protected $table = 'categorias';
 
     protected $fillable = [
-        'tipo'
+        'tipo',
+        'estat',
     ];
 
     public function productos()

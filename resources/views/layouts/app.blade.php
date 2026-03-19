@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SERRELLERIA SOLIDÀRIA</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
+    {{-- Vite --}}
+    @viteReactRefresh
+    @vite(['resources/js/app.jsx', 'resources/css/app.css'])
+
 </head>
 <body class="flex h-screen bg-gradient-to-r from-orange-50 to-red-50 font-sans">
 
@@ -24,8 +30,8 @@
                         </svg>
                     </button>
                     <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                        <a href="{{ route('productos.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Producto</a>
-                        <a href="{{ route('productos.index') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Productos</a>
+                        <a href="{{ route('products.react.list') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Productos</a>
+                        <a href="{{ route('products.react.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Producto</a>
                     </div>
                 </div>
 
@@ -38,11 +44,9 @@
                         </svg>
                     </button>
                     <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-<<<<<<< Updated upstream
-                        <a href="{{ route('categorias.index') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Categorías</a>
-=======
-                        <a href="{{ route('categorias.index') }}" class="text-orange-200 hover:text-white text-sm">Listar Categorías</a>
->>>>>>> Stashed changes
+                        <a href="{{ route('categorias.react.list') }}">
+                            Listar Categorías
+                        </a>
                     </div>
                 </div>
 
@@ -54,8 +58,7 @@
                     </svg>
                 </button>
                 <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                    <a href="{{ route('caracteristicas.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Característica</a>
-                    <a href="{{ route('caracteristicas.index') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Características</a>
+                    <a href="{{ route('caracteristicas.react.list') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar i Alta Características</a>
                 </div>
 
             <div x-data="{ open: false }" class="relative mt-2">
@@ -66,9 +69,9 @@
                     </svg>
                 </button>
                 <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                    <a href="{{ route('packs.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Pack</a>
-                    <a href="{{ route('packs.index') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Packs</a>
-                </div>
+                    <a href="{{ route('packs.react.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Pack</a>
+                    <a href="{{ route('packs.react.list') }}" class="text-gray-600 hover:text-blue-500 text-sm">Listar Packs</a>
+                </div>  
 
             </nav>
         </div>

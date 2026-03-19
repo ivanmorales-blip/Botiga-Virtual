@@ -11,6 +11,7 @@ class Caracteristica extends Model
     protected $fillable = [
         'tipo_id',
         'descripcio',
+        'estat'
     ];
 
     public function tipo()

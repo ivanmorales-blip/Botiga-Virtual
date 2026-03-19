@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('tipo_id')->nullable();
             $table->foreign('tipo_id')->references('id')->on('tipo_caracteristicas')->onDelete('cascade');
             $table->text('descripcio');
+            $table->boolean('estat')->default(1);
             $table->timestamps();
         });
     }

@@ -9,44 +9,55 @@ use App\Models\Producte;
 
 class PackController extends Controller
 {
-    // List all packs
+    /**
+     * List all packs with related products
+     */
     public function index()
     {
         $packs = Pack::with('productes')->get();
-        return response()->json($packs);
+        return response()->json($packs, 200);
     }
 
-    // Store new pack
+    /**
+     * Store a new pack
+     */
     public function store(Request $request)
     {
         $request->validate([
             'nom' => 'required|string|max:255',
             'Descripcio' => 'required|string',
             'preu' => 'required|integer',
-            'productes' => 'array'
+            'productes' => 'sometimes|array'
         ]);
 
         $pack = Pack::create([
             'nom' => $request->nom,
             'Descripcio' => $request->Descripcio,
-            'preu' => $request->preu
+            'preu' => $request->preu,
+            'estat' => true, // always true on creation
         ]);
 
         if ($request->has('productes')) {
             $pack->productes()->sync($request->productes);
         }
 
-        return response()->json($pack, 201);
+        $pack->load('productes');
+
+        return response()->json($pack->load('productes'), 201);
     }
 
-    // Show specific pack
+    /**
+     * Show a specific pack
+     */
     public function show($id)
     {
         $pack = Pack::with('productes')->findOrFail($id);
-        return response()->json($pack);
+        return response()->json($pack, 200);
     }
 
-    // Update pack
+    /**
+     * Update a pack
+     */
     public function update(Request $request, $id)
     {
         $pack = Pack::findOrFail($id);
@@ -55,24 +66,30 @@ class PackController extends Controller
             'nom' => 'sometimes|string|max:255',
             'Descripcio' => 'sometimes|string',
             'preu' => 'sometimes|integer',
-            'productes' => 'array'
+            'estat' => 'sometimes|boolean', // allow updating the state
+            'productes' => 'sometimes|array'
         ]);
 
-        $pack->update($request->only(['nom', 'Descripcio', 'preu']));
+        $pack->update($request->only(['nom', 'Descripcio', 'preu', 'estat']));
 
+        $pack->update($request->only(['nom', 'Descripcio', 'preu']));
         if ($request->has('productes')) {
             $pack->productes()->sync($request->productes);
         }
 
-        return response()->json($pack);
+        return response()->json($pack->load('productes'));
     }
 
-    // Delete pack
+    /**
+     * Delete a pack
+     */
     public function destroy($id)
     {
         $pack = Pack::findOrFail($id);
         $pack->delete();
 
-        return response()->json(['message' => 'Pack deleted successfully']);
+        return response()->json([
+            'message' => 'Pack deleted successfully'
+        ], 200);
     }
 }
