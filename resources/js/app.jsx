@@ -11,6 +11,8 @@ import ProductCreate from "./views/productcreate"; // New
 import CaracteristicasList from "./views/CaracteristicasList";
 import FrontPage from "./views/FrontPage";
 
+
+
 // Grab the mount point
 const rootElement = document.getElementById("app");
 

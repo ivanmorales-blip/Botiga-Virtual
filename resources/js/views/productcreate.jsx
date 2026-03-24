@@ -83,7 +83,7 @@ export default function ProductCreate() {
   return (
     <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-lg">
       <h1 className="text-2xl font-bold mb-4 text-orange-600 text-center">
-        Crear Producto
+        Crear Producte
       </h1>
 
       {errors.length > 0 && (

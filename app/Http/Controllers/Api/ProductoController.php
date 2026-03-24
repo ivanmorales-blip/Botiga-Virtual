@@ -12,6 +12,7 @@ class ProductoController extends Controller
     {
         $products = Producto::with(['categoria', 'caracteristicas.tipo'])->get();
         return response()->json($products, 200);
+        
     }
 
     // New function to fetch all products with categories & characteristics

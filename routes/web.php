@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Api\CategoriaController;
+
 
 // Redirect root to admin dashboard
 Route::get('/', fn() => redirect()->route('admin.dashboard'));
@@ -45,6 +47,8 @@ Route::get('/packs-react/{id}/edit', fn($id) => view('packs.packedit-react', ['i
 // Categorias
 Route::get('/categorias-react', fn() => view('categorias.categorias-react'))
     ->name('categorias.react.list');
+
+Route::get('/categorias/{id}/productos', [CategoriaController::class, 'productos']);
 
 // Caracteristicas
 Route::get('/caracteristicas-react', fn() => view('caracteristicas.caracteristicalist-react'))

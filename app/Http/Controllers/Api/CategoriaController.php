@@ -52,7 +52,7 @@ class CategoriaController extends Controller
      */
     public function show($id)
     {
-        $categoria = Categoria::findOrFail($id);
+        $categoria = Categoria::with('productos')->findOrFail($id);
         return response()->json($categoria, 200);
     }
 
@@ -102,5 +102,13 @@ class CategoriaController extends Controller
         return response()->json([
             'message' => 'Categoria deleted successfully'
         ], 200);
+    }
+
+    public function productos($id)
+    {
+        $categoria = Categoria::with('productos')->findOrFail($id);
+
+        // Devuelve solo los productos
+        return response()->json($categoria->productos, 200);
     }
 }

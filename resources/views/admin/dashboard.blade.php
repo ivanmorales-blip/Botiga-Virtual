@@ -4,7 +4,7 @@
 <div class="min-h-screen bg-[#f5f5f7] p-10">
 
     <h1 class="text-4xl font-semibold text-gray-900 mb-10">
-        Pantalla de inicio
+        Pantalla d'inici
     </h1>
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
@@ -15,7 +15,7 @@
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm p-6">
-            <p class="text-gray-500 text-sm">Productos</p>
+            <p class="text-gray-500 text-sm">Productes</p>
             <h2 class="text-3xl font-semibold">{{ $productsCount }}</h2>
         </div>
 
@@ -25,14 +25,14 @@
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm p-6">
-            <p class="text-gray-500 text-sm">Caracteristicas</p>
+            <p class="text-gray-500 text-sm">Caracteristiques</p>
             <h2 class="text-3xl font-semibold">{{ $featuresCount }}</h2>
         </div>
 
     </div>
 
     <div class="bg-white rounded-3xl shadow-sm p-8">
-        <h3 class="text-xl font-semibold mb-6">Ultimos Products</h3>
+        <h3 class="text-xl font-semibold mb-6">Últims Productes</h3>
 
         <ul>
             @foreach($latestProducts as $product)
