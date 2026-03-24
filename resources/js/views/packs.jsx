@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
+import PackEdit from "./packedit";
 
 export default function Packs() {
   const [packs, setPacks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingPackId, setEditingPackId] = useState(null);
 
   // Load packs from API
-  const loadPacks = () => {
-    setLoading(true);
-    fetch("/api/packs")
-      .then((res) => res.json())
-      .then((data) => {
-        setPacks(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
+  const loadPacks = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/packs");
+      const data = await res.json();
+      setPacks(data);
+    } catch (err) {
+      console.error("Error loading packs:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -26,13 +27,18 @@ export default function Packs() {
   // Delete pack
   const deletePack = async (id) => {
     if (!confirm("Segur que vols eliminar aquest pack?")) return;
-
     try {
       await fetch(`/api/packs/${id}`, { method: "DELETE" });
       loadPacks();
     } catch (err) {
       console.error(err);
     }
+  };
+
+  // Handler after editing
+  const handlePackSaved = () => {
+    setEditingPackId(null);
+    loadPacks();
   };
 
   return (
@@ -58,7 +64,6 @@ export default function Packs() {
                   Pack
                 </span>
 
-                {/* Delete button */}
                 <button
                   onClick={() => deletePack(pack.id)}
                   className="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm font-semibold"
@@ -71,46 +76,53 @@ export default function Packs() {
                 </button>
               </div>
 
-              {/* Pack Name */}
+              {/* Pack info */}
               <h2 className="text-xl font-bold text-gray-800 mb-1">{pack.nom}</h2>
-
-              {/* Description */}
               <p className="text-gray-600 text-sm mb-3">{pack.Descripcio}</p>
-
-              {/* Price */}
               <p className="text-sm text-orange-500 font-semibold mb-3">{pack.preu} €</p>
 
-              {/* Product count */}
-              <p className="text-gray-500 text-sm mb-4">
-                {pack.productes?.length ?? 0} productes
+              {/* Products summary */}
+              <p className="text-sm text-gray-500 mb-4">
+                {(pack.productes || []).reduce(
+                  (sum, p) => sum + (p.pivot?.quantity || 1),
+                  0
+                )}{" "}
+                productes
               </p>
 
               {/* Footer */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Pack ID #{pack.id}</span>
 
-                {/* Edit button (link to edit page) */}
-                <a
-                  href={`/packs-react/${pack.id}/edit`}
+                {/* Edit button */}
+                <button
+                  onClick={() => setEditingPackId(pack.id)}
                   className="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm transition"
                 >
                   Editar Pack
-                </a>
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
 
+      {/* Inline Edit */}
+      {editingPackId && (
+        <div className="mt-10">
+          <PackEdit packId={editingPackId} onSaved={handlePackSaved} />
+        </div>
+      )}
+
       {/* Back / Create button */}
       <div className="mt-10 text-center">
-       <a
-        href="/packs-react/create"
-        className="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl shadow-lg transition"
-      >
-        Crear Pack
-      </a>
+        <a
+          href="/packs-react/create"
+          className="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl shadow-lg transition"
+        >
+          Crear Pack
+        </a>
       </div>
     </div>
   );
-}   
+}

@@ -14,8 +14,8 @@ class PackController extends Controller
      */
     public function index()
     {
-        $packs = Pack::with('productes')->get();
-        return response()->json($packs, 200);
+        $packs = Pack::with(['productes'])->get();
+        return response()->json($packs);
     }
 
     /**
@@ -23,25 +23,22 @@ class PackController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nom' => 'required|string|max:255',
-            'Descripcio' => 'required|string',
-            'preu' => 'required|integer',
-            'productes' => 'sometimes|array'
-        ]);
-
         $pack = Pack::create([
             'nom' => $request->nom,
             'Descripcio' => $request->Descripcio,
             'preu' => $request->preu,
-            'estat' => true, // always true on creation
         ]);
 
+        // 🔥 Attach products WITH quantity
         if ($request->has('productes')) {
-            $pack->productes()->sync($request->productes);
-        }
+            $syncData = [];
 
-        $pack->load('productes');
+            foreach ($request->productes as $prod) {
+                $syncData[$prod['id']] = ['quantity' => $prod['quantity']];
+            }
+
+            $pack->productes()->sync($syncData);
+        }
 
         return response()->json($pack->load('productes'), 201);
     }
@@ -62,19 +59,20 @@ class PackController extends Controller
     {
         $pack = Pack::findOrFail($id);
 
-        $request->validate([
-            'nom' => 'sometimes|string|max:255',
-            'Descripcio' => 'sometimes|string',
-            'preu' => 'sometimes|integer',
-            'estat' => 'sometimes|boolean', // allow updating the state
-            'productes' => 'sometimes|array'
+        $pack->update([
+            'nom' => $request->nom,
+            'Descripcio' => $request->Descripcio,
+            'preu' => $request->preu,
         ]);
 
-        $pack->update($request->only(['nom', 'Descripcio', 'preu', 'estat']));
-
-        $pack->update($request->only(['nom', 'Descripcio', 'preu']));
         if ($request->has('productes')) {
-            $pack->productes()->sync($request->productes);
+            $syncData = [];
+
+            foreach ($request->productes as $prod) {
+                $syncData[$prod['id']] = ['quantity' => $prod['quantity']];
+            }
+
+            $pack->productes()->sync($syncData);
         }
 
         return response()->json($pack->load('productes'));

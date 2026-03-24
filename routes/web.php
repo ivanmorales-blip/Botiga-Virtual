@@ -49,3 +49,7 @@ Route::get('/categorias-react', fn() => view('categorias.categorias-react'))
 // Caracteristicas
 Route::get('/caracteristicas-react', fn() => view('caracteristicas.caracteristicalist-react'))
     ->name('caracteristicas.react.list');
+    
+Route::get('/', function () {
+    return view('Frontend.Frontpage'); // folder 'Frontend', file 'Frontpage.blade.php'
+});

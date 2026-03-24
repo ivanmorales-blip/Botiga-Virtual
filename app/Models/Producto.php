@@ -14,6 +14,7 @@ class Producto extends Model
         'precio',
         'stock',
         'categoria_id',
+        'marca',
         'estat'
     ];
 
@@ -32,8 +33,13 @@ class Producto extends Model
         return $this->belongsTo(Categoria::class);
     }
 
-    public function caracteristicas()
-    {
-        return $this->belongsToMany(Caracteristica::class, 'producto_caracteristica');
-    }
+public function caracteristicas()
+{
+    return $this->belongsToMany(
+        \App\Models\Caracteristica::class,
+        'asignacion_caracteristicas', // ✅ YOUR TABLE
+        'producto_id',                // ✅ FK to producto
+        'caracteristica_id'           // ✅ FK to caracteristica
+    );
+}
 }

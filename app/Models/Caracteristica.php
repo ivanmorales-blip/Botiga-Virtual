@@ -21,6 +21,12 @@ class Caracteristica extends Model
 
     public function productos()
     {
-        return $this->belongsToMany(Producto::class, 'asignacio_caracteristiques', 'id_caracteristica', 'id_producto');
+        return $this->belongsToMany(
+            \App\Models\Producto::class,
+            'asignacion_caracteristicas', // ✅ exact table name
+            'caracteristica_id',          // ✅ FK to caracteristicas
+            'producto_id'                 // ✅ FK to productos
+        )->withTimestamps();
     }
+
 }

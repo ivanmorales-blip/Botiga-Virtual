@@ -55,6 +55,13 @@ Route::apiResource('caracteristicas', CaracteristicaController::class)
          'update' => 'api.caracteristicas.update',
          'destroy' => 'api.caracteristicas.destroy',
      ]);
+// Products for frontend display
+Route::get('/frontend/productos', [ProductoController::class, 'indexWithRelations']);
+Route::get('/frontend/productos/{id}', [ProductoController::class, 'showWithRelations']);
 
+// Categories with their products
+Route::get('/frontend/categorias', [CategoriaController::class, 'indexWithProducts']);
+
+Route::get('/productos/recent', [ProductoController::class, 'recent']);
 
 ?>

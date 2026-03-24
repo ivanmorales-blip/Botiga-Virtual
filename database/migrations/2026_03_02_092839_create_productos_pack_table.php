@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('packs_id')->references('id')->on('packs')->onDelete('cascade');
             $table->unsignedBigInteger('producte_id');
             $table->foreign('producte_id')->references('id')->on('productos')->onDelete('cascade');
+            $table->integer('quantity');
             $table->timestamps();
         });
     }

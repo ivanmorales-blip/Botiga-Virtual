@@ -24,6 +24,6 @@ class Pack extends Model
             'productos_pack',
             'packs_id',
             'producte_id'
-        )->withTimestamps();
+        )->withPivot('quantity')->withTimestamps();
     }
 }

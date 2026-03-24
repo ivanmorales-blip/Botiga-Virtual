@@ -9,6 +9,7 @@ import PackEdit from "./views/packedit";
 import ProductList from "./views/productlist";   // New
 import ProductCreate from "./views/productcreate"; // New
 import CaracteristicasList from "./views/CaracteristicasList";
+import FrontPage from "./views/FrontPage";
 
 // Grab the mount point
 const rootElement = document.getElementById("app");
@@ -47,6 +48,10 @@ if (rootElement) {
 
     case "caracteristicas-list":      
       root.render(<CaracteristicasList />);
+      break;
+
+    case "FrontPage":      
+      root.render(<FrontPage />);
       break;
       
     default:

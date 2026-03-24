@@ -17,6 +17,19 @@ class CategoriaController extends Controller
         return response()->json($categorias, 200);
     }
 
+    // New function to fetch categories with active products
+    public function indexWithProducts()
+    {
+        $categorias = Categoria::where('estat', true)
+            ->with(['productos' => function($query) {
+                $query->where('estat', true)
+                    ->with('caracteristicas');
+            }])
+            ->get();
+
+        return response()->json($categorias, 200);
+    }
+
     /**
      * Store a new category
      */
