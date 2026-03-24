@@ -4,13 +4,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PackController;
 use App\Http\Controllers\Api\CategoriaController;
-use App\Http\Controllers\Api\ProductoController;
 use App\Http\Controllers\Api\CaracteristicaController;
 
 // Health check
 Route::get('/ping', function () {
     return response()->json(['message' => 'pong del laravel']);
 });
+
+use App\Http\Controllers\Api\ProductoController;
+
+// Recent products
+Route::get('productos/recent', [ProductoController::class, 'recent'])->name('api.productos.recent');
+
+// All products (with relations)
+Route::get('frontend/productos', [ProductoController::class, 'indexWithRelations']);
+Route::get('frontend/productos/{id}', [ProductoController::class, 'showWithRelations']);
 
 // API resources (all under /api automatically)
 Route::apiResource('categorias', CategoriaController::class)
@@ -62,6 +70,6 @@ Route::get('/frontend/productos/{id}', [ProductoController::class, 'showWithRela
 // Categories with their products
 Route::get('/frontend/categorias', [CategoriaController::class, 'indexWithProducts']);
 
-Route::get('/productos/recent', [ProductoController::class, 'recent']);
+Route::get('productos/recent', [ProductoController::class, 'recent'])->name('api.productos.recent');
 
 ?>

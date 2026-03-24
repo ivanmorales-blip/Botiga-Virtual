@@ -16,11 +16,12 @@
 
     <!-- Sidebar -->
     <aside class="w-64 bg-orange-100 shadow-sm p-6 flex justify-between">
-<a href="{{ url('/') }}" class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
-    Anar a la Botiga
-</a>
+
         <div class="p-6">
             <img src="/images/logoserralleria.png" alt="Logo" class="mb-6 w-32">
+            <a href="{{ url('/') }}" class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
+                Anar a la Botiga
+            </a>
             <nav class="flex flex-col space-y-2">
                 <a href="{{ route('admin.dashboard') }}" class="text-black-600 hover:text-blue-500 text-lg"> Dashboard </a>
 

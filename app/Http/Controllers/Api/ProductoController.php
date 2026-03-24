@@ -34,15 +34,17 @@ class ProductoController extends Controller
         return response()->json($producto, 200);
     }
 
-    public function recent()
-    {
-        $oneMonthAgo = now()->subMonth();
-        $products = Producto::with('categoria')
-                            ->where('created_at', '>=', $oneMonthAgo)
-                            ->orderBy('created_at', 'desc')
-                            ->get();
-        return response()->json($products);
-    }
+public function recent()
+{
+    $products = Producto::with('categoria')
+        ->where('estat', true)              // only active products
+        ->where('created_at', '>=', now()->subDays(30)) // last 30 days
+        ->orderBy('created_at', 'desc')
+        ->take(5)
+        ->get();
+
+    return response()->json($products, 200);
+}
 
     public function store(Request $request)
 {
