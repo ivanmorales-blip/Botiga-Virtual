@@ -72,4 +72,9 @@ Route::get('/frontend/categorias', [CategoriaController::class, 'indexWithProduc
 
 Route::get('productos/recent', [ProductoController::class, 'recent'])->name('api.productos.recent');
 
+Route::patch('/productos/{id}/activate', [ProductoController::class, 'activate']);
+Route::patch('/productos/{id}/deactivate', [ProductoController::class, 'deactivate']);
+
+
+
 ?>

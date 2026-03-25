@@ -50,6 +50,11 @@ Route::get('/categorias-react', fn() => view('categorias.categorias-react'))
 
 Route::get('/categorias/{id}/productos', [CategoriaController::class, 'productos']);
 
+Route::get('/categorias-productos', function () {
+    return view('CategoriaProductos.categoriasproductos-react');
+})->name('categorias.productos');  // <- nombre de la ruta
+
+
 // Caracteristicas
 Route::get('/caracteristicas-react', fn() => view('caracteristicas.caracteristicalist-react'))
     ->name('caracteristicas.react.list');

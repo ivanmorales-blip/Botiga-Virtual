@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 
 // Import your views
 import Categoria from "./views/categoria";
+import CategoriaProductos from "./views/categoriaproductos";
 import Packs from "./views/packs";
 import PackCreate from "./views/packcreate";
 import PackEdit from "./views/packedit";
@@ -55,7 +56,11 @@ if (rootElement) {
     case "FrontPage":      
       root.render(<FrontPage />);
       break;
-      
+
+    case "categoria-productos":
+      root.render(<CategoriaProductos />);
+      break;
+
     default:
       root.render(<div>Page not found</div>);
   }

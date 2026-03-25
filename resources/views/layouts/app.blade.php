@@ -52,9 +52,12 @@
                             Llistar Categoríes
                         </a>
                     </div>
+                    <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
+                    <a href="{{ route('categorias.productos') }}" class="text-gray-600 hover:text-blue-500 text-sm">
+                        Llistar Productes de Categoria
+                    </a>
                 </div>
-
-                
+                </div>
 
             <div x-data="{ open: false }" class="relative mt-2">
                 <button @click="open = !open" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
@@ -90,7 +93,7 @@
 
         <!-- Header -->
         <header class="bg-orange-100 shadow-sm p-6 flex justify-between items-center">
-            <h1 class="text-2xl font-semibold text-orange-900">SERRELLERIA SOLIDÀRIA</h1>
+            <h1 class="text-2xl font-semibold text-orange-900"> SERRELLERIA SOLIDÀRIA </h1>
             
         </header>
 
