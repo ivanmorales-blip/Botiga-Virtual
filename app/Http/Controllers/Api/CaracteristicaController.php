@@ -11,7 +11,7 @@ class CaracteristicaController extends Controller
     public function index()
     {
         $caracteristicas = Caracteristica::with('tipo')->get();
-        return response()->json($caracteristicas, 201);
+        return response()->json($caracteristicas, 200);
     }
 
     public function store(Request $request)

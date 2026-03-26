@@ -8,6 +8,7 @@ use App\Models\Categoria;
 
 class CategoriaController extends Controller
 {
+    
     /**
      * List all categories
      */

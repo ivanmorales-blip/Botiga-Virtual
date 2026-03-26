@@ -63,6 +63,13 @@ Route::apiResource('caracteristicas', CaracteristicaController::class)
          'update' => 'api.caracteristicas.update',
          'destroy' => 'api.caracteristicas.destroy',
      ]);
+
+Route::get('/categorias/{categoria}/caracteristicas/{caracteristica}/productos', [ProductoController::class, 'productosPorCategoriaYCaracteristica']);
+
+Route::get('/caracteristicas', [CaracteristicaController::class, 'index']);
+Route::get('/categorias/{id}/productos', [ProductoController::class, 'productosPorCategoria']);
+
+
 // Products for frontend display
 Route::get('/frontend/productos', [ProductoController::class, 'indexWithRelations']);
 Route::get('/frontend/productos/{id}', [ProductoController::class, 'showWithRelations']);
@@ -75,7 +82,7 @@ Route::get('productos/recent', [ProductoController::class, 'recent'])->name('api
 Route::patch('/productos/{id}/activate', [ProductoController::class, 'activate']);
 Route::patch('/productos/{id}/deactivate', [ProductoController::class, 'deactivate']);
 
-
+Route::get('/productos', [ProductoController::class, 'index']);
 
 use App\Http\Controllers\Api\SolucionsController;
 

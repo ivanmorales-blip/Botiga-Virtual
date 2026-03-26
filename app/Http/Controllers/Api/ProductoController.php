@@ -8,11 +8,26 @@ use App\Models\Producto;
 
 class ProductoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Producto::with(['categoria', 'caracteristicas.tipo'])->get();
-        return response()->json($products, 200);
-        
+        $query = Producto::query();
+
+        // Filtrar por categoría si viene
+        if ($request->filled('categoria')) {
+            $query->where('categoria_id', $request->categoria);
+        }
+
+        // Filtrar por característica si viene
+        if ($request->filled('caracteristica')) {
+            $query->whereHas('caracteristicas', function ($q) use ($request) {
+                $q->where('id', $request->caracteristica);
+            });
+        }
+
+        // Cargar las características junto con el producto
+        $productos = $query->with('caracteristicas')->get();
+
+        return response()->json($productos);
     }
 
     // New function to fetch all products with categories & characteristics
@@ -136,5 +151,17 @@ public function recent()
         $producto->delete();
 
         return response()->json(['message' => 'Producto deleted successfully'], 200);
+    }
+    public function productosPorCategoriaYCaracteristica($categoriaId, $caracteristicaId)
+    {
+        $productos = Producto::with(['categoria', 'caracteristicas'])
+            ->where('categoria_id', $categoriaId)
+            ->whereHas('caracteristicas', function ($query) use ($caracteristicaId) {
+                $query->where('caracteristicas.id', $caracteristicaId);
+            })
+            ->where('estat', true)
+            ->get();
+
+        return response()->json($productos, 200);
     }
 }
