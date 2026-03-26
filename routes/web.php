@@ -58,7 +58,15 @@ Route::get('/categorias-productos', function () {
 // Caracteristicas
 Route::get('/caracteristicas-react', fn() => view('caracteristicas.caracteristicalist-react'))
     ->name('caracteristicas.react.list');
+
+Route::view('/solucions/create', 'formularisolucions.create')
+    ->name('solucions.create');
+
+Route::view('/admin/solucions', 'formularisolucions.list')
+    ->name('solucions.admin');
     
 Route::get('/', function () {
     return view('Frontend.Frontpage'); // folder 'Frontend', file 'Frontpage.blade.php'
+
+
 });

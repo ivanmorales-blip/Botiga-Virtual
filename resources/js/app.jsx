@@ -2,15 +2,17 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 // Import your views
-import Categoria from "./views/categoria";
-import CategoriaProductos from "./views/categoriaproductos";
-import Packs from "./views/packs";
-import PackCreate from "./views/packcreate";
-import PackEdit from "./views/packedit";
-import ProductList from "./views/productlist";   // New
-import ProductCreate from "./views/productcreate"; // New
-import CaracteristicasList from "./views/CaracteristicasList";
-import FrontPage from "./views/FrontPage";
+import CategoriaProductos from "./views/backend/categorias/categoriaproductos";
+import Categoria from "./views/backend/categorias/categoria";
+import Packs from "./views/backend/packs/packs";
+import PackCreate from "./views/backend/packs/packcreate";
+import PackEdit from "./views/backend/packs/packedit";
+import ProductList from "./views/backend/producto/productlist";   // New
+import ProductCreate from "./views/backend/producto/productcreate"; // New
+import CaracteristicasList from "./views/backend/caracteristicas/CaracteristicasList";
+import FrontPage from "./views/frontend/FrontPage";
+import Solutionlist from "./views/frontend/Listsolucions";
+import SolutionCreate from "./views/frontend/Createsolucions";
 
 
 
@@ -61,6 +63,14 @@ if (rootElement) {
       root.render(<CategoriaProductos />);
       break;
 
+    case "Solucionlist":      
+      root.render(<Solutionlist />);
+      break;
+
+    case "SolucionCreate":      
+      root.render(<SolutionCreate />);
+      break;
+      
     default:
       root.render(<div>Page not found</div>);
   }

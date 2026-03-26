@@ -77,4 +77,13 @@ Route::patch('/productos/{id}/deactivate', [ProductoController::class, 'deactiva
 
 
 
+use App\Http\Controllers\Api\SolucionsController;
+
+Route::get('/solucions', [SolucionsController::class, 'index']);
+Route::get('/solucions/{id}', [SolucionsController::class, 'show']);
+Route::post('/solucions', [SolucionsController::class, 'store']);
+Route::delete('/solucions/{id}', [Solucionscontroller::class, 'destroy']);
+
+Route::apiResource('solucions', SolucionsController::class);
+
 ?>

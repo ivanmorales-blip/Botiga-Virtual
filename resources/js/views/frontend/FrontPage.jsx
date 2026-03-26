@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../../../scss/FrontPage.scss";
+import "../../../../scss/FrontPage.scss";
 
 export default function FrontPage() {
   const [products, setProducts] = useState([]);
@@ -11,7 +11,7 @@ export default function FrontPage() {
   useEffect(() => {
     fetch("/api/productos")
       .then(res => res.json())
-      .then(setProducts)
+      .then(data => setProducts(data.filter(p => p.estat === 1)))
       .catch(err => console.error("Error fetching products:", err));
 
     fetch("/api/productos/recent")
@@ -19,16 +19,18 @@ export default function FrontPage() {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
       })
-      .then(setRecentProducts)
+      .then(data => setRecentProducts(data.filter(p => p.estat === 1)))
       .catch(err => console.error("Error fetching recent products:", err));
 
     fetch("/api/categorias")
       .then(res => res.json())
-      .then(setCategories)
+      .then(data => setCategories(data.filter(p => p.estat === 1)))
       .catch(err => console.error("Error fetching categories:", err));
   }, []);
 
-  const filteredProducts = products.filter(p =>
+  const filteredProducts = products
+  .filter(p => p.estat === 1)
+  .filter(p =>
     p.nombre.toLowerCase().includes(search.toLowerCase())
   );
 

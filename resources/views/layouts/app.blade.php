@@ -82,6 +82,26 @@
                     <a href="{{ route('packs.react.list') }}" class="text-gray-600 hover:text-blue-500 text-sm">Llistar Packs</a>
                 </div>
 
+
+            <!-- Solucions -->
+            <div x-data="{ open: false }" class="relative mt-2">
+                <button @click="open = !open" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
+                    Solucions
+                    <svg class="w-4 h-4 transform" :class="{'rotate-90': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
+                    <a href="{{ route('solucions.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">
+                        Crear Solució
+                    </a>
+
+                    <a href="{{ route('solucions.admin') }}" class="text-gray-600 hover:text-blue-500 text-sm">
+                        Gestionar Solucions
+                    </a>
+                </div>
+            </div>
             </nav>
         </div>
     </aside>
