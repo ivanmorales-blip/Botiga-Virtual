@@ -7,7 +7,7 @@ export default function ProductCreate() {
   const [descripcion, setDescripcion] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
   const [marca, setMarca] = useState("");
-  const [destacat, setDestacat] = useState(false); // 🔥 NUEVO
+  const [destacat, setDestacat] = useState(false); //  NUEVO
 
   const [categorias, setCategorias] = useState([]);
   const [caracteristicas, setCaracteristicas] = useState([]);
@@ -56,7 +56,7 @@ export default function ProductCreate() {
           categoria_id: categoriaId || null,
           marca,
           caracteristicas: selectedCaracteristicas,
-          destacat, // 🔥 NUEVO
+          destacat, //  NUEVO
         }),
       });
 
@@ -71,7 +71,7 @@ export default function ProductCreate() {
       setCategoriaId("");
       setMarca("");
       setSelectedCaracteristicas([]);
-      setDestacat(false); // 🔥 RESET
+      setDestacat(false); //  RESET
 
     } catch (err) {
       console.error(err);
@@ -145,7 +145,7 @@ export default function ProductCreate() {
           ))}
         </select>
 
-        {/* 🔥 CHECKBOX DESTACADO */}
+        {/*CHECKBOX DESTACADO */}
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -153,7 +153,7 @@ export default function ProductCreate() {
             onChange={(e) => setDestacat(e.target.checked)}
           />
           <label className="text-gray-700 font-semibold">
-            Producto destacado
+            Producte destacat
           </label>
         </div>
 

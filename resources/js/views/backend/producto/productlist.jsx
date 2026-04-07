@@ -179,7 +179,7 @@ export default function ProductsList() {
                 {/* BADGE DESTACADO solo si es verdadero */}
                 {p.destacat ? (
                   <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-                    ⭐ Destacado
+                    ⭐ Destacat
                   </span>
                 ) : null}
               </div>
@@ -238,7 +238,7 @@ export default function ProductsList() {
                       }
                     />
                     <label className="text-sm font-semibold text-gray-700">
-                      Producto destacado
+                      Producte destacat
                     </label>
                   </div>
 
