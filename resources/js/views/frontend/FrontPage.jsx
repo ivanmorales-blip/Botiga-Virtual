@@ -85,7 +85,15 @@ const ProductCard = ({ p }) => (
 
       {/* Featured products (empty) */}
       <div className="divider"><h2>Productes Destacats</h2></div>
-      <div className="products-grid"></div>
+      <div className="products-grid">
+        {products.filter(p => p.destacat === 1).length === 0 ? (
+          <p className="no-products">No hi ha productes destacats</p>
+        ) : (
+          products
+            .filter(p => p.destacat === 1) // Solo destacados
+            .map(p => <ProductCard key={p.id} p={p} />)
+        )}
+      </div>
 
       {/* Products by category */}
       {categories.map(cat => (
