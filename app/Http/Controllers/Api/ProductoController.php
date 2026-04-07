@@ -71,7 +71,8 @@ public function recent()
         'categoria_id' => 'nullable|exists:categorias,id',
         'marca' => 'nullable|string|max:255',
         'caracteristicas' => 'nullable|array',
-        'caracteristicas.*' => 'exists:caracteristicas,id'
+        'caracteristicas.*' => 'exists:caracteristicas,id',
+        'destacat' => 'nullable|boolean',
     ]);
 
     $producto = Producto::create([
@@ -82,6 +83,7 @@ public function recent()
         'categoria_id' => $request->categoria_id,
         'marca' => $request->marca,
         'estat' => true,
+        'destacat' => $request->destacat ?? false,
     ]);
 
     if ($request->has('caracteristicas')) {
@@ -113,6 +115,7 @@ public function recent()
         'descripcion' => $request->descripcion,
         'categoria_id' => $request->categoria_id,
         'marca' => $request->marca,
+        'destacat' => $request->destacat ?? false
     ]);
 
     if ($request->has('caracteristicas')) {

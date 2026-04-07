@@ -15,7 +15,8 @@ class Producto extends Model
         'stock',
         'categoria_id',
         'marca',
-        'estat'
+        'estat',
+        'destacat',
     ];
 
     public function productes()

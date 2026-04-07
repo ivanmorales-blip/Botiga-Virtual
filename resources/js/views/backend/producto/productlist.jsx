@@ -55,7 +55,7 @@ export default function ProductsList() {
     loadCaracteristicas();
   }, []);
 
-  // 🔹 Group características by tipo name
+  // 🔹 Group características
   const groupedCaracteristicas = caracteristicas.reduce((acc, c) => {
     const key = c.tipo?.nombre || "Altres";
     if (!acc[key]) acc[key] = [];
@@ -86,6 +86,7 @@ export default function ProductsList() {
       categoria_id: product.categoria_id || "",
       marca: product.marca || "",
       caracteristicas: product.caracteristicas?.map((c) => c.id) || [],
+      destacat: product.destacat || false,
     });
   };
 
@@ -164,24 +165,82 @@ export default function ProductsList() {
               className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition"
             >
               {/* STATUS */}
-              <span
-                className={`text-xs px-2 py-1 rounded-full ${
-                  p.estat
-                    ? "bg-green-100 text-green-700"
-                    : "bg-gray-200 text-gray-500"
-                }`}
-              >
-                {p.estat ? "Actiu" : "Inactiu"}
-              </span>
+              <div className="flex items-center justify-between">
+                <span
+                  className={`text-xs px-2 py-1 rounded-full ${
+                    p.estat
+                      ? "bg-green-100 text-green-700"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
+                >
+                  {p.estat ? "Actiu" : "Inactiu"}
+                </span>
+
+                {/* BADGE DESTACADO solo si es verdadero */}
+                {p.destacat ? (
+                  <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
+                    ⭐ Destacado
+                  </span>
+                ) : null}
+              </div>
 
               {editingId === p.id ? (
                 <>
                   {/* EDIT MODE */}
-                  <input value={editedFields.nombre} onChange={(e) => setEditedFields({ ...editedFields, nombre: e.target.value })} className="w-full border p-2 mt-2 rounded"/>
-                  <input type="number" value={editedFields.precio} onChange={(e) => setEditedFields({ ...editedFields, precio: e.target.value })} className="w-full border p-2 mt-1 rounded"/>
-                  <input type="number" value={editedFields.stock} onChange={(e) => setEditedFields({ ...editedFields, stock: e.target.value })} className="w-full border p-2 mt-1 rounded"/>
-                  <input value={editedFields.marca} onChange={(e) => setEditedFields({ ...editedFields, marca: e.target.value })} placeholder="Marca" className="w-full border p-2 mt-1 rounded"/>
-                  <textarea value={editedFields.descripcion} onChange={(e) => setEditedFields({ ...editedFields, descripcion: e.target.value })} className="w-full border p-2 mt-1 rounded"/>
+                  <input
+                    value={editedFields.nombre}
+                    onChange={(e) =>
+                      setEditedFields({ ...editedFields, nombre: e.target.value })
+                    }
+                    className="w-full border p-2 mt-2 rounded"
+                  />
+                  <input
+                    type="number"
+                    value={editedFields.precio}
+                    onChange={(e) =>
+                      setEditedFields({ ...editedFields, precio: e.target.value })
+                    }
+                    className="w-full border p-2 mt-1 rounded"
+                  />
+                  <input
+                    type="number"
+                    value={editedFields.stock}
+                    onChange={(e) =>
+                      setEditedFields({ ...editedFields, stock: e.target.value })
+                    }
+                    className="w-full border p-2 mt-1 rounded"
+                  />
+                  <input
+                    value={editedFields.marca}
+                    onChange={(e) =>
+                      setEditedFields({ ...editedFields, marca: e.target.value })
+                    }
+                    className="w-full border p-2 mt-1 rounded"
+                  />
+                  <textarea
+                    value={editedFields.descripcion}
+                    onChange={(e) =>
+                      setEditedFields({ ...editedFields, descripcion: e.target.value })
+                    }
+                    className="w-full border p-2 mt-1 rounded"
+                  />
+
+                  {/* CHECKBOX DESTACADO */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <input
+                      type="checkbox"
+                      checked={editedFields.destacat || false}
+                      onChange={(e) =>
+                        setEditedFields({
+                          ...editedFields,
+                          destacat: e.target.checked,
+                        })
+                      }
+                    />
+                    <label className="text-sm font-semibold text-gray-700">
+                      Producto destacado
+                    </label>
+                  </div>
 
                   {/* Características */}
                   <div className="mt-3">
@@ -206,10 +265,16 @@ export default function ProductsList() {
                   </div>
 
                   <div className="flex gap-2 mt-3">
-                    <button onClick={() => saveEdit(p.id)} className="bg-green-500 text-white px-3 py-1 rounded">
+                    <button
+                      onClick={() => saveEdit(p.id)}
+                      className="bg-green-500 text-white px-3 py-1 rounded"
+                    >
                       Guardar
                     </button>
-                    <button onClick={cancelEdit} className="bg-gray-300 px-3 py-1 rounded">
+                    <button
+                      onClick={cancelEdit}
+                      className="bg-gray-300 px-3 py-1 rounded"
+                    >
                       Cancel·lar
                     </button>
                   </div>
@@ -219,44 +284,29 @@ export default function ProductsList() {
                   {/* VIEW MODE */}
                   <h2 className="font-bold text-lg mt-2">{p.nombre}</h2>
                   <p className="text-orange-500 font-semibold">{p.precio} €</p>
-                  <p className="text-sm text-gray-500">Stock: {p.stock}</p>
+
+                  {/* Solo mostrar stock si > 0 */}
+                  {p.stock > 0 && (
+                    <p className="text-sm text-gray-500">Stock: {p.stock}</p>
+                  )}
+
                   <p className="text-sm text-gray-500">Marca: {p.marca || "—"}</p>
-
-                  <div className="mt-2 text-sm">
-                    <strong>Característiques:</strong>
-
-                    {p.caracteristicas?.length ? (
-                      Object.entries(
-                        p.caracteristicas.reduce((acc, c) => {
-                          const key = c.tipo?.nombre || "Altres";
-                          if (!acc[key]) acc[key] = [];
-                          acc[key].push(c);
-                          return acc;
-                        }, {})
-                      ).map(([tipo, items]) => (
-                        <div key={tipo}>
-                          <p className="text-xs text-gray-400">{tipo}</p>
-                          <ul className="ml-3 list-disc">
-                            {items.map((c) => (
-                              <li key={c.id}>{c.descripcio}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-400">Cap</p>
-                    )}
-                  </div>
 
                   <p className="text-xs text-gray-400 mt-2">
                     {p.categoria?.tipo || "Sense categoria"}
                   </p>
 
                   <div className="flex gap-2 mt-3">
-                    <button onClick={() => toggleActive(p)} className="bg-blue-500 text-white px-2 py-1 rounded">
+                    <button
+                      onClick={() => toggleActive(p)}
+                      className="bg-blue-500 text-white px-2 py-1 rounded"
+                    >
                       {p.estat ? "Desactivar" : "Activar"}
                     </button>
-                    <button onClick={() => startEdit(p)} className="bg-yellow-500 text-white px-2 py-1 rounded">
+                    <button
+                      onClick={() => startEdit(p)}
+                      className="bg-yellow-500 text-white px-2 py-1 rounded"
+                    >
                       Editar
                     </button>
                   </div>

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('precio');
             $table->integer('stock');
             $table->string('marca');
-            /*$table->boolean('destacat');*/
+            $table->boolean('destacat')->default(false);
             $table->boolean('estat');
             $table->timestamps();
         });

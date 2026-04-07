@@ -7,6 +7,7 @@ export default function ProductCreate() {
   const [descripcion, setDescripcion] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
   const [marca, setMarca] = useState("");
+  const [destacat, setDestacat] = useState(false); // 🔥 NUEVO
 
   const [categorias, setCategorias] = useState([]);
   const [caracteristicas, setCaracteristicas] = useState([]);
@@ -15,7 +16,7 @@ export default function ProductCreate() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
 
-  // Load data
+  // Cargar datos
   useEffect(() => {
     fetch("/api/categorias")
       .then(res => res.json())
@@ -54,14 +55,13 @@ export default function ProductCreate() {
           descripcion,
           categoria_id: categoriaId || null,
           marca,
-          caracteristicas: selectedCaracteristicas, // 🔥 key part
+          caracteristicas: selectedCaracteristicas,
+          destacat, // 🔥 NUEVO
         }),
       });
 
       const data = await res.json();
-
       if (!res.ok) throw data;
-
 
       // Reset
       setNombre("");
@@ -71,6 +71,7 @@ export default function ProductCreate() {
       setCategoriaId("");
       setMarca("");
       setSelectedCaracteristicas([]);
+      setDestacat(false); // 🔥 RESET
 
     } catch (err) {
       console.error(err);
@@ -94,24 +95,69 @@ export default function ProductCreate() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
 
-        <input placeholder="Nombre" value={nombre} onChange={e=>setNombre(e.target.value)} className="w-full border p-2 rounded"/>
+        <input
+          placeholder="Nombre"
+          value={nombre}
+          onChange={e => setNombre(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
 
-        <input type="number" placeholder="Precio" value={precio} onChange={e=>setPrecio(e.target.value)} className="w-full border p-2 rounded"/>
+        <input
+          type="number"
+          placeholder="Precio"
+          value={precio}
+          onChange={e => setPrecio(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
 
-        <input type="number" placeholder="Stock" value={stock} onChange={e=>setStock(e.target.value)} className="w-full border p-2 rounded"/>
+        <input
+          type="number"
+          placeholder="Stock"
+          value={stock}
+          onChange={e => setStock(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
 
-        <input placeholder="Marca" value={marca} onChange={e=>setMarca(e.target.value)} className="w-full border p-2 rounded"/>
+        <input
+          placeholder="Marca"
+          value={marca}
+          onChange={e => setMarca(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
 
-        <textarea placeholder="Descripción" value={descripcion} onChange={e=>setDescripcion(e.target.value)} className="w-full border p-2 rounded"/>
+        <textarea
+          placeholder="Descripción"
+          value={descripcion}
+          onChange={e => setDescripcion(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
 
-        <select value={categoriaId} onChange={e=>setCategoriaId(e.target.value)} className="w-full border p-2 rounded">
+        <select
+          value={categoriaId}
+          onChange={e => setCategoriaId(e.target.value)}
+          className="w-full border p-2 rounded"
+        >
           <option value="">Categoria</option>
           {categorias.map(c => (
-            <option key={c.id} value={c.id}>{c.tipo}</option>
+            <option key={c.id} value={c.id}>
+              {c.tipo}
+            </option>
           ))}
         </select>
 
-        {/* 🔥 Características */}
+        {/* 🔥 CHECKBOX DESTACADO */}
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={destacat}
+            onChange={(e) => setDestacat(e.target.checked)}
+          />
+          <label className="text-gray-700 font-semibold">
+            Producto destacado
+          </label>
+        </div>
+
+        {/* Características */}
         <div>
           <label className="font-semibold">Característiques</label>
           <div className="border rounded p-2 max-h-40 overflow-y-auto">
@@ -128,7 +174,7 @@ export default function ProductCreate() {
           </div>
         </div>
 
-        <button className="w-full bg-orange-500 text-white p-2 rounded">
+        <button className="w-full bg-orange-500 text-white p-2 rounded hover:bg-orange-600 transition">
           {loading ? "Creando..." : "Crear"}
         </button>
       </form>
