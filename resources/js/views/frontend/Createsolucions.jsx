@@ -44,6 +44,8 @@ const handleSubmit = async (e) => {
       setCorreu("");
       setTelefon("");
       setFiles([]);
+
+      window.location.assign("/"); 
     }
   } catch (err) {
     console.error("Error uploading:", err);
@@ -51,11 +53,13 @@ const handleSubmit = async (e) => {
   } finally {
     setLoading(false);
   }
+
+
 };
 
   return (
     <div className="solucions-form max-w-xl mx-auto p-6 bg-white rounded-xl shadow-lg">
-      <h1 className="text-2xl font-bold mb-6 text-orange-600 text-center">Crear Solució</h1>
+      <h1 className="text-2xl font-bold mb-6 text-orange-600 text-center padding-bottom: 40rem;">Solicitar Solució</h1>
 
       {errors.length > 0 && (
         <div className="errors mb-4 p-3 bg-red-100 text-red-700 rounded">

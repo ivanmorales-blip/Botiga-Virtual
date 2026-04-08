@@ -1,0 +1,152 @@
+
+// Variables
+$primary: #e67e22;
+$primary-dark: #cf711f;
+$background: #f8f9fa;
+$text: #2c3e50;
+$white: #ffffff;
+$border: #e5e7eb;
+
+// Base
+body.app {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: $background;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: $text;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 2rem;
+    background: $white;
+    border-bottom: 4px solid $primary-dark;
+
+    &__title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: $primary;
+        text-decoration: none;
+
+        &:hover {
+            color: $primary-dark;
+        }
+    }
+
+    &__right {
+        display: flex;
+        gap: 1rem;
+    }
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+
+    &--primary {
+        background: $primary;
+        color: $white;
+
+        &:hover {
+            background: $primary-dark;
+        }
+    }
+
+    &--secondary {
+        background: transparent;
+        color: $text;
+        border-color: $border;
+
+        &:hover {
+            border-color: $primary;
+            color: $primary;
+        }
+    }
+
+    &.header__login {
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+}
+
+// Main content
+.main {
+    flex: 1;
+    padding: 2rem;
+}
+
+// Footer
+.footer {
+    background: #1f2933;
+    color: #d1d5db;
+    margin-top: 3rem;
+
+    &__container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        padding: 2.5rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    &__col {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: $white;
+        margin-bottom: 0.5rem;
+    }
+
+    &__subtitle {
+        font-size: 1rem;
+        font-weight: 600;
+        color: $white;
+        margin-bottom: 0.8rem;
+    }
+
+    &__text {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            margin-bottom: 0.4rem;
+
+            a {
+                color: #d1d5db;
+                text-decoration: none;
+                font-size: 0.9rem;
+
+                &:hover {
+                    color: $primary;
+                }
+            }
+        }
+    }
+
+    &__bottom {
+        border-top: 1px solid #374151;
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: #9ca3af;
+    }
+}

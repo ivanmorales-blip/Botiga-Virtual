@@ -157,6 +157,8 @@
 
   .stock {
     font-weight: bold;
+
+
     &.in-stock { color: #28a745; }
     &.out-of-stock { color: #dc3545; }
   }
@@ -191,6 +193,61 @@
   }
 }
 
+.search-container {
+  display: flex;
+  justify-content: center; // keeps everything centered as a group
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .search-bar {
+    margin-bottom: 0; // remove old spacing so alignment is clean
+
+    input {
+      width: 500px; // FIXED width so it doesn't shrink
+      max-width: 100%;
+    }
+  }
+}
+
+.category-dropdown {
+  position: relative;
+  flex-shrink: 0; // prevents it from squishing
+
+  .dropdown-toggle {
+    height: 42px; // match input height visually
+    padding: 0 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    font-size: 0.95rem;
+
+    &:hover {
+      border-color: #ff7f50;
+    }
+  }
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  z-index: 10;
+  width: 200px;
+}
+
+.dropdown-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f0f0f0;
+}
+
 .popup-description {
   flex-basis: 100%;
   background: #f3f3f3;
@@ -208,5 +265,4 @@
   font-size: 1.5rem;
   cursor: pointer;
 }
-
 }

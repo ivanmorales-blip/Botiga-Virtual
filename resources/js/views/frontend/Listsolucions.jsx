@@ -61,7 +61,7 @@ export default function SolucionsAdmin() {
       {/* ✅ FILTER DROPDOWN */}
       <div className="filter-bar">
         <label>
-          Filtrar:
+          Filtrar: 
           <select
             className="filter-select"
             value={filter}

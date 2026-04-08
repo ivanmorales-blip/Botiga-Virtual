@@ -66,7 +66,5 @@ Route::view('/admin/solucions', 'formularisolucions.list')
     ->name('solucions.admin');
     
 Route::get('/', function () {
-    return view('Frontend.Frontpage'); // folder 'Frontend', file 'Frontpage.blade.php'
-
-
-});
+    return view('Frontend.Frontpage');
+})->name('home');
