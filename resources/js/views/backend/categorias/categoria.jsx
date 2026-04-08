@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 
 export default function Categoria() {
   const [categorias, setCategorias] = useState([]);
-  const [tipo, setTipo] = useState("");
+  const [showCreate, setShowCreate] = useState(false);
+  const [newTipo, setNewTipo] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editingTipo, setEditingTipo] = useState("");
   const [search, setSearch] = useState("");
@@ -20,17 +21,17 @@ export default function Categoria() {
   }, []);
 
   // Create
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!tipo.trim()) return;
+  const handleCreate = async () => {
+    if (!newTipo.trim()) return;
 
     try {
       await fetch("/api/categorias", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tipo }),
+        body: JSON.stringify({ tipo: newTipo }),
       });
-      setTipo("");
+      setNewTipo("");
+      setShowCreate(false);
       loadCategorias();
     } catch (err) {
       console.error(err);
@@ -83,34 +84,60 @@ export default function Categoria() {
   );
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 min-h-screen">
       <h1 className="text-3xl font-bold text-orange-500 mb-6">
         Categorías
       </h1>
 
-      {/* Create */}
-      <form onSubmit={handleSubmit} className="mb-6 flex gap-2">
-        <input
-          type="text"
-          value={tipo}
-          onChange={(e) => setTipo(e.target.value)}
-          placeholder="Tipo de categoría"
-          className="border p-2 rounded w-64"
-          required
-        />
-        <button className="bg-orange-500 text-white px-4 py-2 rounded">
-          Crear
-        </button>
-      </form>
-
-      {/* Search */}
+      {/* Top Section: Create + Search */}
+{/* Top Section: Create + Search */}
+<div className="flex flex-col gap-4 mb-6 items-start">
+  {/* Create Button / Form */}
+  {!showCreate ? (
+    <div>
+      <button
+        className="bg-orange-500 text-white px-4 py-2 rounded"
+        onClick={() => setShowCreate(true)}
+      >
+        Crear
+      </button>
+    </div>
+  ) : (
+    <div className="flex gap-2">
       <input
         type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Buscar categoría..."
-        className="mb-4 p-2 border rounded w-64"
+        value={newTipo}
+        onChange={(e) => setNewTipo(e.target.value)}
+        placeholder="Tipo de categoría"
+        className="border p-2 rounded w-64"
       />
+      <button
+        className="bg-green-500 text-white px-4 py-2 rounded"
+        onClick={handleCreate}
+      >
+        Registrar
+      </button>
+      <button
+        className="bg-gray-400 text-white px-4 py-2 rounded"
+        onClick={() => {
+          setShowCreate(false);
+          setNewTipo("");
+        }}
+      >
+        Cancelar
+      </button>
+    </div>
+  )}
+
+  {/* Search Bar */}
+  <input
+    type="text"
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    placeholder="Buscar categoría..."
+    className="p-2 border rounded w-64"
+  />
+</div>
 
       {/* Table */}
       <table className="w-full bg-white shadow rounded">

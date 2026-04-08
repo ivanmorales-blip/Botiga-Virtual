@@ -41,66 +41,28 @@
 
                 <!-- Categorías desplegable -->
                 <div x-data="{ open: false }" class="relative mt-2">
-                    <button @click="open = !open" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
-                        Categoríes
-                        <svg class="w-4 h-4 transform" :class="{'rotate-90': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                        <a href="{{ route('categorias.react.list') }}" class="text-gray-600 hover:text-blue-500 text-sm">
-                            Llistar Categoríes
-                        </a>
-                    </div>
-                    <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                    <a href="{{ route('categorias.productos') }}" class="text-gray-600 hover:text-blue-500 text-sm">
-                        Llistar Productes de Categoria
+                    <a href="{{ route('categorias.react.list') }}" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
+                        Gestionar Categoríes
                     </a>
                 </div>
-                </div>
 
             <div x-data="{ open: false }" class="relative mt-2">
-                <button @click="open = !open" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
-                    Característiques
-                    <svg class="w-4 h-4 transform" :class="{'rotate-90': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-                <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                    <a href="{{ route('caracteristicas.react.list') }}" class="text-gray-600 hover:text-blue-500 text-sm">Llistar i Alta Característiques</a>
-                </div>
+                <a href="{{ route('caracteristicas.react.list') }}" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
+                    Llistar i Alta Característiques
+                </a>
+            </div>
 
             <div x-data="{ open: false }" class="relative mt-2">
-                <button @click="open = !open" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
-                    Packs
-                    <svg class="w-4 h-4 transform" :class="{'rotate-90': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-                <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                    <a href="{{ route('packs.react.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">Alta Pack</a>
-                    <a href="{{ route('packs.react.list') }}" class="text-gray-600 hover:text-blue-500 text-sm">Llistar Packs</a>
-                </div>
-
+                <a href="{{ route('packs.react.list') }}" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
+                    Gestionar Packs
+                </a>
+            </div>
 
             <!-- Solucions -->
             <div x-data="{ open: false }" class="relative mt-2">
-                <button @click="open = !open" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
-                    Solucions
-                    <svg class="w-4 h-4 transform" :class="{'rotate-90': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-
-                <div x-show="open" class="ml-4 mt-2 flex flex-col space-y-1">
-                    <a href="{{ route('solucions.create') }}" class="text-gray-600 hover:text-blue-500 text-sm">
-                        Crear Solució
+                    <a href="{{ route('solucions.admin') }}" class="w-full text-left text-gray-700 hover:text-blue-600 font-medium flex justify-between items-center">
+                        Gestionar Solucions Personalitzades
                     </a>
-
-                    <a href="{{ route('solucions.admin') }}" class="text-gray-600 hover:text-blue-500 text-sm">
-                        Gestionar Solucions
-                    </a>
-                </div>
             </div>
             </nav>
         </div>

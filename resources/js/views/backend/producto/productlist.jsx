@@ -138,13 +138,13 @@ export default function ProductsList() {
   );
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8min-h-screen">
       <h1 className="text-3xl font-bold mb-4 text-orange-500 text-center">
         Llista de Productes
       </h1>
 
       {/* 🔍 Search */}
-      <div className="mb-6 flex justify-center">
+      <div className="mb-3 flex justify-center">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -152,6 +152,12 @@ export default function ProductsList() {
           className="px-4 py-2 border rounded-lg w-80 shadow-sm"
         />
       </div>
+      <div className="mt-10 text-center mb-6">
+        <a href="/products-react/create" className="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl shadow-lg transition">
+          Crear Entrada Producte
+        </a>
+      </div>
+
 
       {loading ? (
         <p className="text-center text-gray-500">Carregant...</p>

@@ -178,7 +178,7 @@ export default function CategoriaProductos() {
                   <strong>Característiques:</strong>
                   <ul>
                     {selectedProduct.caracteristicas.map(c => (
-                      <li key={c.id}>{c.tipo?.tipo}: {c.descripcio}</li>
+                      <li key={c.id}>{c.tipo?.tipo} {c.descripcio}</li>
                     ))}
                   </ul>
                 </div>
