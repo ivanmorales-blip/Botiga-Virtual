@@ -1,0 +1,239 @@
+@use 'variables.scss' as *;
+
+/* =====================
+   LAYOUT
+===================== */
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+
+    &__body {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+}
+
+/* =====================
+   HEADER (EXTENDED)
+===================== */
+
+.header--admin {
+    border-bottom: 2px solid $border;
+    background: $white;
+    z-index: 10;
+    border-bottom: 4px solid $primary-dark;
+}
+
+/* =====================
+   SIDEBAR
+===================== */
+
+.sidebar {
+    position: relative;
+    background: $white;
+    border-right: 1px solid $border;
+    transition: width 0.3s ease;
+    overflow: visible;
+
+    &--open {
+        width: 240px;
+    }
+
+    &--closed {
+        width: 70px;
+    }
+
+    /* TOGGLE BUTTON */
+    &__toggle {
+        position: absolute;
+        top: 10px;
+        right: -12px;
+        background: $primary;
+        color: $white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+
+        &:hover {
+            background: $primary-dark;
+        }
+    }
+
+    &__logo {
+        padding: 1.5rem;
+        display: flex;
+        justify-content: center;
+
+        img {
+            max-width: 120px;
+            transition: all 0.3s;
+        }
+    }
+
+    &--closed &__logo img {
+        max-width: 40px;
+    }
+
+    &__nav {
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    &__link {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.6rem 0.8rem;
+        border-radius: 6px;
+        color: $text;
+        text-decoration: none;
+        transition: all 0.2s;
+
+        &:hover {
+            background: $background;
+            color: $primary;
+        }
+    }
+
+    &__icon {
+        font-size: 1.2rem;
+        min-width: 24px;
+        text-align: center;
+    }
+
+    &__text {
+        white-space: nowrap;
+        transition: opacity 0.2s;
+    }
+
+    /* COLLAPSED STATE */
+    &--closed {
+        .sidebar__text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar__link {
+            justify-content: center;
+        }
+    }
+}
+
+.sidebar {
+    position: relative;
+    overflow: visible; // 👈 allow elements to escape if needed
+}
+
+.sidebar__toggle {
+    position: absolute;
+    top: 14px;
+    right: -17px;
+    z-index: 50;
+
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: $white;
+    color: $primary;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.25s ease;
+
+    /* ICON inside */
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* HOVER EFFECT */
+    &:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+        background: $primary;
+        color: $white;
+    }
+
+    /* CLICK EFFECT */
+    &:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+}
+
+.sidebar__logo {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    img {
+        max-width: 120px;
+        transition: all 0.3s ease;
+    }
+}
+
+/* COLLAPSED STATE */
+.sidebar--closed {
+    .sidebar__logo {
+        padding: 0;              // remove spacing
+        height: 0;               // collapse container
+        overflow: hidden;        // hide content
+    }
+
+    .sidebar__logo img {
+        opacity: 0;              // fade out
+        transform: scale(0.8);   // slight shrink effect
+    }
+}
+
+/* =====================
+   CONTENT
+===================== */
+
+.content {
+    flex: 1;
+    padding: 2rem;
+    background: $background;
+    overflow-y: auto;
+}
+
+.sidebar__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+
+    svg {
+        width: 20px;
+        height: 20px;
+        stroke: $primary;
+        fill: $primary;
+    }
+}
+
+/* =====================
+   SMALL IMPROVEMENTS
+===================== */
+
+.header__right .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
