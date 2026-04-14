@@ -93,4 +93,6 @@ Route::delete('/solucions/{id}', [Solucionscontroller::class, 'destroy']);
 
 Route::apiResource('solucions', SolucionsController::class);
 
+Route::post('/packs/{id}/toggle', [PackController::class, 'toggleActive']);
+
 ?>

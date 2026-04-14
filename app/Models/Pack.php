@@ -26,4 +26,9 @@ class Pack extends Model
             'producte_id'
         )->withPivot('quantity')->withTimestamps();
     }
+
+public function images()
+{
+    return $this->hasMany(PackImage::class)->orderBy('order');
+}
 }

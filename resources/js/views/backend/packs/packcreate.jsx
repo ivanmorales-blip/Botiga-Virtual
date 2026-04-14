@@ -1,205 +1,319 @@
 import React, { useEffect, useState } from "react";
 
 export default function PackCreate({ onCreated }) {
-  const [nom, setNom] = useState(""); 
-  const [descripcio, setDescripcio] = useState(""); 
-  const [preu, setPreu] = useState(""); 
+  const [nom, setNom] = useState("");
+  const [descripcio, setDescripcio] = useState("");
+  const [preu, setPreu] = useState("");
   const [estat, setEstat] = useState(true);
 
   const [products, setProducts] = useState([]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [selectedProducts, setSelectedProducts] = useState([]);
 
-  const [newImages, setNewImages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [images, setImages] = useState([]);
   const [creating, setCreating] = useState(false);
 
+  // ----------------------------
+  // LOAD PRODUCTS
+  // ----------------------------
   useEffect(() => {
     fetch("/api/productos")
-      .then(res => res.json())
-      .then(data => setProducts(data))
-      .finally(() => setLoading(false));
+      .then((res) => res.json())
+      .then((data) => setProducts(data))
+      .catch(console.error);
   }, []);
 
-  const filteredProducts = products.filter(p =>
-    p.nombre.toLowerCase().includes(search.toLowerCase())
+  const filteredProducts = products.filter((p) =>
+    (p.nombre || "").toLowerCase().includes(search.toLowerCase())
   );
 
-  // Product handlers
-  const addProduct = product => {
-    const existing = selectedProducts.find(p => p.id === product.id);
-    if (existing) {
-      setSelectedProducts(prev =>
-        prev.map(p => (p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p))
-      );
-    } else {
-      setSelectedProducts(prev => [...prev, { ...product, quantity: 1 }]);
-    }
+  // ----------------------------
+  // DRAG PRODUCT
+  // ----------------------------
+  const handleDragStartProduct = (e, product) => {
+    e.dataTransfer.setData("product", JSON.stringify(product));
   };
 
-  const removeProduct = index =>
-    setSelectedProducts(prev => prev.filter((_, i) => i !== index));
+  const allowDrop = (e) => e.preventDefault();
 
-  const changeQuantity = (id, value) => {
-    const qty = Math.max(1, Number(value));
-    setSelectedProducts(prev =>
-      prev.map(p => (p.id === id ? { ...p, quantity: qty } : p))
-    );
-  };
-
-  // Image handlers
-  const handleImageUpload = e =>
-    setNewImages(prev => [...prev, ...Array.from(e.target.files)]);
-
-  const removeNewImage = index =>
-    setNewImages(prev => prev.filter((_, i) => i !== index));
-
-  const moveNewImage = (from, to) => {
-    const arr = [...newImages];
-    const [moved] = arr.splice(from, 1);
-    arr.splice(to, 0, moved);
-    setNewImages(arr);
-  };
-
-  const handleSubmit = async e => {
+  // ----------------------------
+  // DROP PRODUCT INTO PACK
+  // ----------------------------
+  const handleDropToPack = (e) => {
     e.preventDefault();
-    if (!nom || !descripcio || !preu || selectedProducts.length === 0)
-      return alert("Omple tots els camps i afegeix almenys un producte!");
+
+    const data = e.dataTransfer.getData("product");
+    if (!data) return;
+
+    const product = JSON.parse(data);
+
+    setSelectedProducts((prev) => {
+      const exists = prev.find((p) => p.id === product.id);
+
+      if (exists) {
+        return prev.map((p) =>
+          p.id === product.id
+            ? { ...p, quantity: (p.quantity || 1) + 1 }
+            : p
+        );
+      }
+
+      return [...prev, { ...product, quantity: 1 }];
+    });
+  };
+
+  // ----------------------------
+  // REORDER PRODUCTS INSIDE PACK
+  // ----------------------------
+  const handleDragStartPack = (e, index) => {
+    e.dataTransfer.setData("packIndex", index);
+  };
+
+  const handleDropReorder = (e, toIndex) => {
+    e.preventDefault();
+
+    const fromIndex = Number(e.dataTransfer.getData("packIndex"));
+    if (isNaN(fromIndex)) return;
+
+    setSelectedProducts((prev) => {
+      const arr = [...prev];
+      const [moved] = arr.splice(fromIndex, 1);
+      arr.splice(toIndex, 0, moved);
+      return arr;
+    });
+  };
+
+  const removeProduct = (id) => {
+    setSelectedProducts((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  // ----------------------------
+  // IMAGES
+  // ----------------------------
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    setImages((prev) => [...prev, ...files]);
+  };
+
+  const removeImage = (i) => {
+    setImages((prev) => prev.filter((_, idx) => idx !== i));
+  };
+
+  const moveImage = (from, to) => {
+    const arr = [...images];
+    const [item] = arr.splice(from, 1);
+    arr.splice(to, 0, item);
+    setImages(arr);
+  };
+
+  // ----------------------------
+  // SUBMIT (FIXED)
+  // ----------------------------
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!nom || !descripcio || !preu) {
+      alert("Omple tots els camps");
+      return;
+    }
 
     const formData = new FormData();
+
     formData.append("nom", nom);
     formData.append("Descripcio", descripcio);
     formData.append("preu", preu);
     formData.append("estat", estat ? 1 : 0);
+
+    // PRODUCTS
     formData.append(
       "productes",
-      JSON.stringify(selectedProducts.map(p => ({ id: p.id, quantity: p.quantity })))
+      JSON.stringify(
+        selectedProducts.map((p, i) => ({
+          id: p.id,
+          quantity: p.quantity,
+          order: i,
+        }))
+      )
     );
 
-    newImages.forEach((file, i) => {
+    // IMAGES (🔥 FIXED - MUST MATCH LARAVEL)
+    images.forEach((file, i) => {
       formData.append("new_images[]", file);
       formData.append("new_images_order[]", i);
     });
 
     try {
       setCreating(true);
-      const res = await fetch("/api/packs", { method: "POST", body: formData });
-      if (!res.ok) throw new Error("Error creant el pack");
+
+      const res = await fetch("/api/packs", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.text();
+
+      if (!res.ok) {
+        console.error("SERVER RESPONSE:", data);
+        throw new Error("Error creating pack");
+      }
 
       alert("Pack creat correctament!");
+
+      // reset
       setNom("");
       setDescripcio("");
       setPreu("");
       setSelectedProducts([]);
-      setNewImages([]);
+      setImages([]);
+
       if (onCreated) onCreated();
     } catch (err) {
-      console.error(err);
-      alert("Error creant el pack");
+      console.error("PACK CREATE ERROR:", err);
+      alert(err.message || "Error creant pack");
     } finally {
       setCreating(false);
     }
   };
 
-  if (loading) return <div className="text-center text-gray-500">Carregant...</div>;
-
+  // ----------------------------
+  // UI
+  // ----------------------------
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-orange-500 mb-6 text-center">Crear Pack</h1>
+    <div className="p-8 max-w-5xl mx-auto">
+      <h1 className="text-2xl font-bold text-orange-500 mb-6">
+        Crear Pack
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic info */}
-        <div className="flex flex-col gap-4 max-w-md mx-auto">
+
+        {/* BASIC */}
+        <div className="grid gap-3 max-w-md">
           <input
-            type="text"
-            placeholder="Nom del pack"
+            className="border p-2"
+            placeholder="Nom"
             value={nom}
-            onChange={e => setNom(e.target.value)}
-            className="p-2 border rounded"
-            required
+            onChange={(e) => setNom(e.target.value)}
           />
+
           <textarea
+            className="border p-2"
             placeholder="Descripció"
             value={descripcio}
-            onChange={e => setDescripcio(e.target.value)}
-            rows={3}
-            className="p-2 border rounded"
-            required
+            onChange={(e) => setDescripcio(e.target.value)}
           />
+
           <input
             type="number"
-            placeholder="Preu (€)"
+            className="border p-2"
+            placeholder="Preu"
             value={preu}
-            onChange={e => setPreu(e.target.value)}
-            className="p-2 border rounded"
-            required
+            onChange={(e) => setPreu(e.target.value)}
           />
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={estat} onChange={e => setEstat(e.target.checked)} /> Actiu
+
+          <label className="flex gap-2">
+            <input
+              type="checkbox"
+              checked={estat}
+              onChange={(e) => setEstat(e.target.checked)}
+            />
+            Actiu
           </label>
         </div>
 
-        {/* Images */}
-        <div className="max-w-md mx-auto space-y-2">
-          <label className="font-semibold">Imatges del Pack</label>
-          <input type="file" multiple onChange={handleImageUpload} className="border rounded p-2 w-full" />
-          <div className="flex gap-2 overflow-x-auto mt-2">
-            {newImages.map((file, i) => (
+        {/* IMAGES */}
+        <div>
+          <input type="file" multiple onChange={handleImageUpload} />
+
+          <div className="flex gap-2 mt-2 overflow-x-auto">
+            {images.map((img, i) => (
               <div key={i} className="relative">
-                <img src={URL.createObjectURL(file)} alt="" className="h-24 w-24 object-cover rounded" />
-                <div className="flex gap-1 mt-1 justify-center">
-                  {i > 0 && (
-                    <button type="button" onClick={() => moveNewImage(i, i - 1)} className="px-1 bg-gray-200 rounded">↑</button>
-                  )}
-                  {i < newImages.length - 1 && (
-                    <button type="button" onClick={() => moveNewImage(i, i + 1)} className="px-1 bg-gray-200 rounded">↓</button>
-                  )}
-                  <button type="button" onClick={() => removeNewImage(i)} className="text-red-500 font-bold">×</button>
-                </div>
+                <img
+                  src={URL.createObjectURL(img)}
+                  className="w-20 h-20 object-cover"
+                />
+
+                <button type="button" onClick={() => removeImage(i)}>
+                  ×
+                </button>
+
+                {i > 0 && (
+                  <button type="button" onClick={() => moveImage(i, i - 1)}>
+                    ←
+                  </button>
+                )}
+
+                {i < images.length - 1 && (
+                  <button type="button" onClick={() => moveImage(i, i + 1)}>
+                    →
+                  </button>
+                )}
               </div>
             ))}
           </div>
         </div>
 
-        {/* Product selection */}
-        <div className="flex gap-6 max-w-4xl mx-auto">
-          {/* Available products */}
-          <div className="flex-1 bg-orange-50 p-4 rounded max-h-[400px] overflow-y-auto">
-            <input type="text" placeholder="Buscar producte..." value={search} onChange={e => setSearch(e.target.value)} className="w-full p-2 border rounded mb-4" />
-            {filteredProducts.map(p => (
-              <div key={p.id} onClick={() => addProduct(p)} className="cursor-pointer p-2 bg-white rounded border mb-1 flex justify-between items-center hover:bg-orange-100">
-                <span>{p.nombre}</span>
-                <span>{selectedProducts.find(sp => sp.id === p.id)?.quantity || 0}×</span>
+        {/* DRAG AREA */}
+        <div className="flex gap-4">
+
+          {/* PRODUCTS */}
+          <div className="w-1/2 border p-3">
+            <input
+              className="border p-2 w-full mb-2"
+              placeholder="Buscar"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+
+            {filteredProducts.map((p) => (
+              <div
+                key={p.id}
+                draggable
+                onDragStart={(e) => handleDragStartProduct(e, p)}
+                className="p-2 border mb-1 bg-white cursor-grab"
+              >
+                {p.nombre}
               </div>
             ))}
           </div>
 
-          {/* Selected products */}
-          <div className="flex-1 bg-green-50 p-4 rounded max-h-[400px] overflow-y-auto">
-            <h2 className="font-semibold mb-4 text-center">Productes del Pack</h2>
+          {/* PACK DROP ZONE */}
+          <div
+            className="w-1/2 border p-3 min-h-[300px]"
+            onDrop={handleDropToPack}
+            onDragOver={allowDrop}
+          >
+            <h3 className="font-bold mb-2">Pack</h3>
+
             {selectedProducts.map((p, i) => (
-              <div key={i} className="flex justify-between items-center bg-white p-2 rounded border mb-2">
-                <div>
-                  <div className="font-semibold">{p.nombre}</div>
-                  <div className="text-xs text-gray-500">ID: {p.id} | Preu: {p.precio} €</div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button type="button" onClick={() => changeQuantity(p.id, p.quantity - 1)} className="px-2 bg-gray-200 rounded">-</button>
-                  <span>{p.quantity}</span>
-                  <button type="button" onClick={() => changeQuantity(p.id, p.quantity + 1)} className="px-2 bg-gray-200 rounded">+</button>
-                  <button type="button" onClick={() => removeProduct(i)} className="text-red-500 font-bold ml-2">×</button>
-                </div>
+              <div
+                key={p.id}
+                draggable
+                onDragStart={(e) => handleDragStartPack(e, i)}
+                onDrop={(e) => handleDropReorder(e, i)}
+                onDragOver={allowDrop}
+                className="flex justify-between border p-2 mb-1 bg-green-50"
+              >
+                <span>
+                  {p.nombre} ({p.quantity})
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => removeProduct(p.id)}
+                >
+                  ×
+                </button>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Submit button */}
-        <div className="text-center mt-6">
-          <button type="submit" disabled={creating} className="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition">
-            {creating ? "Creant..." : "Crear Pack"}
-          </button>
-        </div>
+        <button
+          className="bg-orange-500 text-white px-4 py-2"
+          disabled={creating}
+        >
+          {creating ? "Creant..." : "Crear Pack"}
+        </button>
       </form>
     </div>
   );

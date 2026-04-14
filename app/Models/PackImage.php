@@ -24,4 +24,11 @@ class PackImage extends Model
     {
         return $this->belongsTo(Pack::class);
     }
+
+    protected $appends = ['url'];
+
+    public function getUrlAttribute()
+    {
+        return asset('storage/' . $this->image_path);
+    }
 }

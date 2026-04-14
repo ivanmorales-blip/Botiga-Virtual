@@ -1,221 +1,381 @@
 import React, { useEffect, useState } from "react";
+import {
+  DndContext,
+  useDraggable,
+  useDroppable
+} from "@dnd-kit/core";
 
-export default function PackEdit({ packId, onSaved }) {
+export default function PackEdit({ packId, onClose }) {
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-
-  const [nom, setNom] = useState("");
-  const [descripcio, setDescripcio] = useState("");
-  const [preu, setPreu] = useState("");
-  const [estat, setEstat] = useState(true);
 
   const [products, setProducts] = useState([]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selected, setSelected] = useState([]);
+
+  const [nom, setNom] = useState("");
+  const [desc, setDesc] = useState("");
+  const [preu, setPreu] = useState("");
+
   const [search, setSearch] = useState("");
 
-  const [images, setImages] = useState([]); // Existing images with path & order
-  const [newImages, setNewImages] = useState([]); // File uploads
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [productsRes, packRes] = await Promise.all([
-        fetch("/api/productos"),
-        fetch(`/api/packs/${packId}`)
-      ]);
-
-      const allProducts = await productsRes.json();
-      const packData = await packRes.json();
-
-      setProducts(allProducts);
-
-      setNom(packData.nom);
-      setDescripcio(packData.Descripcio);
-      setPreu(packData.preu);
-      setEstat(packData.estat);
-
-      const packProducts = (packData.productes || []).map(p => ({
-        ...p,
-        quantity: p.pivot?.quantity || 1
-      }));
-      setSelectedProducts(packProducts);
-
-      setImages((packData.images || []).sort((a,b)=>a.order-b.order));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // ✅ STABLE IMAGE STATE
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
-    loadData();
+    load();
   }, [packId]);
 
+  const load = async () => {
+    setLoading(true);
+
+    const [pRes, packRes] = await Promise.all([
+      fetch("/api/productos"),
+      fetch(`/api/packs/${packId}`)
+    ]);
+
+    const allProducts = await pRes.json();
+    const pack = await packRes.json();
+
+    setProducts(allProducts);
+
+    setNom(pack.nom);
+    setDesc(pack.Descripcio);
+    setPreu(pack.preu);
+
+    setSelected(
+      (pack.productes || []).map(p => ({
+        id: p.id,
+        nombre: p.nombre,
+        quantity: p.pivot?.quantity || 1
+      }))
+    );
+
+    // IMPORTANT: normalize images
+    setImages(
+      (pack.images || []).map(img => ({
+        id: img.id,
+        url: img.url,
+        file: null
+      }))
+    );
+
+    setLoading(false);
+  };
+
+  // ---------------- PRODUCTS DND ----------------
+  const onDragEnd = ({ active, over }) => {
+    if (!over || over.id !== "dropzone") return;
+
+    const id = Number(active.id);
+
+    setSelected(prev => {
+      const exists = prev.find(p => p.id === id);
+
+      if (exists) {
+        return prev.map(p =>
+          p.id === id ? { ...p, quantity: p.quantity + 1 } : p
+        );
+      }
+
+      const product = products.find(p => p.id === id);
+      if (!product) return prev;
+
+      return [
+        ...prev,
+        { id: product.id, nombre: product.nombre, quantity: 1 }
+      ];
+    });
+  };
+
+  // ---------------- PRODUCTS SEARCH ----------------
   const filteredProducts = products.filter(p =>
-    p.nombre.toLowerCase().includes(search.toLowerCase())
+    (p.nombre || "").toLowerCase().includes(search.toLowerCase())
   );
 
-  const addProduct = product => {
-    const existing = selectedProducts.find(p => p.id === product.id);
-    if (existing) {
-      setSelectedProducts(prev =>
-        prev.map(p =>
-          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
-        )
-      );
-    } else {
-      setSelectedProducts(prev => [...prev, { ...product, quantity: 1 }]);
-    }
+  const removeProduct = (id) => {
+    setSelected(prev => prev.filter(p => p.id !== id));
   };
 
-  const removeProduct = index =>
-    setSelectedProducts(prev => prev.filter((_, i) => i !== index));
+  // ---------------- IMAGES ----------------
+  const addImages = (e) => {
+    const files = Array.from(e.target.files || []);
 
-  const changeQuantity = (productId, value) => {
-    const qty = Math.max(1, Number(value));
-    setSelectedProducts(prev =>
-      prev.map(p => (p.id === productId ? { ...p, quantity: qty } : p))
-    );
+    const mapped = files.map(file => ({
+      id: null,
+      file,
+      url: URL.createObjectURL(file)
+    }));
+
+    setImages(prev => [...prev, ...mapped]);
   };
 
-  const handleImageUpload = e => {
-    setNewImages([...newImages, ...Array.from(e.target.files)]);
-  };
-
-  const removeExistingImage = index =>
+  const removeImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
-
-  const removeNewImage = index =>
-    setNewImages(prev => prev.filter((_, i) => i !== index));
-
-  const moveImage = (arr, from, to) => {
-    const newArr = [...arr];
-    const [moved] = newArr.splice(from, 1);
-    newArr.splice(to, 0, moved);
-    return newArr;
   };
 
-  const moveExistingImage = (from, to) => setImages(prev => moveImage(prev, from, to));
-  const moveNewImage = (from, to) => setNewImages(prev => moveImage(prev, from, to));
+  const moveImage = (from, to) => {
+    const arr = [...images];
+    const [item] = arr.splice(from, 1);
+    arr.splice(to, 0, item);
+    setImages(arr);
+  };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    if (!nom || !descripcio || !preu) return alert("Omple tots els camps!");
-
+  // ---------------- SAVE (STABLE SYNC) ----------------
+  const save = async () => {
     const formData = new FormData();
-    formData.append("nom", nom);
-    formData.append("Descripcio", descripcio);
-    formData.append("preu", preu);
-    formData.append("estat", estat ? 1 : 0);
-    formData.append("productes", JSON.stringify(selectedProducts.map(p => ({ id: p.id, quantity: p.quantity }))));
-    formData.append("existing_images", JSON.stringify(images.map((img, i) => ({ id: img.id, order: i }))));
 
-    newImages.forEach((file, i) => {
-      formData.append("new_images[]", file);
-      formData.append("new_images_order[]", images.length + i);
+    formData.append("_method", "PUT");
+
+    formData.append("nom", nom);
+    formData.append("Descripcio", desc);
+    formData.append("preu", preu);
+
+    // PRODUCTS
+    formData.append(
+      "productes",
+      JSON.stringify(
+        selected.map(p => ({
+          id: p.id,
+          quantity: p.quantity
+        }))
+      )
+    );
+
+    // IMAGE STATE (SOURCE OF TRUTH)
+    const imageState = images.map((img, index) => ({
+      id: img.id,
+      order: index
+    }));
+
+    formData.append("images", JSON.stringify(imageState));
+
+    // ONLY NEW FILES
+    images.forEach(img => {
+      if (img.file) {
+        formData.append("new_images[]", img.file);
+      }
     });
 
     try {
-      setSaving(true);
       const res = await fetch(`/api/packs/${packId}`, {
-        method: "POST", // or PUT if backend expects PUT
+        method: "POST",
         body: formData
       });
 
-      if (!res.ok) throw new Error("Error updating pack");
-      alert("Pack actualitzat correctament!");
-      if (onSaved) onSaved();
+      if (!res.ok) {
+        throw new Error("Save failed");
+      }
+
+      onClose?.();
     } catch (err) {
       console.error(err);
-      alert("Error actualitzant el pack");
-    } finally {
-      setSaving(false);
+      alert("Error saving pack");
     }
   };
 
-  if (loading) return <div className="text-center text-gray-500">Carregant...</div>;
+  if (loading) return null;
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-orange-500 mb-6 text-center">Editar Pack</h1>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white w-[95%] max-w-5xl rounded-2xl shadow-xl p-6 max-h-[90vh] overflow-y-auto">
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Info */}
-        <div className="flex flex-col gap-4 max-w-md mx-auto">
-          <input type="text" placeholder="Nom del pack" value={nom} onChange={e=>setNom(e.target.value)} className="p-2 border rounded" required />
-          <textarea placeholder="Descripció" value={descripcio} onChange={e=>setDescripcio(e.target.value)} rows={3} className="p-2 border rounded" required />
-          <input type="number" placeholder="Preu (€)" value={preu} onChange={e=>setPreu(e.target.value)} className="p-2 border rounded" required />
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={estat} onChange={e=>setEstat(e.target.checked)} />
-            Actiu
-          </label>
-        </div>
-
-        {/* Images */}
-        <div className="max-w-md mx-auto space-y-2">
-          <label className="font-semibold">Imatges del Pack</label>
-          <input type="file" multiple onChange={handleImageUpload} className="border rounded p-2 w-full"/>
-          <div className="flex gap-2 overflow-x-auto mt-2">
-            {images.map((img, i) => (
-              <div key={img.id} className="relative">
-                <img src={img.url} alt="" className="h-24 w-24 object-cover rounded"/>
-                <div className="flex gap-1 mt-1 justify-center">
-                  {i>0 && <button type="button" onClick={()=>moveExistingImage(i,i-1)} className="px-1 bg-gray-200 rounded">↑</button>}
-                  {i<images.length-1 && <button type="button" onClick={()=>moveExistingImage(i,i+1)} className="px-1 bg-gray-200 rounded">↓</button>}
-                  <button type="button" onClick={()=>removeExistingImage(i)} className="text-red-500 font-bold">×</button>
-                </div>
-              </div>
-            ))}
-            {newImages.map((file,i)=>(
-              <div key={i} className="relative">
-                <img src={URL.createObjectURL(file)} alt="" className="h-24 w-24 object-cover rounded"/>
-                <div className="flex gap-1 mt-1 justify-center">
-                  {i>0 && <button type="button" onClick={()=>moveNewImage(i,i-1)} className="px-1 bg-gray-200 rounded">↑</button>}
-                  {i<newImages.length-1 && <button type="button" onClick={()=>moveNewImage(i,i+1)} className="px-1 bg-gray-200 rounded">↓</button>}
-                  <button type="button" onClick={()=>removeNewImage(i)} className="text-red-500 font-bold">×</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Product Selection */}
-        <div className="flex gap-6 max-w-4xl mx-auto">
-          <div className="flex-1 bg-orange-50 p-4 rounded max-h-[400px] overflow-y-auto">
-            <input type="text" placeholder="Buscar producte..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full p-2 border rounded mb-4" />
-            {filteredProducts.map(p=>(
-              <div key={p.id} onClick={()=>addProduct(p)} className="cursor-pointer p-2 bg-white rounded border mb-1 flex justify-between items-center hover:bg-orange-100">
-                <span>{p.nombre}</span>
-                <span>{selectedProducts.find(sp=>sp.id===p.id)?.quantity || 0}×</span>
-              </div>
-            ))}
-          </div>
-          <div className="flex-1 bg-green-50 p-4 rounded max-h-[400px] overflow-y-auto">
-            <h2 className="font-semibold mb-4 text-center">Productes del Pack</h2>
-            {selectedProducts.map((p,i)=>(
-              <div key={i} className="flex justify-between items-center bg-white p-2 rounded border mb-2">
-                <div>
-                  <div className="font-semibold">{p.nombre}</div>
-                  <div className="text-xs text-gray-500">ID: {p.id} | Preu: {p.precio} €</div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button type="button" onClick={()=>changeQuantity(p.id, p.quantity-1)} className="px-2 bg-gray-200 rounded">-</button>
-                  <span>{p.quantity}</span>
-                  <button type="button" onClick={()=>changeQuantity(p.id, p.quantity+1)} className="px-2 bg-gray-200 rounded">+</button>
-                  <button type="button" onClick={()=>removeProduct(i)} className="text-red-500 font-bold ml-2">×</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="text-center mt-6">
-          <button type="submit" disabled={saving} className="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition">
-            {saving ? "Guardant..." : "Actualitzar Pack"}
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Edit Pack</h2>
+          <button onClick={onClose} className="px-3 py-1 bg-gray-200 rounded-lg">
+            Close
           </button>
         </div>
-      </form>
+
+        {/* BASIC */}
+        <div className="grid gap-3 mb-6">
+          <input
+            className="border rounded-lg p-2"
+            value={nom}
+            onChange={e => setNom(e.target.value)}
+            placeholder="Nom"
+          />
+
+          <textarea
+            className="border rounded-lg p-2"
+            value={desc}
+            onChange={e => setDesc(e.target.value)}
+            placeholder="Descripció"
+          />
+
+          <input
+            className="border rounded-lg p-2"
+            value={preu}
+            onChange={e => setPreu(e.target.value)}
+            placeholder="Preu"
+          />
+        </div>
+
+        {/* IMAGES */}
+        <div className="mb-6">
+          <h3 className="font-semibold mb-2">Images</h3>
+
+          <input type="file" multiple onChange={addImages} />
+
+          <div className="flex gap-2 mt-2 flex-wrap">
+            {images.map((img, i) => (
+              <div key={i} className="relative">
+                <img
+                  src={img.url}
+                  className="w-20 h-20 object-cover rounded-lg"
+                />
+
+                <button
+                  onClick={() => removeImage(i)}
+                  className="absolute top-0 right-0 bg-red-500 text-white px-1 rounded"
+                >
+                  ×
+                </button>
+
+                {i > 0 && (
+                  <button
+                    onClick={() => moveImage(i, i - 1)}
+                    className="absolute bottom-0 left-0 bg-gray-200 px-1 rounded"
+                  >
+                    ←
+                  </button>
+                )}
+
+                {i < images.length - 1 && (
+                  <button
+                    onClick={() => moveImage(i, i + 1)}
+                    className="absolute bottom-0 right-0 bg-gray-200 px-1 rounded"
+                  >
+                    →
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* PRODUCTS + DND */}
+        <DndContext onDragEnd={onDragEnd}>
+          <div className="flex gap-4">
+
+            {/* PRODUCTS */}
+            <div className="w-1/2 border rounded-xl p-3">
+              <input
+                className="w-full border rounded-lg p-2 mb-3"
+                placeholder="Search products"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+
+              <div className="max-h-[300px] overflow-y-auto">
+                {filteredProducts.map(p => (
+                  <Draggable key={p.id} product={p} />
+                ))}
+              </div>
+            </div>
+
+            {/* DROP ZONE */}
+            <DropZone selected={selected} setSelected={setSelected} remove={removeProduct} />
+
+          </div>
+        </DndContext>
+
+        {/* SAVE */}
+        <div className="mt-6 flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg bg-gray-200"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={save}
+            className="px-4 py-2 rounded-lg bg-green-500 text-white"
+          >
+            Save
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// ---------------- DRAGGABLE ----------------
+function Draggable({ product }) {
+  const { setNodeRef, listeners, attributes } = useDraggable({
+    id: product.id
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className="p-2 mb-2 bg-gray-100 rounded-lg cursor-grab"
+    >
+      {product.nombre}
+    </div>
+  );
+}
+
+// ---------------- DROP ZONE ----------------
+function DropZone({ selected, setSelected, remove }) {
+  const { setNodeRef } = useDroppable({ id: "dropzone" });
+
+  return (
+    <div ref={setNodeRef} className="w-1/2 border rounded-xl p-3 min-h-[300px]">
+
+      {selected.length === 0 && (
+        <p className="text-gray-400">Drop products here</p>
+      )}
+
+      {selected.map(p => (
+        <div key={p.id} className="flex justify-between items-center mb-2 bg-green-50 p-2 rounded-lg">
+
+          <span>{p.nombre}</span>
+
+          <div className="flex gap-2 items-center">
+            <button
+              onClick={() =>
+                setSelected(prev =>
+                  prev.map(x =>
+                    x.id === p.id
+                      ? { ...x, quantity: Math.max(1, x.quantity - 1) }
+                      : x
+                  )
+                )
+              }
+            >
+              -
+            </button>
+
+            <span>{p.quantity}</span>
+
+            <button
+              onClick={() =>
+                setSelected(prev =>
+                  prev.map(x =>
+                    x.id === p.id
+                      ? { ...x, quantity: x.quantity + 1 }
+                      : x
+                  )
+                )
+              }
+            >
+              +
+            </button>
+
+            <button
+              onClick={() => remove(p.id)}
+              className="text-red-500"
+            >
+              ×
+            </button>
+          </div>
+
+        </div>
+      ))}
     </div>
   );
 }
