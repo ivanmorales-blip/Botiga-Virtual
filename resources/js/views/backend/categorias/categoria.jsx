@@ -85,61 +85,33 @@ export default function Categoria() {
 
   return (
     <div className="p-8 min-h-screen">
-      <h1 className="text-3xl font-bold text-orange-500 mb-6">
-        Categorías
+      <h1 className="text-3xl font-bold text-orange-500 mb-6 flex justify-center">
+        LLista de Categorías
       </h1>
+      <div className="mb-3 flex justify-center">
+        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cercar per nom..." className="px-4 py-2 border rounded-lg w-80 shadow-sm"/>
+      </div>
 
-      {/* Top Section: Create + Search */}
-{/* Top Section: Create + Search */}
-<div className="flex flex-col gap-4 mb-6 items-start">
-  {/* Create Button / Form */}
-  {!showCreate ? (
-    <div>
-      <button
-        className="bg-orange-500 text-white px-4 py-2 rounded"
-        onClick={() => setShowCreate(true)}
-      >
-        Crear
-      </button>
+    <div className="flex flex-col gap-4 mb-6 items-center justify-center">
+      {!showCreate ? (
+        <div className="flex justify-center">
+          <button className="bg-orange-500 text-white px-4 py-2 rounded" onClick={() => setShowCreate(true)}>
+            Crear
+          </button>
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <input type="text" value={newTipo} onChange={(e) => setNewTipo(e.target.value)} placeholder="Nova categoría" className="border p-2 rounded w-64"/>
+          <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={handleCreate}>
+            Registrar
+          </button>
+          <button className="bg-gray-400 text-white px-4 py-2 rounded" onClick={() => {setShowCreate(false); setNewTipo("");}}>
+            Cancelar
+          </button>
+        </div>
+      )}
     </div>
-  ) : (
-    <div className="flex gap-2">
-      <input
-        type="text"
-        value={newTipo}
-        onChange={(e) => setNewTipo(e.target.value)}
-        placeholder="Tipo de categoría"
-        className="border p-2 rounded w-64"
-      />
-      <button
-        className="bg-green-500 text-white px-4 py-2 rounded"
-        onClick={handleCreate}
-      >
-        Registrar
-      </button>
-      <button
-        className="bg-gray-400 text-white px-4 py-2 rounded"
-        onClick={() => {
-          setShowCreate(false);
-          setNewTipo("");
-        }}
-      >
-        Cancelar
-      </button>
-    </div>
-  )}
 
-  {/* Search Bar */}
-  <input
-    type="text"
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    placeholder="Buscar categoría..."
-    className="p-2 border rounded w-64"
-  />
-</div>
-
-      {/* Table */}
       <table className="w-full bg-white shadow rounded">
         <thead>
           <tr className="bg-orange-100 text-left">

@@ -143,14 +143,8 @@ export default function ProductsList() {
         Llista de Productes
       </h1>
 
-      {/* 🔍 Search */}
       <div className="mb-3 flex justify-center">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Cerca per nom..."
-          className="px-4 py-2 border rounded-lg w-80 shadow-sm"
-        />
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cerca per nom..." className="px-4 py-2 border rounded-lg w-80 shadow-sm"/>
       </div>
       <div className="mt-10 text-center mb-6">
         <a href="/products-react/create" className="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl shadow-lg transition">
@@ -170,7 +164,6 @@ export default function ProductsList() {
               key={p.id}
               className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition"
             >
-              {/* STATUS */}
               <div className="flex items-center justify-between">
                 <span
                   className={`text-xs px-2 py-1 rounded-full ${
@@ -182,7 +175,6 @@ export default function ProductsList() {
                   {p.estat ? "Actiu" : "Inactiu"}
                 </span>
 
-                {/* BADGE DESTACADO solo si es verdadero */}
                 {p.destacat ? (
                   <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
                     ⭐ Destacat
@@ -192,7 +184,6 @@ export default function ProductsList() {
 
               {editingId === p.id ? (
                 <>
-                  {/* EDIT MODE */}
                   <input
                     value={editedFields.nombre}
                     onChange={(e) =>
@@ -231,7 +222,6 @@ export default function ProductsList() {
                     className="w-full border p-2 mt-1 rounded"
                   />
 
-                  {/* CHECKBOX DESTACADO */}
                   <div className="flex items-center gap-2 mt-2">
                     <input
                       type="checkbox"
@@ -248,7 +238,6 @@ export default function ProductsList() {
                     </label>
                   </div>
 
-                  {/* Características */}
                   <div className="mt-3">
                     <strong className="text-sm">Característiques</strong>
 
@@ -287,11 +276,9 @@ export default function ProductsList() {
                 </>
               ) : (
                 <>
-                  {/* VIEW MODE */}
                   <h2 className="font-bold text-lg mt-2">{p.nombre}</h2>
                   <p className="text-orange-500 font-semibold">{p.precio} €</p>
 
-                  {/* Solo mostrar stock si > 0 */}
                   {p.stock > 0 && (
                     <p className="text-sm text-gray-500">Stock: {p.stock}</p>
                   )}

@@ -5,22 +5,18 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pack;
-use App\Models\Producte;
+use App\Models\Producto;
+use App\Models\PackImage;
 
 class PackController extends Controller
 {
-    /**
-     * List all packs with related products
-     */
     public function index()
     {
-        $packs = Pack::with(['productes'])->get();
+        // Load products and images
+        $packs = Pack::with(['productes', 'images'])->get();
         return response()->json($packs);
     }
 
-    /**
-     * Store a new pack
-     */
     public function store(Request $request)
     {
         $pack = Pack::create([
@@ -29,32 +25,35 @@ class PackController extends Controller
             'preu' => $request->preu,
         ]);
 
-        // 🔥 Attach products WITH quantity
+        // Attach products with quantity
         if ($request->has('productes')) {
             $syncData = [];
-
             foreach ($request->productes as $prod) {
                 $syncData[$prod['id']] = ['quantity' => $prod['quantity']];
             }
-
             $pack->productes()->sync($syncData);
         }
 
-        return response()->json($pack->load('productes'), 201);
+        // Attach images with order
+        if ($request->has('images')) {
+            foreach ($request->images as $img) {
+                PackImage::create([
+                    'pack_id' => $pack->id,
+                    'image_path' => $img['path'], // expected path from frontend upload
+                    'order' => $img['order'] ?? 0
+                ]);
+            }
+        }
+
+        return response()->json($pack->load(['productes', 'images']), 201);
     }
 
-    /**
-     * Show a specific pack
-     */
     public function show($id)
     {
-        $pack = Pack::with('productes')->findOrFail($id);
+        $pack = Pack::with(['productes', 'images'])->findOrFail($id);
         return response()->json($pack, 200);
     }
 
-    /**
-     * Update a pack
-     */
     public function update(Request $request, $id)
     {
         $pack = Pack::findOrFail($id);
@@ -65,29 +64,34 @@ class PackController extends Controller
             'preu' => $request->preu,
         ]);
 
+        // Sync products
         if ($request->has('productes')) {
             $syncData = [];
-
             foreach ($request->productes as $prod) {
                 $syncData[$prod['id']] = ['quantity' => $prod['quantity']];
             }
-
             $pack->productes()->sync($syncData);
         }
 
-        return response()->json($pack->load('productes'));
+        // Sync images: delete old, add new
+        if ($request->has('images')) {
+            $pack->images()->delete();
+            foreach ($request->images as $img) {
+                PackImage::create([
+                    'pack_id' => $pack->id,
+                    'image_path' => $img['path'],
+                    'order' => $img['order'] ?? 0
+                ]);
+            }
+        }
+
+        return response()->json($pack->load(['productes', 'images']));
     }
 
-    /**
-     * Delete a pack
-     */
     public function destroy($id)
     {
         $pack = Pack::findOrFail($id);
         $pack->delete();
-
-        return response()->json([
-            'message' => 'Pack deleted successfully'
-        ], 200);
+        return response()->json(['message' => 'Pack deleted successfully'], 200);
     }
 }

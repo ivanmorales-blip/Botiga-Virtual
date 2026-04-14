@@ -3,7 +3,7 @@ import "../../../../scss/solucions.scss";
 
 export default function SolucionsAdmin() {
   const [solucions, setSolucions] = useState([]);
-  const [filter, setFilter] = useState("actives"); // default view
+  const [filter, setFilter] = useState("actives"); 
 
   const fetchData = () => {
     fetch("/api/solucions")
@@ -33,7 +33,6 @@ export default function SolucionsAdmin() {
         return;
       }
 
-      // update locally
       setSolucions(prev =>
         prev.map(sol =>
           sol.id === id ? { ...sol, estat } : sol
@@ -45,20 +44,17 @@ export default function SolucionsAdmin() {
     }
   };
 
-  // ✅ Filtering logic
   const filteredSolucions = solucions.filter(sol => {
     if (filter === "actives") {
       return sol.estat === "pendent" || sol.estat === "en_proces";
     }
-    if (filter === "") return true; // tots
+    if (filter === "") return true; 
     return sol.estat === filter;
   });
 
   return (
     <div className="solucions-admin">
       <h2>Gestió de Solucions</h2>
-
-      {/* ✅ FILTER DROPDOWN */}
       <div className="filter-bar">
         <label>
           Filtrar: 
@@ -120,7 +116,7 @@ export default function SolucionsAdmin() {
             </div>
           ))
         ) : (
-          <p>No hi ha solucions</p>
+          <p>No hi ha solucions en aquesta categoria</p>
         )}
       </div>
     </div>

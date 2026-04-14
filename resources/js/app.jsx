@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import '../../scss/FrontPage.scss'
 import '../../scss/FrontEndTemplate.scss'
 import '../../scss/CategoriaProductos.scss'
+import '../../scss/Admintemplate.scss'
 
 // Import your views
 import CategoriaProductos from "./views/backend/categorias/categoriaproductos";

@@ -8,7 +8,6 @@ export default function FrontPage() {
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // NEW STATE
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -32,7 +31,6 @@ export default function FrontPage() {
       .catch(err => console.error("Error fetching categories:", err));
   }, []);
 
-  // UPDATED FILTER
   const filteredProducts = products
     .filter(p => p.estat === 1)
     .filter(p =>
@@ -45,7 +43,6 @@ export default function FrontPage() {
   const openProduct = (product) => setSelectedProduct(product);
   const closeProduct = () => setSelectedProduct(null);
 
-  // Product Card
   const ProductCard = ({ p }) => (
     <div className="product-card" onClick={() => openProduct(p)}>
       <div className="product-image-placeholder">📦</div>
@@ -73,7 +70,6 @@ export default function FrontPage() {
   return (
     <div className="frontpage-container">
 
-      {/* SEARCH + CATEGORY DROPDOWN */}
       <div className="search-container">
         <div className="search-bar">
           <input
@@ -123,7 +119,6 @@ export default function FrontPage() {
         </div>
       </div>
 
-      {/* RECENT PRODUCTS */}
       <div className="divider"><h2>Productes Recents</h2></div>
       <div className="products-grid">
         {recentProducts.length === 0
@@ -131,7 +126,6 @@ export default function FrontPage() {
           : recentProducts.map(p => <ProductCard key={p.id} p={p} />)}
       </div>
 
-      {/* FEATURED PRODUCTS */}
       <div className="divider"><h2>Productes Destacats</h2></div>
       <div className="products-grid">
         {products.filter(p => p.destacat === 1).length === 0 ? (
@@ -143,7 +137,6 @@ export default function FrontPage() {
         )}
       </div>
 
-      {/* PRODUCTS BY CATEGORY (FILTERED) */}
       {categories
         .filter(cat => selectedCategory === "" || cat.id === selectedCategory)
         .map(cat => (
@@ -157,7 +150,6 @@ export default function FrontPage() {
           </div>
         ))}
 
-      {/* POPUP */}
       {selectedProduct && (
         <div className="product-popup-overlay" onClick={closeProduct}>
           <div

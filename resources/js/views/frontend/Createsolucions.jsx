@@ -22,7 +22,7 @@ export default function CreateSolucions() {
     formData.append("descripcio", descripcio);
     formData.append("correu_electronic", correu);
     formData.append("telefon", telefon);
-    formData.append("estat", "pendent"); // always pending
+    formData.append("estat", "pendent");
     files.forEach((file) => formData.append("attachments[]", file));
 
     setLoading(true);
@@ -43,7 +43,7 @@ export default function CreateSolucions() {
         setCorreu("");
         setTelefon("");
         setFiles([]);
-        setShowSuccessPopup(true); // <-- show popup
+        setShowSuccessPopup(true); 
       }
     } catch (err) {
       console.error("Error uploading:", err);
@@ -115,7 +115,6 @@ export default function CreateSolucions() {
         </button>
       </form>
 
-      {/* Success Popup */}
       {showSuccessPopup && (
         <div className="success-popup-overlay" onClick={() => setShowSuccessPopup(false)}>
           <div className="success-popup" onClick={(e) => e.stopPropagation()}>
@@ -125,7 +124,6 @@ export default function CreateSolucions() {
         </div>
       )}
 
-      {/* Styles for the popup */}
       <style jsx>{`
         .success-popup-overlay {
           position: fixed;

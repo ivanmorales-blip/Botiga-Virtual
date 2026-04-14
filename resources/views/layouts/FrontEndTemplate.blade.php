@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SERRELLERIA SOLIDÀRIA</title>
 
-    {{-- Vite --}}
     @viteReactRefresh
     @vite(['resources/js/app.jsx'])
 
@@ -14,7 +13,6 @@
 
     <script src="//unpkg.com/alpinejs" defer></script>
 
-    <!-- Header -->
     <header class="header">
         <div class="header__left">
             <a href="{{ route('home') }}" class="header__title">
@@ -36,8 +34,6 @@
             </a>
         </div>
     </header>
-
-    <!-- Main content -->
     <main class="main">
         @yield('content')
     </main>
@@ -45,7 +41,6 @@
 <footer class="footer">
     <div class="footer__container">
 
-        <!-- Columna 1 -->
         <div class="footer__col">
             <h3 class="footer__title">Serrelleria Solidària</h3>
             <p class="footer__text">
@@ -53,7 +48,6 @@
             </p>
         </div>
 
-        <!-- Columna 2 -->
         <div class="footer__col">
             <h4 class="footer__subtitle">Botiga</h4>
             <ul>
@@ -63,7 +57,6 @@
             </ul>
         </div>
 
-        <!-- Columna 3 -->
         <div class="footer__col">
             <h4 class="footer__subtitle">Ajuda</h4>
             <ul>
@@ -74,7 +67,6 @@
             </ul>
         </div>
 
-        <!-- Columna 4 -->
         <div class="footer__col">
             <h4 class="footer__subtitle">Legal</h4>
             <ul>

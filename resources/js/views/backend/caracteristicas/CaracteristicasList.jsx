@@ -17,13 +17,14 @@ export default function CaracteristicasList() {
   const [editingId, setEditingId] = useState(null);
   const [editingDescripcion, setEditingDescripcion] = useState("");
   const [editingTipo, setEditingTipo] = useState(null);
+
+  const [showCreateCaracteristica, setShowCreateCaracteristica] = useState(false);
+  const [showCreateTipo, setShowCreateTipo] = useState(false);
   
 
-  // Load caracteristicas + tipos
   const loadData = async () => {
     setLoading(true);
     try {
-      // Fetch caracteristicas
       const resC = await fetch("/api/caracteristicas");
       if (!resC.ok) throw new Error("Error loading caracteristicas");
       const dataC = await resC.json();
@@ -46,12 +47,10 @@ export default function CaracteristicasList() {
     loadData();
   }, []);
 
-  // Filtered list by search
   const filtered = caracteristicas.filter((c) =>
     c.descripcio.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Create new caracteristica
 const handleCreate = async () => {
   if (!newDescripcion.trim() || !editingTipoId) return;
 
@@ -84,7 +83,6 @@ const handleCreate = async () => {
   }
 };
 
-  // Create new tipo
   const handleCreateTipo = async () => {
     if (!newTipo.trim()) return;
     setCreatingTipo(true);
@@ -105,7 +103,6 @@ const handleCreate = async () => {
     }
   };
 
-  // Update caracteristica
   const handleUpdate = async (id) => {
     if (!editingDescripcion.trim() || !editingTipo) return;
     try {
@@ -128,7 +125,6 @@ const handleCreate = async () => {
     }
   };
 
-  // Delete caracteristica
   const handleDelete = async (id) => {
     if (!confirm("Segur que vols eliminar aquesta característica?")) return;
     try {
@@ -141,138 +137,113 @@ const handleCreate = async () => {
     }
   };
 
-  return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-orange-500 text-center">
-        Llista de Característiques
-      </h1>
+return (
+  <div className="p-8 min-h-screen">
 
-      {/* Search */}
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Cerca per descripció..."
-        className="border px-3 py-2 rounded w-full mb-4"
-      />
+    <h1 className="text-3xl font-bold mb-6 text-orange-500 text-center">
+      Llista de Característiques
+    </h1>
 
-      {/* Create new caracteristica */}
-      <div className="flex gap-2 mb-6">
-        <input
-          type="text"
-          value={newDescripcion}
-          onChange={(e) => setNewDescripcion(e.target.value)}
-          placeholder="Nova característica"
-          className="border px-3 py-2 rounded flex-1"
-        />
-        <select
-          value={editingTipoId || ""}
-          onChange={(e) => setEditingTipoId(e.target.value)}
-          className="border px-3 py-2 rounded"
-        >
-          <option value="">Selecciona tipus</option>
-          {tipos.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.tipo}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={handleCreate}
-          disabled={creating || !editingTipoId || !newDescripcion.trim()}
-          className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded"
-        >
-          {creating ? "Creant..." : "Crear"}
-        </button>
-      </div>
-
-      {/* Create new tipo */}
-      <div className="flex gap-2 mb-6">
-        <input
-          type="text"
-          value={newTipo}
-          onChange={(e) => setNewTipo(e.target.value)}
-          placeholder="Nou tipus"
-          className="border px-3 py-2 rounded flex-1"
-        />
-        <button
-          onClick={handleCreateTipo}
-          disabled={creatingTipo || !newTipo.trim()}
-          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
-        >
-          {creatingTipo ? "Creant tipus..." : "Crear tipus"}
-        </button>
-      </div>
-
-      {/* List */}
-      {loading ? (
-        <div className="text-center text-gray-500">Carregant...</div>
-      ) : filtered.length === 0 ? (
-        <div className="text-center text-gray-500">No hi ha característiques</div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((c) => (
-            <div
-              key={c.id}
-              className="bg-white rounded-xl shadow border p-4 flex flex-col justify-between hover:shadow-lg transition"
-            >
-              {editingId === c.id ? (
-                <>
-                  <input
-                    type="text"
-                    value={editingDescripcion}
-                    onChange={(e) => setEditingDescripcion(e.target.value)}
-                    className="border px-2 py-1 rounded mb-2"
-                  />
-                  <select
-                    value={editingTipo || ""}
-                    onChange={(e) => setEditingTipo(e.target.value)}
-                    className="border px-2 py-1 rounded mb-2"
-                  >
-                    <option value="">Selecciona tipus</option>
-                    {tipos.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.tipo}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    onClick={() => handleUpdate(c.id)}
-                    className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm"
-                  >
-                    Guardar
-                  </button>
-                </>
-              ) : (
-                <>
-                  <span className="text-gray-700 font-medium mb-2">{c.descripcio}</span>
-                  <span className="text-gray-500 text-sm mb-2">
-                    Tipus: {c.tipo?.tipo || "Sense tipus"}
-                  </span>
-                  <div className="flex justify-between mt-2">
-                    <button
-                      onClick={() => {
-                        setEditingId(c.id);
-                        setEditingDescripcion(c.descripcio);
-                        setEditingTipo(c.tipo_id);
-                      }}
-                      className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => handleDelete(c.id)}
-                      className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="flex justify-center mb-6">
+      <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cerca per descripció..." className="border px-4 py-2 rounded w-80 shadow-sm"/>
     </div>
-  );
+
+    <div className="flex gap-8 mb-6 items-start justify-end">
+
+      <div className="flex flex-col gap-4 items-start">
+        {!showCreateCaracteristica ? (
+          <button className="bg-orange-500 text-white px-4 py-2 rounded" onClick={() => setShowCreateCaracteristica(true)}>
+            Nova característica
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <input type="text" value={newDescripcion} onChange={(e) => setNewDescripcion(e.target.value)} placeholder="Nova característica" className="border px-4 py-2 rounded w-64 shadow-sm"/>
+
+            <select value={editingTipoId || ""} onChange={(e) => setEditingTipoId(e.target.value)} className="border px-3 py-2 rounded">
+              <option value="">Selecciona tipus</option>
+              {tipos.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.tipo}
+                </option>
+              ))}
+            </select>
+
+            <button onClick={handleCreate} disabled={creating || !editingTipoId || !newDescripcion.trim()} className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded">
+              {creating ? "Creant..." : "Crear"}
+            </button>
+
+            <button className="bg-gray-400 text-white px-4 py-2 rounded" onClick={() => {setShowCreateCaracteristica(false); setNewDescripcion(""); setEditingTipoId(null);}}>
+              Cancelar
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-4 items-start">
+        {!showCreateTipo ? (
+          <button className="bg-orange-500 text-white px-4 py-2 rounded" onClick={() => setShowCreateTipo(true)}>
+            Nou tipus de caracteristica
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <input type="text" value={newTipo} onChange={(e) => setNewTipo(e.target.value)} placeholder="Nou tipus" className="border px-3 py-2 rounded w-64"/>
+
+            <button onClick={handleCreateTipo} disabled={creatingTipo || !newTipo.trim()} className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded">
+              {creatingTipo ? "Creant tipus..." : "Crear tipus"}
+            </button>
+
+            <button className="bg-gray-400 text-white px-4 py-2 rounded" onClick={() => {setShowCreateTipo(false); setNewTipo("");}}>
+              Cancelar
+            </button>
+          </div>
+        )}
+      </div>
+
+    </div>
+
+    {loading ? (
+      <div className="text-center text-gray-500">Carregant...</div>
+    ) : filtered.length === 0 ? (
+      <div className="text-center text-gray-500">No hi ha característiques</div>
+    ) : (
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {filtered.map((c) => (
+          <div key={c.id} className="bg-white rounded-xl shadow border p-4 flex flex-col justify-between hover:shadow-lg transition">
+            {editingId === c.id ? (
+              <>
+                <input type="text" value={editingDescripcion} onChange={(e) => setEditingDescripcion(e.target.value)} className="border px-2 py-1 rounded mb-2"/>
+                <select value={editingTipo || ""} onChange={(e) => setEditingTipo(e.target.value)} className="border px-2 py-1 rounded mb-2">
+                  <option value="">Selecciona tipus</option>
+                  {tipos.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.tipo}
+                    </option>
+                  ))}
+                </select>
+                <button onClick={() => handleUpdate(c.id)} className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm">
+                  Guardar
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="text-gray-700 font-medium mb-2">{c.descripcio}</span>
+                <span className="text-gray-500 text-sm mb-2">
+                  Tipus: {c.tipo?.tipo || "Sense tipus"}
+                </span>
+                <div className="flex justify-between mt-2">
+                  <button onClick={() => { setEditingId(c.id); setEditingDescripcion(c.descripcio); setEditingTipo(c.tipo_id);}} className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm">
+                    Editar
+                  </button>
+                  <button onClick={() => handleDelete(c.id)} className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm">
+                    Eliminar
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
 }
