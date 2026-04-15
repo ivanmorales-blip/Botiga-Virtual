@@ -74,12 +74,12 @@
                 scales: {
                     x: {
                     ticks: {
-                        color: 'black' // letras eje X
+                        color: 'black' 
                     }
                     },
                     y: {
                         ticks: {
-                            color: 'black' // números eje Y
+                            color: 'black' 
                     }
                     }
                 }

@@ -16,7 +16,7 @@ export default function ProductCreate() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
 
-  const [successMsg, setSuccessMsg] = useState(""); // ⭐ NUEVO
+  const [successMsg, setSuccessMsg] = useState(""); // NUEVO
 
   useEffect(() => {
     fetch("/api/categorias")
@@ -74,7 +74,7 @@ export default function ProductCreate() {
       setSelectedCaracteristicas([]);
       setDestacat(false);
 
-      // ⭐ MENSAJE ÉXITO
+      //MENSAJE ÉXITO
       setSuccessMsg("Producto creado correctamente ✅");
 
       setTimeout(() => {
@@ -96,7 +96,7 @@ export default function ProductCreate() {
         Crear Producte
       </h1>
 
-      {/* ⭐ MENSAJE ÉXITO */}
+      {/* MENSAJE ÉXITO */}
       {successMsg && (
         <div className="mb-4 p-3 bg-green-100 text-green-700 rounded text-center">
           {successMsg}
