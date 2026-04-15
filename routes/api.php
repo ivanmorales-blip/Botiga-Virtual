@@ -82,6 +82,8 @@ Route::get('productos/recent', [ProductoController::class, 'recent'])->name('api
 Route::patch('/productos/{id}/activate', [ProductoController::class, 'activate']);
 Route::patch('/productos/{id}/deactivate', [ProductoController::class, 'deactivate']);
 
+Route::post('/productos', [ProductoController::class, 'store']);
+
 Route::get('/productos', [ProductoController::class, 'index']);
 
 use App\Http\Controllers\Api\SolucionsController;

@@ -31,7 +31,7 @@
 
     </div>
 
-    <div class="bg-white rounded-3xl shadow-sm p-8">
+    <!-- <div class="bg-white rounded-3xl shadow-sm p-8">
         <h3 class="text-xl font-semibold mb-6">Últims Productes</h3>
 
         <ul>
@@ -42,6 +42,50 @@
             @endforeach
         </ul>
     </div>
+    !-->
+
+    <div class="bg-white rounded-3xl shadow-sm p-8 mt-10" style="width: 900px;">
+        <h3 class="text-xl font-semibold mb-6">Productes amb menys stock</h3>
+
+        <canvas id="stockChart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const stockData = @json($lowStock);
+
+        const labels = stockData.map(p => p.nombre);
+        const values = stockData.map(p => p.stock);
+
+        new Chart(document.getElementById('stockChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Stock disponible',
+                    data: values,
+                    backgroundColor: 'rgba(251, 146, 60, 0.4)',
+                    borderColor: 'rgba(249, 115, 22, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                    ticks: {
+                        color: 'black' // letras eje X
+                    }
+                    },
+                    y: {
+                        ticks: {
+                            color: 'black' // números eje Y
+                    }
+                    }
+                }
+            }
+        });
+    </script>
 
 </div>
 @endsection

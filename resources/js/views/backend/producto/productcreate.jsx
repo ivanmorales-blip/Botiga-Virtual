@@ -7,7 +7,7 @@ export default function ProductCreate() {
   const [descripcion, setDescripcion] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
   const [marca, setMarca] = useState("");
-  const [destacat, setDestacat] = useState(false); //  NUEVO
+  const [destacat, setDestacat] = useState(false);
 
   const [categorias, setCategorias] = useState([]);
   const [caracteristicas, setCaracteristicas] = useState([]);
@@ -16,7 +16,8 @@ export default function ProductCreate() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
 
-  // Cargar datos
+  const [successMsg, setSuccessMsg] = useState(""); // ⭐ NUEVO
+
   useEffect(() => {
     fetch("/api/categorias")
       .then(res => res.json())
@@ -27,7 +28,6 @@ export default function ProductCreate() {
       .then(setCaracteristicas);
   }, []);
 
-  // Toggle característica
   const toggleCaracteristica = (id) => {
     setSelectedCaracteristicas(prev =>
       prev.includes(id)
@@ -40,6 +40,7 @@ export default function ProductCreate() {
     e.preventDefault();
     setLoading(true);
     setErrors([]);
+    setSuccessMsg("");
 
     try {
       const res = await fetch("/api/productos", {
@@ -56,7 +57,7 @@ export default function ProductCreate() {
           categoria_id: categoriaId || null,
           marca,
           caracteristicas: selectedCaracteristicas,
-          destacat, //  NUEVO
+          destacat,
         }),
       });
 
@@ -71,7 +72,14 @@ export default function ProductCreate() {
       setCategoriaId("");
       setMarca("");
       setSelectedCaracteristicas([]);
-      setDestacat(false); //  RESET
+      setDestacat(false);
+
+      // ⭐ MENSAJE ÉXITO
+      setSuccessMsg("Producto creado correctamente ✅");
+
+      setTimeout(() => {
+        setSuccessMsg("");
+      }, 3000);
 
     } catch (err) {
       console.error(err);
@@ -83,9 +91,17 @@ export default function ProductCreate() {
 
   return (
     <div className="max-w-xl mx-auto rounded-xl shadow-lg">
+
       <h1 className="text-2xl font-bold mb-4 text-orange-600 text-center">
         Crear Producte
       </h1>
+
+      {/* ⭐ MENSAJE ÉXITO */}
+      {successMsg && (
+        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded text-center">
+          {successMsg}
+        </div>
+      )}
 
       {errors.length > 0 && (
         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
@@ -145,7 +161,7 @@ export default function ProductCreate() {
           ))}
         </select>
 
-        {/*CHECKBOX DESTACADO */}
+        {/* CHECKBOX DESTACADO */}
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -157,7 +173,7 @@ export default function ProductCreate() {
           </label>
         </div>
 
-        {/* Características */}
+        {/* CARACTERÍSTICAS */}
         <div>
           <label className="font-semibold">Característiques</label>
           <div className="border rounded p-2 max-h-40 overflow-y-auto">
@@ -177,6 +193,7 @@ export default function ProductCreate() {
         <button className="w-full bg-orange-500 text-white p-2 rounded hover:bg-orange-600 transition">
           {loading ? "Creando..." : "Crear"}
         </button>
+
       </form>
     </div>
   );
