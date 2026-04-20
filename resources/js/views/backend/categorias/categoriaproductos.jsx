@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../../../../scss/CategoriaProductos.scss";
+import { addToCart } from "../../../utils/cart.js";
 
 export default function CategoriaProductos() {
   const [categorias, setCategorias] = useState([]);
@@ -7,31 +8,39 @@ export default function CategoriaProductos() {
   const [selectedCategoria, setSelectedCategoria] = useState("");
   const [selectedCaracteristicas, setSelectedCaracteristicas] = useState([]);
   const [productos, setProductos] = useState([]);
-  const [mostrarMas, setMostrarMas] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const MAX_VISIBLE = 5;
+  const [qty, setQty] = useState(1);
 
   useEffect(() => {
     fetch("/api/categorias")
       .then(res => res.json())
-      .then(data => setCategorias(data))
-      .catch(err => console.error(err));
+      .then(setCategorias)
+      .catch(console.error);
 
     fetch("/api/caracteristicas")
       .then(res => res.json())
-      .then(data => setCaracteristicas(data))
-      .catch(err => console.error(err));
+      .then(setCaracteristicas)
+      .catch(console.error);
   }, []);
 
   const loadProductos = async (categoriaId = "", caracteristicasIds = []) => {
-    const params = new URLSearchParams();
-    if (categoriaId) params.append("categoria", categoriaId);
-    caracteristicasIds.forEach(id => params.append("caracteristica[]", id));
+    try {
+      const params = new URLSearchParams();
 
-    const res = await fetch(`/api/productos?${params.toString()}`);
-    const data = await res.json();
-    setProductos(data);
+      if (categoriaId) params.append("categoria", categoriaId);
+      caracteristicasIds.forEach(id =>
+        params.append("caracteristica[]", id)
+      );
+
+      const res = await fetch(`/api/productos?${params.toString()}`);
+      const data = await res.json();
+
+      // ⚠️ IMPORTANT FIX: ensure it's always an array
+      setProductos(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error loading productos:", err);
+      setProductos([]);
+    }
   };
 
   useEffect(() => {
@@ -39,13 +48,12 @@ export default function CategoriaProductos() {
   }, [selectedCategoria, selectedCaracteristicas]);
 
   const handleCaracteristicaChange = (id) => {
-    const nuevaSeleccion = selectedCaracteristicas.includes(id)
-      ? selectedCaracteristicas.filter(c => c !== id)
-      : [...selectedCaracteristicas, id];
-    setSelectedCaracteristicas(nuevaSeleccion);
+    setSelectedCaracteristicas(prev =>
+      prev.includes(id)
+        ? prev.filter(c => c !== id)
+        : [...prev, id]
+    );
   };
-
-  const categoriaSeleccionada = categorias.find(c => c.id == selectedCategoria);
 
   const productosFiltrados = selectedCaracteristicas.length
     ? productos.filter(p =>
@@ -55,7 +63,11 @@ export default function CategoriaProductos() {
       )
     : productos;
 
-  const openProduct = (prod) => setSelectedProduct(prod);
+  const openProduct = (prod) => {
+    setSelectedProduct(prod);
+    setQty(1);
+  };
+
   const closeProduct = () => setSelectedProduct(null);
 
   return (
@@ -63,7 +75,8 @@ export default function CategoriaProductos() {
       <h1>Categorías</h1>
 
       <div className="page-content">
-        {/* Filters */}
+
+        {/* FILTERS */}
         <div className="filters">
           <div className="categoria-filtros">
             <select
@@ -72,7 +85,9 @@ export default function CategoriaProductos() {
             >
               <option value="">Todas las categorías</option>
               {categorias.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.tipo}</option>
+                <option key={cat.id} value={cat.id}>
+                  {cat.tipo}
+                </option>
               ))}
             </select>
           </div>
@@ -100,11 +115,10 @@ export default function CategoriaProductos() {
                 ))}
               </div>
             ))}
-
           </div>
         </div>
 
-        {/* Products */}
+        {/* PRODUCTS */}
         <div className="productos">
           {productosFiltrados.length > 0 ? (
             <div className="productos-grid">
@@ -124,15 +138,17 @@ export default function CategoriaProductos() {
 
                   <h3>{prod.nombre}</h3>
                   <p className="precio">{prod.precio} €</p>
+
                   <p className={`stock ${prod.stock >= 1 ? "in-stock" : "out-of-stock"}`}>
                     {prod.stock >= 1 ? "En stock" : "Agotado"}
                   </p>
 
                   <button
                     className="buy-button"
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.stopPropagation();
-                      alert("Comprar functionality not implemented yet");
+                      await addToCart(prod.id, 1, false);
+                      alert("Producto añadido");
                     }}
                   >
                     Comprar
@@ -141,15 +157,18 @@ export default function CategoriaProductos() {
               ))}
             </div>
           ) : (
-            <p className="no-productos">No hay productos con esos filtros</p>
+            <p className="no-productos">
+              No hay productos con esos filtros
+            </p>
           )}
         </div>
       </div>
 
-      {/* Product Popup */}
+      {/* POPUP */}
       {selectedProduct && (
         <div className="product-popup-overlay" onClick={closeProduct}>
           <div className="product-popup" onClick={(e) => e.stopPropagation()}>
+
             <div className="popup-left">
               <div className="product-image-placeholder-large">
                 {selectedProduct.imagen ? (
@@ -162,10 +181,20 @@ export default function CategoriaProductos() {
 
             <div className="popup-right">
               <h2 className="popup-name">{selectedProduct.nombre}</h2>
+
               <p className={`stock ${selectedProduct.stock >= 1 ? "in-stock" : "out-of-stock"}`}>
                 {selectedProduct.stock >= 1 ? "En stock" : "Agotado"}
               </p>
+
               <div className="popup-price">{selectedProduct.precio} €</div>
+
+              {/* ✅ quantity ONLY here */}
+              <input
+                type="number"
+                min="1"
+                value={qty}
+                onChange={(e) => setQty(parseInt(e.target.value) || 1)}
+              />
 
               {selectedProduct.categoria && (
                 <div className="popup-attribute">
@@ -173,12 +202,14 @@ export default function CategoriaProductos() {
                 </div>
               )}
 
-              {selectedProduct.caracteristicas && selectedProduct.caracteristicas.length > 0 && (
+              {selectedProduct.caracteristicas?.length > 0 && (
                 <div className="popup-attribute">
                   <strong>Característiques:</strong>
                   <ul>
                     {selectedProduct.caracteristicas.map(c => (
-                      <li key={c.id}>{c.tipo?.tipo} {c.descripcio}</li>
+                      <li key={c.id}>
+                        {c.tipo?.tipo} {c.descripcio}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -186,7 +217,10 @@ export default function CategoriaProductos() {
 
               <button
                 className="buy-button"
-                onClick={() => alert("Comprar functionality not implemented yet")}
+                onClick={async () => {
+                  await addToCart(selectedProduct.id, qty, false);
+                  alert("Producto añadido");
+                }}
               >
                 Comprar
               </button>

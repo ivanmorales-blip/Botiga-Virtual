@@ -25,6 +25,8 @@
                 Productes
             </a>
 
+            
+
             <a href="{{ route('solucions.create') }}" class="btn btn--primary">
                 Solucions Personalitzades
             </a>
@@ -33,6 +35,8 @@
             Iniciar Sessió
             </a>
         </div>
+
+        <div id="cart-counter"></div>
     </header>
     <main class="main">
         @yield('content')

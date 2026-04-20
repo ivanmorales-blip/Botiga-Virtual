@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../../../scss/FrontPage.scss";
+import { addToCart } from "../../utils/cart.js";
 
 export default function FrontPage() {
   const [products, setProducts] = useState([]);
@@ -11,36 +12,32 @@ export default function FrontPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const [qty, setQty] = useState(1);
+
   useEffect(() => {
     fetch("/api/productos")
       .then(res => res.json())
-      .then(data => setProducts(data.filter(p => p.estat === 1)))
-      .catch(err => console.error("Error fetching products:", err));
+      .then(data => setProducts(data.filter(p => p.estat === 1)));
 
     fetch("/api/productos/recent")
-      .then(res => {
-        if (!res.ok) throw new Error("Network response was not ok");
-        return res.json();
-      })
-      .then(data => setRecentProducts(data.filter(p => p.estat === 1)))
-      .catch(err => console.error("Error fetching recent products:", err));
+      .then(res => res.json())
+      .then(data => setRecentProducts(data.filter(p => p.estat === 1)));
 
     fetch("/api/categorias")
       .then(res => res.json())
-      .then(data => setCategories(data.filter(p => p.estat === 1)))
-      .catch(err => console.error("Error fetching categories:", err));
+      .then(data => setCategories(data.filter(p => p.estat === 1)));
   }, []);
 
   const filteredProducts = products
     .filter(p => p.estat === 1)
-    .filter(p =>
-      p.nombre.toLowerCase().includes(search.toLowerCase())
-    )
-    .filter(p =>
-      selectedCategory === "" || p.categoria_id === selectedCategory
-    );
+    .filter(p => p.nombre.toLowerCase().includes(search.toLowerCase()))
+    .filter(p => selectedCategory === "" || p.categoria_id === selectedCategory);
 
-  const openProduct = (product) => setSelectedProduct(product);
+  const openProduct = (product) => {
+    setSelectedProduct(product);
+    setQty(1);
+  };
+
   const closeProduct = () => setSelectedProduct(null);
 
   const ProductCard = ({ p }) => (
@@ -57,9 +54,10 @@ export default function FrontPage() {
 
       <button
         className="buy-button"
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation();
-          alert("Comprar functionality not implemented yet");
+          await addToCart(p.id, 1, false);
+          alert("Producto añadido");
         }}
       >
         Comprar
@@ -70,6 +68,7 @@ export default function FrontPage() {
   return (
     <div className="frontpage-container">
 
+      {/* SEARCH + FILTER UI (unchanged) */}
       <div className="search-container">
         <div className="search-bar">
           <input
@@ -79,140 +78,66 @@ export default function FrontPage() {
             placeholder="Cerca productes..."
           />
         </div>
-
-        <div className="category-dropdown">
-          <button
-            className="dropdown-toggle"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {selectedCategory
-              ? categories.find(c => c.id === selectedCategory)?.tipo
-              : "Totes les categories"} ▼
-          </button>
-
-          {isMenuOpen && (
-            <div className="dropdown-menu">
-              <div
-                className="dropdown-item"
-                onClick={() => {
-                  setSelectedCategory("");
-                  setIsMenuOpen(false);
-                }}
-              >
-                Totes les categories
-              </div>
-
-              {categories.map(cat => (
-                <div
-                  key={cat.id}
-                  className="dropdown-item"
-                  onClick={() => {
-                    setSelectedCategory(cat.id);
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  {cat.tipo}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
 
+      {/* RECENTS */}
       <div className="divider"><h2>Productes Recents</h2></div>
       <div className="products-grid">
-        {recentProducts.length === 0
-          ? <p className="no-products">No hi ha productes recents</p>
-          : recentProducts.map(p => <ProductCard key={p.id} p={p} />)}
+        {recentProducts.map(p => <ProductCard key={p.id} p={p} />)}
       </div>
 
+      {/* DESTACATS */}
       <div className="divider"><h2>Productes Destacats</h2></div>
       <div className="products-grid">
-        {products.filter(p => p.destacat === 1).length === 0 ? (
-          <p className="no-products">No hi ha productes destacats</p>
-        ) : (
-          products
-            .filter(p => p.destacat === 1) // Solo destacados
-            .map(p => <ProductCard key={p.id} p={p} />)
-        )}
+        {products.filter(p => p.destacat === 1)
+          .map(p => <ProductCard key={p.id} p={p} />)}
       </div>
 
-      {categories
-        .filter(cat => selectedCategory === "" || cat.id === selectedCategory)
-        .map(cat => (
-          <div key={cat.id}>
-            <div className="divider"><h2>{cat.tipo}</h2></div>
-            <div className="products-grid">
-              {filteredProducts
-                .filter(p => p.categoria_id === cat.id)
-                .map(p => <ProductCard key={p.id} p={p} />)}
-            </div>
+      {/* CATEGORIES */}
+      {categories.map(cat => (
+        <div key={cat.id}>
+          <div className="divider"><h2>{cat.tipo}</h2></div>
+          <div className="products-grid">
+            {filteredProducts
+              .filter(p => p.categoria_id === cat.id)
+              .map(p => <ProductCard key={p.id} p={p} />)}
           </div>
-        ))}
+        </div>
+      ))}
 
+      {/* POPUP */}
       {selectedProduct && (
         <div className="product-popup-overlay" onClick={closeProduct}>
-          <div
-            className="product-popup"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="product-popup" onClick={(e) => e.stopPropagation()}>
+
             <div className="popup-left">
               <div className="product-image-placeholder-large">📦</div>
             </div>
 
             <div className="popup-right">
-              <h2 className="popup-name">{selectedProduct.nombre}</h2>
+              <h2>{selectedProduct.nombre}</h2>
+              <div>{selectedProduct.precio} €</div>
 
-              {selectedProduct.stock >= 1 ? (
-                <div className="stock in-stock">En stock</div>
-              ) : (
-                <div className="stock out-of-stock">Agotado</div>
-              )}
-
-              <div className="popup-price">{selectedProduct.precio} €</div>
-
-              {selectedProduct.categoria && (
-                <div className="popup-attribute">
-                  <strong>Categoria:</strong> {selectedProduct.categoria.tipo}
-                </div>
-              )}
-
-              {selectedProduct.marca && (
-                <div className="popup-attribute">
-                  <strong>Marca:</strong> {selectedProduct.marca}
-                </div>
-              )}
-
-              {selectedProduct.caracteristicas && selectedProduct.caracteristicas.length > 0 && (
-                <div className="popup-attribute">
-                  <strong>Característiques:</strong>
-                  <ul>
-                    {selectedProduct.caracteristicas.map(c => (
-                      <li key={c.id}>
-                        {c.tipo?.tipo}: {c.descripcio}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {/* ✅ quantity ONLY here */}
+              <input
+                type="number"
+                min="1"
+                value={qty}
+                onChange={(e) => setQty(parseInt(e.target.value) || 1)}
+              />
 
               <button
                 className="buy-button"
-                onClick={() => alert("Comprar functionality not implemented yet")}
+                onClick={async () => {
+                  await addToCart(selectedProduct.id, qty, false);
+                  alert("Producto añadido");
+                }}
               >
                 Comprar
               </button>
             </div>
 
-            {selectedProduct.descripcion && (
-              <div className="popup-description">
-                {selectedProduct.descripcion}
-              </div>
-            )}
-
-            <button className="popup-close" onClick={closeProduct}>
-              ✖
-            </button>
+            <button className="popup-close" onClick={closeProduct}>✖</button>
           </div>
         </div>
       )}

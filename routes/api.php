@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PackController;
 use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\CaracteristicaController;
+use App\Http\Controllers\CarritoController;
 
 // Health check
 Route::get('/ping', function () {
@@ -96,5 +97,10 @@ Route::delete('/solucions/{id}', [Solucionscontroller::class, 'destroy']);
 Route::apiResource('solucions', SolucionsController::class);
 
 Route::post('/packs/{id}/toggle', [PackController::class, 'toggleActive']);
+
+    Route::post('/cart/add', [CarritoController::class, 'add']);
+    Route::get('/api/cart', [CarritoController::class, 'get']);
+    Route::post('/cart/remove', [CarritoController::class, 'remove']);
+    Route::post('/cart/update', [CarritoController::class, 'update']);
 
 ?>

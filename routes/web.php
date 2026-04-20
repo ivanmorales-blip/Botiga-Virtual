@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Api\CategoriaController;
+use App\Http\Controllers\CarritoController;
+
 
 
 // Redirect root to admin dashboard
@@ -64,6 +66,15 @@ Route::view('/solucions/create', 'formularisolucions.create')
 
 Route::view('/admin/solucions', 'formularisolucions.list')
     ->name('solucions.admin');
+
+//Carrito
+
+Route::view('/cart-page', 'Frontend.Carrito')->name('cart.page');
+
+Route::post('/cart/add', [CarritoController::class, 'add']);
+Route::get('/api/cart', [CarritoController::class, 'get']);     
+Route::post('/cart/remove', [CarritoController::class, 'remove']);
+Route::post('/cart/update', [CarritoController::class, 'update']);
     
 Route::get('/', function () {
     return view('Frontend.Frontpage');
