@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
 
         $escutCategory = Categoria::where('tipo', 'Escut')->first();
         $bombinCategory = Categoria::where('tipo', 'Bombin')->first();
+        $cilindreCategory = Categoria::where('tipo', 'Cilindre')->first();
 
         // -----------------------
         // Products
@@ -61,6 +62,42 @@ class DatabaseSeeder extends Seeder
                 'marca' => 'Keso',
                 'estat' => 1,
             ],
+            [
+                'categoria_id' => $cilindreCategory->id,
+                'nombre' => 'Cilindre 30x30 Niquel Securemme K1',
+                'descripcion' => "Sistema de seguretatamb sistema d'encriptació de 6 pins actius, clau d'obra, totes les claus son de llautó Leva DIN 30 Antibumping i anti manipulació",
+                'precio' => 26.50,
+                'stock' => 2,
+                'marca' => 'Securemme',
+                'estat' => 1,
+            ],
+            [
+                'categoria_id' => $cilindreCategory->id,
+                'nombre' => 'Cilindre 30x30 Llautó Securemme K1',
+                'descripcion' => "Sistema de seguretatamb sistema d'encriptació de 6 pins actius, clau d'obra, totes les claus son de llautó Leva DIN 30 Antibumping i anti manipulació",
+                'precio' => 26.50,
+                'stock' => 2,
+                'marca' => 'Securemme',
+                'estat' => 1,
+            ],
+            [
+                'categoria_id' => $cilindreCategory->id,
+                'nombre' => 'Cilindre 30x30 Niquel Securemme K1 DE',
+                'descripcion' => "Sistema de seguretatamb sistema d'encriptació de 6 pins actius, clau d'obra, totes les claus son de llautó Leva DIN 30 Antibumping i anti manipulació",
+                'precio' => 42.00,
+                'stock' => 1,
+                'marca' => 'Securemme',
+                'estat' => 1,
+            ],
+            [
+                'categoria_id' => $cilindreCategory->id,
+                'nombre' => 'Cilindre 30x30 Llautó Securemme K1 DE',
+                'descripcion' => "Sistema de seguretatamb sistema d'encriptació de 6 pins actius, clau d'obra, totes les claus son de llautó Leva DIN 30 Antibumping i anti manipulació",
+                'precio' => 42.00,
+                'stock' => 1,
+                'marca' => 'Securemme',
+                'estat' => 1,
+            ],
         ];
 
         $products = [];
@@ -78,7 +115,10 @@ class DatabaseSeeder extends Seeder
             ['tipo' => 'Tipus clau', 'Descripcio' => 'Tipus de clau per productes'],
             ['tipo' => 'Nivell de seguretat', 'Descripcio' => 'Seguretat del producte'],
             ['tipo' => 'Color', 'Descripcio' => 'Color disponible'],
-            ['tipo' => 'Targeta de propietat', 'Descripcio' => 'Inclou targeta de propietat']
+            ['tipo' => 'Targeta de propietat', 'Descripcio' => 'Inclou targeta de propietat'],
+            ['tipo' => 'Mida interna', 'Descripcio' => 'Medida interna'],
+            ['tipo' => 'Mida externa', 'Descripcio' => 'Medida externa'],
+            ['tipo' => 'Doble Embrage', 'Descripcio' => 'doble embrage'],
         ];
 
         $tipoMap = [];
@@ -95,22 +135,34 @@ class DatabaseSeeder extends Seeder
         // -----------------------
         $caracteristicasData = [
             // Tipus clau
-            ['tipo' => 'Tipus clau', 'descripcio' => 'Element Mobil'],
-            ['tipo' => 'Tipus clau', 'descripcio' => 'Punts copiables'],
-            ['tipo' => 'Tipus clau', 'descripcio' => 'Codificador magnètic'],
+            ['tipo' => 'Tipus clau', 'descripcio' => 'Element Mobil'], //0
+            ['tipo' => 'Tipus clau', 'descripcio' => 'Punts copiables'], 
+            ['tipo' => 'Tipus clau', 'descripcio' => 'Codificador magnètic'], 
             ['tipo' => 'Tipus clau', 'descripcio' => 'Punts incopiables'],
 
             // Nivell de seguretat
-            ['tipo' => 'Nivell de seguretat', 'descripcio' => 'Seguretat'],
+            ['tipo' => 'Nivell de seguretat', 'descripcio' => 'Seguretat'], // 4
             ['tipo' => 'Nivell de seguretat', 'descripcio' => 'Alta seguretat'],
             ['tipo' => 'Nivell de seguretat', 'descripcio' => 'Molt alta seguretat'],
 
             // Color
-            ['tipo' => 'Color', 'descripcio' => 'Plata'],
+            ['tipo' => 'Color', 'descripcio' => 'Plata'], // 7
             ['tipo' => 'Color', 'descripcio' => 'Daurat'],
 
             // Targeta de propietat
-            ['tipo' => 'Targeta de propietat', 'descripcio' => 'Inclou targeta'],
+            ['tipo' => 'Targeta de propietat', 'descripcio' => 'Inclou targeta'], // 9
+
+            // Mesuras
+            ['tipo' => 'Mida interna', 'descripcio' => 'Interna: 30mm'], // 10
+            ['tipo' => 'Mida externa', 'descripcio' => 'Externa: 30mm'],
+            ['tipo' => 'Mida interna', 'descripcio' => 'Interna: 40mm'],
+            ['tipo' => 'Mida externa', 'descripcio' => 'Externa: 40mm'], 
+            ['tipo' => 'Mida interna', 'descripcio' => 'Interna: 32mm'],
+            ['tipo' => 'Mida externa', 'descripcio' => 'Externa: 32mm'],
+
+            // Doble embrage
+            ['tipo' => 'Doble Embrage', 'descripcio' => 'Doble embrague: Si'], // 16
+            ['tipo' => 'Doble Embrage', 'descripcio' => 'Doble embrague: No'],
         ];
 
         $caracteristicas = [];
@@ -137,6 +189,70 @@ class DatabaseSeeder extends Seeder
                 $caracteristicas[2]->id,
                 $caracteristicas[3]->id,
                 $caracteristicas[4]->id,
+            ]);
+
+            $products[2]->caracteristicas()->sync([
+                // Tipus clau
+                $caracteristicas[1]->id,
+                // Nivell Seguretat
+                $caracteristicas[4]->id,
+                // Color
+                $caracteristicas[7]->id,
+                // Tarjeta
+                $caracteristicas[9]->id,
+                // Mesures 
+                $caracteristicas[10]->id,
+                $caracteristicas[11]->id,
+                //Doble Embrage
+                $caracteristicas[17]->id,
+            ]);
+
+                $products[3]->caracteristicas()->sync([
+                // Tipus clau
+                $caracteristicas[1]->id,
+                // Nivell Seguretat
+                $caracteristicas[4]->id,
+                // Color
+                $caracteristicas[8]->id,
+                // Tarjeta
+                $caracteristicas[9]->id,
+                // Mesures 
+                $caracteristicas[10]->id,
+                $caracteristicas[11]->id,
+                //Doble Embrage
+                $caracteristicas[17]->id,
+            ]);
+
+                $products[4]->caracteristicas()->sync([
+                // Tipus clau
+                $caracteristicas[1]->id,
+                // Nivell Seguretat
+                $caracteristicas[4]->id,
+                // Color
+                $caracteristicas[7]->id,
+                // Tarjeta
+                $caracteristicas[9]->id,
+                // Mesures 
+                $caracteristicas[10]->id,
+                $caracteristicas[11]->id,
+                //Doble Embrage
+                $caracteristicas[16]->id,
+            ]);
+
+                $products[5]->caracteristicas()->sync([
+                // Tipus clau
+                $caracteristicas[1]->id,
+                // Nivell Seguretat
+                $caracteristicas[4]->id,
+                // Color
+                $caracteristicas[8]->id,
+                // Tarjeta
+                $caracteristicas[9]->id,
+                // Mesures 
+                $caracteristicas[10]->id,
+                $caracteristicas[11]->id,
+                //Doble Embrage
+                $caracteristicas[16]->id,
             ]);
         }
 

@@ -25,18 +25,18 @@
                 Productes
             </a>
 
-            
-
             <a href="{{ route('solucions.create') }}" class="btn btn--primary">
                 Solucions Personalitzades
             </a>
+
+            <div id="cart-counter"></div>
 
             <a href="{{ route('admin.dashboard') }}" class="btn btn--secondary header__login">
             Iniciar Sessió
             </a>
         </div>
 
-        <div id="cart-counter"></div>
+        
     </header>
     <main class="main">
         @yield('content')

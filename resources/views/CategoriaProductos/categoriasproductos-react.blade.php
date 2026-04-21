@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.FrontEndTemplate')
 
 @section('content')
 <div id="app" data-page="categoria-productos"></div>
