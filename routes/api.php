@@ -85,8 +85,6 @@ Route::patch('/productos/{id}/deactivate', [ProductoController::class, 'deactiva
 
 Route::post('/productos', [ProductoController::class, 'store']);
 
-Route::get('/productos', [ProductoController::class, 'index']);
-
 use App\Http\Controllers\Api\SolucionsController;
 
 Route::get('/solucions', [SolucionsController::class, 'index']);
@@ -103,4 +101,8 @@ Route::post('/packs/{id}/toggle', [PackController::class, 'toggleActive']);
     Route::post('/cart/remove', [CarritoController::class, 'remove']);
     Route::post('/cart/update', [CarritoController::class, 'update']);
 
+
+Route::middleware('auth:web')->get('/user', function (Request $request) {
+    return response()->json($request->user());
+});
 ?>

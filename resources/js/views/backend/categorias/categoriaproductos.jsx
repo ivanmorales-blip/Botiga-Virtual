@@ -24,44 +24,56 @@ export default function CategoriaProductos() {
   }, []);
 
   const loadProductos = async (categoriaId = "", caracteristicasIds = []) => {
+  try {
+    const params = new URLSearchParams();
+
+    if (categoriaId) params.append("categoria", categoriaId);
+    caracteristicasIds.forEach(id =>
+      params.append("caracteristica[]", id)
+    );
+
+    const query = params.toString();
+    const url = query ? `/api/productos?${query}` : `/api/productos`;
+
+    console.log("Fetching:", url);
+
+    const res = await fetch(url);
+    const text = await res.text();
+
+    console.log("RAW RESPONSE:", text);
+
+    let data;
     try {
-      const params = new URLSearchParams();
-
-      if (categoriaId) params.append("categoria", categoriaId);
-      caracteristicasIds.forEach(id =>
-        params.append("caracteristica[]", id)
-      );
-
-      const res = await fetch(`/api/productos?${params.toString()}`);
-      const data = await res.json();
-
-      // ⚠️ IMPORTANT FIX: ensure it's always an array
-      setProductos(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Error loading productos:", err);
+      data = JSON.parse(text);
+    } catch {
+      console.error("❌ Not JSON response");
       setProductos([]);
+      return;
     }
-  };
+
+    setProductos(Array.isArray(data) ? data : []);
+  } catch (err) {
+    console.error("Error loading productos:", err);
+    setProductos([]);
+  }
+};
 
   useEffect(() => {
     loadProductos(selectedCategoria, selectedCaracteristicas);
   }, [selectedCategoria, selectedCaracteristicas]);
 
+  // ✅ IMPORTANT: no frontend filtering
+  const productosFiltrados = productos;
+
   const handleCaracteristicaChange = (id) => {
+    const numericId = Number(id);
+
     setSelectedCaracteristicas(prev =>
-      prev.includes(id)
-        ? prev.filter(c => c !== id)
-        : [...prev, id]
+      prev.includes(numericId)
+        ? prev.filter(c => c !== numericId)
+        : [...prev, numericId]
     );
   };
-
-  const productosFiltrados = selectedCaracteristicas.length
-    ? productos.filter(p =>
-        selectedCaracteristicas.every(sc =>
-          p.caracteristicas?.some(c => c.id == sc)
-        )
-      )
-    : productos;
 
   const openProduct = (prod) => {
     setSelectedProduct(prod);
@@ -107,7 +119,7 @@ export default function CategoriaProductos() {
                   <label key={car.id}>
                     <input
                       type="checkbox"
-                      checked={selectedCaracteristicas.includes(car.id)}
+                      checked={selectedCaracteristicas.includes(Number(car.id))}
                       onChange={() => handleCaracteristicaChange(car.id)}
                     />
                     {car.descripcio}
@@ -188,7 +200,6 @@ export default function CategoriaProductos() {
 
               <div className="popup-price">{selectedProduct.precio} €</div>
 
-              {/* ✅ quantity ONLY here */}
               <input
                 type="number"
                 min="1"

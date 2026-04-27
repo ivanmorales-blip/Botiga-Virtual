@@ -8,6 +8,8 @@ use App\Models\Categoria;
 use App\Models\Producto;
 use App\Models\TipoCaracteristica;
 use App\Models\Caracteristica;
+use App\Models\Usuario;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,6 +27,19 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Test User',
                 'password' => bcrypt('password'),
                 'email_verified_at' => now(),
+            ]
+        );
+
+                Usuario::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'nombre' => 'Admin',
+                'apellidos' => 'System',
+                'telefono' => '000000000',
+                'direccion' => 'Admin HQ',
+                'dni' => 'ADMIN001',
+                'password' => Hash::make('admin123'),
+                'admin' => true,
             ]
         );
 

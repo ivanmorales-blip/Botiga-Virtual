@@ -1,0 +1,26 @@
+.cart-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.6rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.cart-btn:hover {
+  transform: translateY(-1px);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.cart-icon {
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+  display: block;
+}
+
+.cart-count {
+  font-weight: 600;
+  font-size: 0.9rem;
+}

@@ -152,6 +152,33 @@ body.app {
   }
 }
 
+.header__login {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.6rem;
+
+  color: #333;
+  font-weight: 500;
+  text-decoration: none;
+
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+  }
+}
+
+.icon-user {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
 /* MINIMAL breakpoint (only where layout truly needs it) */
 @media (max-width: 480px) {
   .header {

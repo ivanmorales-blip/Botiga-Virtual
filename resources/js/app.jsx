@@ -19,6 +19,7 @@ import Solutionlist from "./views/frontend/Listsolucions";
 import SolutionCreate from "./views/frontend/Createsolucions";
 import CartPage from "./views/frontend/Carrito";
 import CartCounter from "../js/utils/cartcounter.jsx";
+import ProfilePage from "../js/views/frontend/Profile.jsx"
 
 /* CART COUNTER */
 function mountCartCounter() {
@@ -88,6 +89,10 @@ if (rootElement) {
 
     case "cart":
       root.render(<CartPage />);
+      break;
+
+    case "profile":
+      root.render(<ProfilePage />);
       break;
 
     default:

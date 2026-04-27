@@ -1,0 +1,102 @@
+
+/* GLOBAL SAFETY FIX (prevents overflow issues everywhere) */
+* {
+  box-sizing: border-box;
+}
+
+/* Page wrapper */
+.profile-page {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+/* Card */
+.profile-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Title */
+.profile-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-align: center;
+  color: #ea580c;
+  margin-bottom: 1.5rem;
+}
+
+/* Sections */
+.profile-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.profile-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #374151;
+}
+
+/* Inputs */
+.profile-section input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  }
+}
+
+/* Button */
+.profile-btn {
+  width: 100%;
+  background: #ea580c;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.85rem;
+  padding-bottom: 14px;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.logout-btn {
+  margin-top: 0.75rem;
+  background: #ef4444;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+/* Error */
+.error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}

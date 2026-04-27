@@ -8,27 +8,34 @@ use App\Models\Producto;
 
 class ProductoController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = Producto::query();
+public function index(Request $request)
+{
+    $query = Producto::with('caracteristicas');
 
-        // Filtrar por categoría si viene
-        if ($request->filled('categoria')) {
-            $query->where('categoria_id', $request->categoria);
-        }
-
-        // Filtrar por característica si viene
-        if ($request->filled('caracteristica')) {
-            $query->whereHas('caracteristicas', function ($q) use ($request) {
-                $q->where('id', $request->caracteristica);
-            });
-        }
-
-        // Cargar las características junto con el producto
-        $productos = $query->with('caracteristicas')->get();
-
-        return response()->json($productos);
+    // Category filter
+    if ($request->filled('categoria')) {
+        $query->where('categoria_id', $request->categoria);
     }
+
+    // Characteristic filter (FIXED)
+    if ($request->filled('caracteristica')) {
+
+        $caracteristicas = $request->input('caracteristica');
+
+        // always normalize to array
+        if (!is_array($caracteristicas)) {
+            $caracteristicas = [$caracteristicas];
+        }
+
+        $query->whereHas('caracteristicas', function ($q) use ($caracteristicas) {
+            $q->whereIn('caracteristicas.id', $caracteristicas);
+        });
+    }
+
+    $productos = $query->get();
+
+    return response()->json($productos);
+}
 
     // New function to fetch all products with categories & characteristics
     public function indexWithRelations()

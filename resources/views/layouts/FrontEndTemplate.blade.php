@@ -31,9 +31,28 @@
 
             <div id="cart-counter"></div>
 
-            <a href="{{ route('admin.dashboard') }}" class="btn btn--secondary header__login">
-            Iniciar Sessió
-            </a>
+                @auth
+                    @if(Auth::user()->admin)
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn--secondary header__login">
+                            👤 {{ Auth::user()->nombre }}
+                        </a>
+                    @else
+                        <a href="{{ route('profile.edit') }}" class="btn btn--secondary header__login">
+                            👤 {{ Auth::user()->nombre }}
+                        </a>
+                    @endif
+
+                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                        @csrf
+                        <button type="submit" class="btn btn--secondary header__login">
+                            Log out
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn btn--secondary header__login">
+                        Iniciar Sessió
+                    </a>
+                @endauth
         </div>
 
         
