@@ -113,6 +113,24 @@ class DatabaseSeeder extends Seeder
                 'marca' => 'Securemme',
                 'estat' => 1,
             ],
+            [
+                'categoria_id' => $cilindreCategory->id,
+                'nombre' => 'Cilindre 30x40 Niquel Securemme K1',
+                'descripcion' => "Sistema de seguretatamb sistema d'encriptació de 6 pins actius, clau d'obra, totes les claus son de llautó Leva DIN 30 Antibumping i anti manipulació",
+                'precio' => 30.00,
+                'stock' => 2,
+                'marca' => 'Securemme',
+                'estat' => 1,
+            ],
+            [
+                'categoria_id' => $cilindreCategory->id,
+                'nombre' => 'Cilindre 30x40 Llautó Securemme K1',
+                'descripcion' => "Sistema de seguretatamb sistema d'encriptació de 6 pins actius, clau d'obra, totes les claus son de llautó Leva DIN 30 Antibumping i anti manipulació",
+                'precio' => 30.00,
+                'stock' => 2,
+                'marca' => 'Securemme',
+                'estat' => 1,
+            ],
         ];
 
         $products = [];
@@ -268,6 +286,36 @@ class DatabaseSeeder extends Seeder
                 $caracteristicas[11]->id,
                 //Doble Embrage
                 $caracteristicas[16]->id,
+            ]);
+            $products[6]->caracteristicas()->sync([
+                // Tipus clau
+                $caracteristicas[1]->id,
+                // Nivell Seguretat
+                $caracteristicas[4]->id,
+                // Color
+                $caracteristicas[7]->id,
+                // Tarjeta
+                $caracteristicas[9]->id,
+                // Mesures 
+                $caracteristicas[10]->id,
+                $caracteristicas[13]->id,
+                //Doble Embrage
+                $caracteristicas[17]->id,
+            ]);
+            $products[7]->caracteristicas()->sync([
+                // Tipus clau
+                $caracteristicas[1]->id,
+                // Nivell Seguretat
+                $caracteristicas[4]->id,
+                // Color
+                $caracteristicas[8]->id,
+                // Tarjeta
+                $caracteristicas[9]->id,
+                // Mesures 
+                $caracteristicas[10]->id,
+                $caracteristicas[13]->id,
+                //Doble Embrage
+                $caracteristicas[17]->id,
             ]);
         }
 

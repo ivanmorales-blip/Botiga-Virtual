@@ -1,161 +1,384 @@
+@use 'variables.scss' as *;
+@function fluid($min, $vw, $max) {
+  @return clamp($min, $vw, $max);
+}
+
+@mixin flex-center($gap: null, $wrap: null) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @if $gap {
+    gap: $gap;
+  }
+
+  @if $wrap {
+    flex-wrap: $wrap;
+  }
+}
+
+@mixin card {
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+@mixin button($bg, $hover-bg) {
+  background-color: $bg;
+  color: #fff;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  font-weight: bold;
+
+  &:hover {
+    background-color: $hover-bg;
+  }
+}
+
+@mixin input-base {
+  border-radius: $radius-md;
+  border: $border;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 5px rgba(255, 127, 80, 0.5);
+  }
+}
+
 .frontpage-container {
-  padding: clamp(0.75rem, 2vw, 2rem);
+  padding: fluid(0.75rem, 2vw, 2rem);
   font-family: Arial, sans-serif;
   background: #f9f9f9;
 
-  /* SEARCH */
   .search-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: clamp(0.5rem, 2vw, 1rem);
-    margin-bottom: clamp(1rem, 3vw, 2rem);
-    flex-wrap: wrap;
+    @include flex-center(fluid(0.5rem, 2vw, 1rem), wrap);
+    margin-bottom: fluid(1rem, 3vw, 2rem);
   }
 
   .search-bar {
     input {
+      @include input-base;
       width: clamp(220px, 80vw, 500px);
-      padding: clamp(0.5rem, 1.5vw, 0.75rem);
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: clamp(0.9rem, 2.5vw, 1rem);
-
-      &:focus {
-        outline: none;
-        border-color: #ff7f50;
-        box-shadow: 0 0 5px rgba(255, 127, 80, 0.5);
-      }
+      padding: fluid(0.5rem, 1.5vw, 0.75rem);
+      font-size: fluid(0.9rem, 2.5vw, 1rem);
     }
   }
 
-  /* DIVIDER */
   .divider {
-    margin: clamp(1.5rem, 4vw, 2rem) 0 1rem;
+    margin: fluid(1.5rem, 4vw, 2rem) 0 1rem;
     border-bottom: 2px solid #ccc;
 
     h2 {
       margin: 0;
       padding-bottom: 0.5rem;
-      color: #ff7f50;
-      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      color: $primary;
+      font-size: fluid(1.1rem, 3vw, 1.5rem);
     }
   }
 
-  /* GRID */
   .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 45vw, 220px), 1fr));
-    gap: clamp(0.75rem, 2vw, 1.5rem);
-    margin-bottom: clamp(1.5rem, 4vw, 2rem);
+    gap: fluid(0.75rem, 2vw, 1.5rem);
+    margin-bottom: fluid(1.5rem, 4vw, 2rem);
 
     .no-products {
       grid-column: 1 / -1;
       text-align: center;
-      color: #888;
+      color: $text-light;
     }
   }
 
-  /* CARD */
   .product-card {
-    background: #fff;
-    padding: clamp(0.6rem, 1.5vw, 1rem);
-    border-radius: 8px;
+    @include card;
+    padding: fluid(0.6rem, 1.5vw, 1rem);
     text-align: center;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 
     &:hover {
       transform: translateY(-3px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      box-shadow: $shadow-md;
     }
 
     .product-image-placeholder {
-      font-size: clamp(2rem, 5vw, 3rem);
+      font-size: fluid(2rem, 5vw, 3rem);
       margin-bottom: 0.75rem;
     }
 
     .product-name {
       font-weight: bold;
       margin-bottom: 0.4rem;
-      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      font-size: fluid(0.9rem, 2.5vw, 1rem);
     }
 
     .product-price {
-      color: #555;
+      color: $text-muted;
       margin-bottom: 0.6rem;
-      font-size: clamp(0.85rem, 2.3vw, 1rem);
+      font-size: fluid(0.85rem, 2.3vw, 1rem);
     }
 
     .buy-button {
-      background-color: #ff7f50;
-      color: #fff;
-      border: none;
-      padding: clamp(0.45rem, 1.2vw, 0.6rem)
-               clamp(0.8rem, 2vw, 1rem);
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: clamp(0.8rem, 2.2vw, 0.95rem);
-
-      &:hover {
-        background-color: #ff6347;
-      }
+      @include button($primary, $primary-hover);
+      padding: fluid(0.45rem, 1.2vw, 0.6rem)
+               fluid(0.8rem, 2vw, 1rem);
+      font-size: fluid(0.8rem, 2.2vw, 0.95rem);
     }
   }
 
-  /* STOCK */
   .stock {
     font-weight: bold;
     margin-bottom: 0.4rem;
-    font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+    font-size: fluid(0.8rem, 2.2vw, 0.9rem);
 
     &.in-stock { color: #28a745; }
     &.out-of-stock { color: #dc3545; }
   }
 
-  /* POPUP OVERLAY */
   .product-popup-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flex-center;
     z-index: 1000;
     overflow-y: auto;
     padding: 1rem;
   }
 
-  /* POPUP */
   .product-popup {
-    background: #fff;
-    padding: clamp(1rem, 3vw, 2rem);
+    @include card;
+    padding: fluid(1rem, 3vw, 2rem);
     display: flex;
-    gap: clamp(1rem, 3vw, 2rem);
+    gap: fluid(1rem, 3vw, 2rem);
     position: relative;
     width: 100%;
     max-width: clamp(300px, 90vw, 900px);
-    border-radius: 12px;
+    border-radius: $radius-xl;
     flex-wrap: wrap;
   }
 
   .popup-left {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    flex: 1 1 300px;
+    @include flex-center;
 
     .product-image-placeholder-large {
       width: clamp(160px, 40vw, 250px);
       height: clamp(160px, 40vw, 250px);
       background: #eee;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: clamp(2.5rem, 6vw, 5rem);
-      border-radius: 8px;
+      @include flex-center;
+      font-size: fluid(2.5rem, 6vw, 5rem);
+      border-radius: $radius-lg;
+    }
+  }
+
+  .popup-right {
+    flex: 1 1 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .popup-name {
+      font-size: fluid(1.3rem, 4vw, 2rem);
+      font-weight: bold;
+    }
+
+    .popup-price {
+      font-size: fluid(1.1rem, 3vw, 1.5rem);
+      font-weight: 600;
+    }
+
+    input {
+      @include input-base;
+      width: 100%;$primary: #ff7f50;
+$primary-hover: #ff6347;
+$primary-strong: #ff4500;
+
+$text-muted: #555;
+$text-light: #888;
+
+$border: 1px solid #ccc;
+
+$radius-sm: 5px;
+$radius-md: 6px;
+$radius-lg: 8px;
+$radius-xl: 12px;
+
+$shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+@function fluid($min, $vw, $max) {
+  @return clamp($min, $vw, $max);
+}
+
+@mixin flex-center($gap: null, $wrap: null) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @if $gap {
+    gap: $gap;
+  }
+
+  @if $wrap {
+    flex-wrap: $wrap;
+  }
+}
+
+@mixin card {
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+@mixin button($bg, $hover-bg) {
+  background-color: $bg;
+  color: #fff;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  font-weight: bold;
+
+  &:hover {
+    background-color: $hover-bg;
+  }
+}
+
+@mixin input-base {
+  border-radius: $radius-md;
+  border: $border;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 5px rgba(255, 127, 80, 0.5);
+  }
+}
+
+.frontpage-container {
+  padding: fluid(0.75rem, 2vw, 2rem);
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+
+  .search-container {
+    @include flex-center(fluid(0.5rem, 2vw, 1rem), wrap);
+    margin-bottom: fluid(1rem, 3vw, 2rem);
+  }
+
+  .search-bar {
+    input {
+      @include input-base;
+      width: clamp(220px, 80vw, 500px);
+      padding: fluid(0.5rem, 1.5vw, 0.75rem);
+      font-size: fluid(0.9rem, 2.5vw, 1rem);
+    }
+  }
+
+  .divider {
+    margin: fluid(1.5rem, 4vw, 2rem) 0 1rem;
+    border-bottom: 2px solid #ccc;
+
+    h2 {
+      margin: 0;
+      padding-bottom: 0.5rem;
+      color: $primary;
+      font-size: fluid(1.1rem, 3vw, 1.5rem);
+    }
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 45vw, 220px), 1fr));
+    gap: fluid(0.75rem, 2vw, 1.5rem);
+    margin-bottom: fluid(1.5rem, 4vw, 2rem);
+
+    .no-products {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: $text-light;
+    }
+  }
+
+  .product-card {
+    @include card;
+    padding: fluid(0.6rem, 1.5vw, 1rem);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: $shadow-md;
+    }
+
+    .product-image-placeholder {
+      font-size: fluid(2rem, 5vw, 3rem);
+      margin-bottom: 0.75rem;
+    }
+
+    .product-name {
+      font-weight: bold;
+      margin-bottom: 0.4rem;
+      font-size: fluid(0.9rem, 2.5vw, 1rem);
+    }
+
+    .product-price {
+      color: $text-muted;
+      margin-bottom: 0.6rem;
+      font-size: fluid(0.85rem, 2.3vw, 1rem);
+    }
+
+    .buy-button {
+      @include button($primary, $primary-hover);
+      padding: fluid(0.45rem, 1.2vw, 0.6rem)
+               fluid(0.8rem, 2vw, 1rem);
+      font-size: fluid(0.8rem, 2.2vw, 0.95rem);
+    }
+  }
+
+  .stock {
+    font-weight: bold;
+    margin-bottom: 0.4rem;
+    font-size: fluid(0.8rem, 2.2vw, 0.9rem);
+
+    &.in-stock { color: #28a745; }
+    &.out-of-stock { color: #dc3545; }
+  }
+
+  .product-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    @include flex-center;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+
+  .product-popup {
+    @include card;
+    padding: fluid(1rem, 3vw, 2rem);
+    display: flex;
+    gap: fluid(1rem, 3vw, 2rem);
+    position: relative;
+    width: 100%;
+    max-width: clamp(300px, 90vw, 900px);
+    border-radius: $radius-xl;
+    flex-wrap: wrap;
+  }
+
+  .popup-left {
+    flex: 1;
+    @include flex-center;
+
+    .product-image-placeholder-large {
+      width: clamp(160px, 40vw, 250px);
+      height: clamp(160px, 40vw, 250px);
+      background: #eee;
+      @include flex-center;
+      font-size: fluid(2.5rem, 6vw, 5rem);
+      border-radius: $radius-lg;
     }
   }
 
@@ -166,44 +389,36 @@
     gap: 0.5rem;
 
     .popup-name {
-      font-size: clamp(1.3rem, 4vw, 2rem);
+      font-size: fluid(1.3rem, 4vw, 2rem);
       font-weight: bold;
     }
 
     .popup-price {
-      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      font-size: fluid(1.1rem, 3vw, 1.5rem);
       font-weight: 600;
     }
 
     input {
+      @include input-base;
       width: 100%;
       padding: 0.4rem;
-      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      font-size: fluid(0.9rem, 2.5vw, 1rem);
     }
 
     .buy-button {
+      @include button($primary, $primary-strong);
       margin-top: 0.5rem;
       padding: 0.6rem;
-      background: #ff7f50;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-
-      &:hover {
-        background: #ff4500;
-      }
     }
   }
 
   .popup-description {
     flex-basis: 100%;
     background: #f3f3f3;
-    padding: clamp(0.75rem, 2vw, 1rem);
+    padding: fluid(0.75rem, 2vw, 1rem);
     border-radius: 10px;
     margin-top: 1rem;
-    font-size: clamp(0.85rem, 2.3vw, 1rem);
+    font-size: fluid(0.85rem, 2.3vw, 1rem);
   }
 
   .popup-close {
@@ -212,25 +427,24 @@
     right: 0.75rem;
     background: transparent;
     border: none;
-    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    font-size: fluid(1.2rem, 3vw, 1.5rem);
     cursor: pointer;
   }
 
-  /* DROPDOWN */
   .category-dropdown {
     position: relative;
 
     .dropdown-toggle {
       height: 42px;
       padding: 0 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      border-radius: $radius-md;
+      border: $border;
       background: white;
       cursor: pointer;
-      font-size: clamp(0.85rem, 2vw, 0.95rem);
+      font-size: fluid(0.85rem, 2vw, 0.95rem);
 
       &:hover {
-        border-color: #ff7f50;
+        border-color: $primary;
       }
     }
   }
@@ -240,7 +454,7 @@
     top: 100%;
     left: 0;
     background: white;
-    border: 1px solid #ccc;
+    border: $border;
     z-index: 10;
     width: 200px;
   }
@@ -255,11 +469,77 @@
   }
 }
 
-/* ONLY breakpoint needed */
 @media (max-width: 480px) {
   .frontpage-container {
     .product-popup {
       flex-direction: column;
+    }
+  }
+}
+      padding: 0.4rem;
+      font-size: fluid(0.9rem, 2.5vw, 1rem);
+    }
+
+    .buy-button {
+      @include button($primary, $primary-strong);
+      margin-top: 0.5rem;
+      padding: 0.6rem;
+    }
+  }
+
+  .popup-description {
+    flex-basis: 100%;
+    background: #f3f3f3;
+    padding: fluid(0.75rem, 2vw, 1rem);
+    border-radius: 10px;
+    margin-top: 1rem;
+    font-size: fluid(0.85rem, 2.3vw, 1rem);
+  }
+
+  .popup-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    font-size: fluid(1.2rem, 3vw, 1.5rem);
+    cursor: pointer;
+  }
+
+  .category-dropdown {
+    position: relative;
+
+    .dropdown-toggle {
+      height: 42px;
+      padding: 0 12px;
+      border-radius: $radius-md;
+      border: $border;
+      background: white;
+      cursor: pointer;
+      font-size: fluid(0.85rem, 2vw, 0.95rem);
+
+      &:hover {
+        border-color: $primary;
+      }
+    }
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: $border;
+    z-index: 10;
+    width: 200px;
+  }
+
+  .dropdown-item {
+    padding: 8px;
+    cursor: pointer;
+
+    &:hover {
+      background: #f0f0f0;
     }
   }
 }

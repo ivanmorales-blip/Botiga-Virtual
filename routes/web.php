@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
 Route::patch('/profile', [ProfileController::class, 'update'])
     ->middleware('auth')
     ->name('profile.update');
@@ -104,6 +105,19 @@ Route::get('/debug-user', function (Request $request) {
         'check' => auth()->check(),
         'user' => auth()->user(),
     ];
+});
+
+Route::get('/auth/user-bridge', function () {
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json(null, 401);
+    }
+
+    return response()->json([
+        'id' => $user->id,
+        'name' => $user->name ?? $user->email ?? 'User'
+    ]);
 });
 
 require __DIR__.'/auth.php';

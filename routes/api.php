@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\PackController;
 use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\CaracteristicaController;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\Api\PedidoController;
 
 // Health check
 Route::get('/ping', function () {
@@ -93,6 +94,15 @@ Route::post('/solucions', [SolucionsController::class, 'store']);
 Route::delete('/solucions/{id}', [Solucionscontroller::class, 'destroy']);
 
 Route::apiResource('solucions', SolucionsController::class);
+
+use Illuminate\Support\Facades\Auth;
+
+Route::get('/user', function () {
+    return response()->json(Auth::user());
+});
+
+
+Route::post('/pedido', [PedidoController::class, 'store']);
 
 Route::post('/packs/{id}/toggle', [PackController::class, 'toggleActive']);
 

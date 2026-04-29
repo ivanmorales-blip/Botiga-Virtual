@@ -12,17 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pedido', function (Blueprint $table) {
-            $table->id();
-            $table->dateTime('data');
-            $table->integer('total');
-            $table->unsignedBigInteger('usuari_id')->nullable();
-            $table->foreign('usuari_id')->references('id')->on('usuario')->onDelete('cascade');
-            $table->text('estat');
-            $table->text('direccio');
-            $table->integer('telefon')->nullable();
-            $table->text('email')->nullable();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->dateTime('data');
+    $table->integer('total');
+
+    $table->unsignedBigInteger('usuari_id')->nullable();
+    $table->foreign('usuari_id')
+        ->references('id')
+        ->on('usuario')
+        ->onDelete('cascade');
+
+    $table->string('estat')->default('En process');
+    $table->text('direccio');
+    $table->integer('telefon')->nullable();
+    $table->text('email')->nullable();
+
+    $table->timestamps();
+});
     }
 
     /**
