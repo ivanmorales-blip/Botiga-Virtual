@@ -22,4 +22,9 @@ class Pedido extends Model
     {
         return $this->hasMany(DetallePedido::class, 'pedido_id');
     }
+
+    public function usuario()
+{
+    return $this->belongsTo(\App\Models\Usuario::class, 'usuari_id');
+}
 }

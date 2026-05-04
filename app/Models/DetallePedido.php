@@ -20,4 +20,14 @@ class DetallePedido extends Model
     {
         return $this->belongsTo(Pedido::class, 'pedido_id');
     }
+
+    public function producto()
+    {
+    return $this->belongsTo(\App\Models\Producto::class, 'producto_id');
+    }
+
+public function pack()
+    {
+    return $this->belongsTo(\App\Models\Pack::class, 'pack_id');
+    }
 }

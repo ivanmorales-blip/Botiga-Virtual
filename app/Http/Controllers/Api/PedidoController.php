@@ -11,11 +11,50 @@ use Carbon\Carbon;
 
 class PedidoController extends Controller
 {
+
+public function index()
+{
+    $pedidos = Pedido::with([
+        'detalles.producto',
+        'detalles.pack',
+        'usuario'
+    ])->orderBy('created_at', 'desc')->get();
+
+    return response()->json($pedidos);
+}
+
+public function updateStatus(Request $request, $id)
+{
+    $pedido = Pedido::find($id);
+
+    if (!$pedido) {
+        return response()->json(['error' => 'Pedido not found'], 404);
+    }
+
+    $request->validate([
+        'estat' => 'required|string'
+    ]);
+
+    $pedido->estat = $request->estat;
+    $pedido->save();
+
+    return response()->json([
+        'message' => 'Status updated',
+        'pedido' => $pedido
+    ]);
+}
+
 public function store(Request $request)
 {
-    $data = $request->all();
+    $userId = $request->usuari_id;
 
-    $cart = $data['cart'] ?? [];
+    if (!$userId) {
+        return response()->json([
+            'message' => 'Missing user id'
+        ], 422);
+    }
+
+    $cart = $request->cart ?? [];
 
     if (!is_array($cart) || count($cart) === 0) {
         return response()->json(['error' => 'Cart empty'], 400);
@@ -38,16 +77,15 @@ public function store(Request $request)
     $pedido = Pedido::create([
         'data' => now(),
         'total' => $total,
-        'usuari_id' => $data['usuari_id'] ?? null,
+        'usuari_id' => $userId, // ✔ FROM FRONTEND
         'estat' => 'En process',
-        'direccio' => $data['direccio'] ?? 'N/A',
-        'telefon' => $data['telefon'] ?? null,
-        'email' => $data['email'] ?? null,
+        'direccio' => $request->direccio ?? 'N/A',
+        'telefon' => $request->telefon ?? null,
+        'email' => $request->email ?? null,
     ]);
 
     foreach ($cart as $item) {
         $product = \App\Models\Producto::find($item['id']);
-
         if (!$product) continue;
 
         DetallePedido::create([

@@ -1,22 +1,63 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\Api\PedidoController;
 
+/*
+|--------------------------------------------------------------------------
+| ROOT
+|--------------------------------------------------------------------------
+*/
+Route::get('/', fn () => view('Frontend.Frontpage'))->name('home');
 
-
-// Redirect root to admin dashboard
-Route::get('/', fn() => redirect()->route('admin.dashboard'));
-
-// Admin dashboard
+/*
+|--------------------------------------------------------------------------
+| ADMIN
+|--------------------------------------------------------------------------
+*/
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 });
 
-// DB test
+/*
+|--------------------------------------------------------------------------
+| AUTH (CUSTOM LOGIN)
+|--------------------------------------------------------------------------
+*/
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+/*
+|--------------------------------------------------------------------------
+| PROFILE (AUTH REQUIRED)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+
+    Route::get('/profile', function () {
+        return view('Frontend.Profile');
+    })->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
+| DEBUG (KEEP ONLY IF NEEDED)
+|--------------------------------------------------------------------------
+*/
 Route::get('/db-test', function () {
     try {
         \DB::connection()->getPdo();
@@ -26,80 +67,6 @@ Route::get('/db-test', function () {
     }
 });
 
-// --------------------
-// React pages
-// --------------------
-
-// Products
-Route::get('/products-react', fn() => view('producto.products-list'))
-    ->name('products.react.list');
-
-Route::get('/products-react/create', fn() => view('producto.product-create'))
-    ->name('products.react.create');
-
-// Packs
-Route::get('/packs-react', fn() => view('packs.packslista-react'))
-    ->name('packs.react.list');
-
-Route::get('/packs-react/create', fn() => view('packs.packcreate-react'))
-    ->name('packs.react.create');
-
-Route::get('/packs-react/{id}/edit', fn($id) => view('packs.packedit-react', ['id' => $id]))
-    ->name('packs.react.edit');
-
-// Categorias
-Route::get('/categorias-react', fn() => view('categorias.categorias-react'))
-    ->name('categorias.react.list');
-
-Route::get('/categorias/{id}/productos', [CategoriaController::class, 'productos']);
-
-Route::get('/categorias-productos', function () {
-    return view('CategoriaProductos.categoriasproductos-react');
-})->name('categorias.productos');  // <- nombre de la ruta
-
-
-// Caracteristicas
-Route::get('/caracteristicas-react', fn() => view('caracteristicas.caracteristicalist-react'))
-    ->name('caracteristicas.react.list');
-
-Route::view('/solucions/create', 'formularisolucions.create')
-    ->name('solucions.create');
-
-Route::view('/admin/solucions', 'formularisolucions.list')
-    ->name('solucions.admin');
-
-//Carrito
-
-Route::view('/cart-page', 'Frontend.Carrito')->name('cart.page');
-
-Route::post('/cart/add', [CarritoController::class, 'add']);
-Route::get('/api/cart', [CarritoController::class, 'get']);     
-Route::post('/cart/remove', [CarritoController::class, 'remove']);
-Route::post('/cart/update', [CarritoController::class, 'update']);
-    
-Route::get('/', function () {
-    return view('Frontend.Frontpage');
-})->name('home');
-
-use App\Http\Controllers\AuthController;
-
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-
-Route::middleware('auth')->group(function () {
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-
-Route::patch('/profile', [ProfileController::class, 'update'])
-    ->middleware('auth')
-    ->name('profile.update');
-
-Route::get('/profile', function () {
-    return view('Frontend.Profile');
-})->middleware('auth')->name('profile.edit');
-
 Route::get('/debug-user', function (Request $request) {
     return [
         'check' => auth()->check(),
@@ -107,6 +74,11 @@ Route::get('/debug-user', function (Request $request) {
     ];
 });
 
+/*
+|--------------------------------------------------------------------------
+| USER BRIDGE (IMPORTANT FOR YOUR FRONTEND)
+|--------------------------------------------------------------------------
+*/
 Route::get('/auth/user-bridge', function () {
     $user = auth()->user();
 
@@ -116,8 +88,62 @@ Route::get('/auth/user-bridge', function () {
 
     return response()->json([
         'id' => $user->id,
-        'name' => $user->name ?? $user->email ?? 'User'
+        'name' => $user->nombre ?? $user->email ?? 'User'
     ]);
 });
 
+/*
+|--------------------------------------------------------------------------
+| REACT PAGES
+|--------------------------------------------------------------------------
+*/
+
+// Products
+Route::get('/products-react', fn () => view('producto.products-list'))->name('products.react.list');
+Route::get('/products-react/create', fn () => view('producto.product-create'))->name('products.react.create');
+
+// Packs
+Route::get('/packs-react', fn () => view('packs.packslista-react'))->name('packs.react.list');
+Route::get('/packs-react/create', fn () => view('packs.packcreate-react'))->name('packs.react.create');
+Route::get('/packs-react/{id}/edit', fn ($id) => view('packs.packedit-react', ['id' => $id]))->name('packs.react.edit');
+
+// Categories
+Route::get('/categorias-react', fn () => view('categorias.categorias-react'))->name('categorias.react.list');
+Route::get('/categorias/{id}/productos', [CategoriaController::class, 'productos']);
+
+Route::get('/categorias-productos', function () {
+    return view('CategoriaProductos.categoriasproductos-react');
+})->name('categorias.productos');
+
+// Features
+Route::get('/caracteristicas-react', fn () => view('caracteristicas.caracteristicalist-react'))
+    ->name('caracteristicas.react.list');
+
+// Solutions
+Route::view('/solucions/create', 'formularisolucions.create')->name('solucions.create');
+Route::view('/admin/solucions', 'formularisolucions.list')->name('solucions.admin');
+
+/*
+|--------------------------------------------------------------------------
+| CART (SESSION BASED - NO AUTH REQUIRED)
+|--------------------------------------------------------------------------
+*/
+Route::view('/cart-page', 'Frontend.Carrito')->name('cart.page');
+
+Route::get('/api/cart', [CarritoController::class, 'get']);
+Route::post('/cart/remove', [CarritoController::class, 'remove']);
+Route::post('/cart/update', [CarritoController::class, 'update']);
+
+
+Route::view('/admin/pedidos', 'app'); 
+
+Route::get('/admin/pedidos', function () {
+    return view('pedidos.pedidos');
+})->name('pedidos.index');
+
+/*
+|--------------------------------------------------------------------------
+| LARAVEL DEFAULT AUTH FILES
+|--------------------------------------------------------------------------
+*/
 require __DIR__.'/auth.php';

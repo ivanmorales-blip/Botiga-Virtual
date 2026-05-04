@@ -19,7 +19,8 @@ import Solutionlist from "./views/frontend/Listsolucions";
 import SolutionCreate from "./views/frontend/Createsolucions";
 import CartPage from "./views/frontend/Carrito";
 import CartCounter from "../js/utils/cartcounter.jsx";
-import ProfilePage from "../js/views/frontend/Profile.jsx"
+import ProfilePage from "../js/views/frontend/Profile.jsx";
+import PedidoManager from "../js/views/backend/Pedido/GestionPedidos.jsx";
 
 /* CART COUNTER */
 function mountCartCounter() {
@@ -93,6 +94,10 @@ if (rootElement) {
 
     case "profile":
       root.render(<ProfilePage />);
+      break;
+
+    case "pedidos-gestion":
+      root.render(<PedidoManager/>)
       break;
 
     default:

@@ -96,6 +96,10 @@
                     <span class="sidebar__text">Packs</span>
                 </a>
 
+                <a href="{{ route('pedidos.index') }}" class="sidebar__link">
+                Gestionar Pedidos
+                </a>
+
                 <a href="{{ route('solucions.admin') }}" class="sidebar__link">
                     <span class="sidebar__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">

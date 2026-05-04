@@ -5,158 +5,144 @@ import "../../../../scss/Carrito.scss";
 export default function CartPage() {
   const [cart, setCart] = useState([]);
   const [products, setProducts] = useState([]);
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // 👤 USER (SESSION STORAGE)
+  // 👤 GET USER (Laravel session)
   useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem("user");
-      setUser(stored ? JSON.parse(stored) : null);
-    } catch (err) {
-      console.error("User parse error:", err);
-      setUser(null);
-    }
-  }, []);
-
-  // 📦 LOAD PRODUCTS
-  useEffect(() => {
-    const loadProducts = async () => {
+    const loadUser = async () => {
       try {
-        const res = await fetch("/api/productos", {
+        const res = await fetch("/auth/user-bridge", {
           credentials: "include",
-          headers: {
-            Accept: "application/json"
-          }
+          headers: { Accept: "application/json" },
         });
 
-        const text = await res.text();
-
-        const data = JSON.parse(text);
-
-        setProducts(Array.isArray(data) ? data : []);
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        } else {
+          setUser(null);
+        }
       } catch (err) {
-        console.error("❌ Products load error:", err);
-        setProducts([]);
+        console.warn("User not logged in");
+        setUser(null);
       }
     };
 
-    loadProducts();
+    loadUser();
   }, []);
 
-  // 🛒 LOAD CART (WHEN PRODUCTS READY)
+  // 📦 PRODUCTS
   useEffect(() => {
-    const loadCart = async () => {
-      if (!products.length) return;
+    fetch("/api/productos", {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    })
+      .then(res => res.json())
+      .then(data => setProducts(Array.isArray(data) ? data : []))
+      .catch(() => setProducts([]));
+  }, []);
 
-      try {
-        const cartData = await getCart();
-
-        console.log("🛒 RAW CART DATA:", cartData);
-
-        const enriched = cartData.map(item => {
-          const product = products.find(p => p.id === item.id);
-
-          return {
-            id: item.id,
-            quantity: item.quantity,
-            isPack: item.isPack,
-            nombre: product?.nombre || "Producto",
-            precio: product?.precio || 0,
-            imagen: product?.imagen || null
-          };
-        });
-
-        setCart(enriched);
-      } catch (err) {
-        console.error("Cart load error:", err);
-      }
-    };
-
-    loadCart();
-  }, [products]);
-
-  const handleRemove = async (id) => {
+  // 🛒 LOAD CART
+  const loadCart = async () => {
     try {
-      await removeFromCart(id);
-      const updated = await getCart();
-      setCart(updated);
-    } catch (err) {
-      console.error("Remove error:", err);
-    }
-  };
+      const cartData = await getCart();
 
-  // 🔄 UPDATE ITEM
-  const handleUpdate = async (id, quantity) => {
-    try {
-      await updateCart(id, Math.max(1, quantity || 1));
-      const updated = await getCart();
-      setCart(updated);
-    } catch (err) {
-      console.error("Update error:", err);
-    }
-  };
+      const enriched = cartData.map(item => {
+        const product = products.find(p => p.id === item.id);
 
-  const handleCheckout = async () => {
-    console.log();
-
-    try {
-      if (!user) {
-        alert("Debes iniciar sesión");
-        return;
-      }
-
-      const cleanCart = cart.map(({ id, quantity, isPack }) => ({
-        id,
-        quantity,
-        isPack
-      }));
-
-
-      const res = await fetch("/api/pedido", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          cart: cleanCart,
-          usuari_id: user.id,
-          direccio: "Dirección del usuario",
-          telefon: "123456789",
-          email: "test@email.com"
-        })
+        return {
+          id: item.id,
+          quantity: item.quantity ?? 1,
+          isPack: item.isPack ?? false,
+          nombre: product?.nombre || "Producto",
+          precio: product?.precio || 0,
+          imagen: product?.imagen || null,
+        };
       });
 
-      let data;
-      try {
-        data = JSON.parse(rawText);
-      } catch (e) {
-        console.error("❌ JSON parse error:", e);
-        throw new Error("Invalid JSON from backend");
-      }
-
-      console.log("📦 PARSED BACKEND RESPONSE:", data);
-
-      if (!res.ok) {
-        throw new Error(data?.error || data?.message || "Error al crear pedido");
-      }
-
-      alert("Pedido creado correctamente");
-
-      sessionStorage.removeItem("cart");
-      setCart([]);
-
+      setCart(enriched);
     } catch (err) {
-      console.error("❌ Checkout error:", err);
-      alert(err.message);
+      console.error("Cart error:", err);
+      setCart([]);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (products.length) loadCart();
+  }, [products]);
+
+  // 🗑 REMOVE
+  const handleRemove = async (id) => {
+    await removeFromCart(id);
+    setCart(prev => prev.filter(i => i.id !== id));
+  };
+
+  // 🔄 UPDATE
+  const handleUpdate = async (id, qty) => {
+    const safe = Math.max(1, parseInt(qty) || 1);
+
+    await updateCart(id, safe);
+
+    setCart(prev =>
+      prev.map(i => (i.id === id ? { ...i, quantity: safe } : i))
+    );
+  };
+
+  // 💰 TOTAL
   const total = cart.reduce(
     (sum, item) => sum + item.quantity * item.precio,
     0
   );
+
+  // 🧾 CHECKOUT (FIXED + SAFE USER)
+  const handleCheckout = async () => {
+    try {
+      if (!user?.id) {
+        alert("Debes iniciar sesión");
+        return;
+      }
+
+      const res = await fetch("/api/pedido", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          usuari_id: user.id,
+          cart: cart.map(({ id, quantity, isPack }) => ({
+            id,
+            quantity,
+            isPack,
+          })),
+          direccio: "Dirección del usuario",
+          telefon: "123456789",
+          email: "test@email.com",
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Error al crear pedido");
+      }
+
+      alert("Pedido creado correctamente");
+      setCart([]);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
+
+  // ⏳ LOADING STATE (UI preserved)
+  if (loading) {
+    return <div className="cart-page">Cargando carrito...</div>;
+  }
 
   return (
     <div className="cart-page">
@@ -186,14 +172,13 @@ export default function CartPage() {
                   min="1"
                   value={item.quantity}
                   onChange={(e) =>
-                    handleUpdate(item.id, parseInt(e.target.value))
+                    handleUpdate(item.id, e.target.value)
                   }
                 />
 
                 <button onClick={() => handleRemove(item.id)}>
                   Eliminar
                 </button>
-
               </div>
             ))}
           </div>
