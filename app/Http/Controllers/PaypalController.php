@@ -49,14 +49,27 @@ public function createPayment($pedidoId)
     return redirect("/profile")
         ->with("error", "No se pudo obtener el enlace de pago");
 }
-    public function success(Request $request)
-    {
-        $pedido = Pedido::findOrFail($request->pedido_id);
+
+    
+public function success(Request $request)
+{
+    $pedido = Pedido::findOrFail($request->pedido_id);
+
+    $provider = new PayPalClient;
+    $provider->setApiCredentials(config('paypal'));
+    $provider->getAccessToken();
+
+    $response = $provider->capturePaymentOrder($request->token);
+
+    if (($response['status'] ?? null) === 'COMPLETED') {
         $pedido->estat = "Pagado";
         $pedido->save();
 
         return redirect("/profile")->with("success", "Pago completado");
     }
+
+    return redirect("/profile")->with("error", "Pago no completado");
+}
 
     public function cancel()
     {
