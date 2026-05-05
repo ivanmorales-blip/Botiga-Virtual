@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\Api\PedidoController;
+use App\Http\Controllers\PaypalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -140,6 +141,19 @@ Route::view('/admin/pedidos', 'app');
 Route::get('/admin/pedidos', function () {
     return view('pedidos.pedidos');
 })->name('pedidos.index');
+
+Route::get('/my-pedidos', [PedidoController::class, 'userPedidos'])
+    ->middleware('auth');
+
+    Route::get('/pedido/{id}/pdf', [PedidoController::class, 'downloadPdf'])
+    ->middleware('auth');
+
+
+Route::get('/paypal/pay/{pedido}', [PayPalController::class, 'createPayment']);
+Route::get('/paypal/success', [PayPalController::class, 'success']);
+Route::get('/paypal/cancel', [PayPalController::class, 'cancel']);
+Route::get('/paypal/pay/{pedido}', [PaypalController::class, 'createPayment'])
+    ->name('paypal.pay');
 
 /*
 |--------------------------------------------------------------------------

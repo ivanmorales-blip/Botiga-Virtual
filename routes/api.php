@@ -57,3 +57,6 @@ Route::post('/pedido', [PedidoController::class, 'store']);
 Route::post('/pedido', [PedidoController::class, 'store']);
 Route::get('/pedidos', [PedidoController::class, 'index']);
 Route::put('/pedido/{id}/status', [PedidoController::class, 'updateStatus']);
+
+Route::get('/my-pedidos', [PedidoController::class, 'userPedidos']);
+

@@ -96,6 +96,21 @@
   }
 }
 
+.paypal-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: #0070ba;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  text-decoration: none;
+
+  &:hover {
+    background: #005c99;
+  }
+}
+
 /* TOTAL SECTION */
 .cart-total {
   margin-top: 2rem;

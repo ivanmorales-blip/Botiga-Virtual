@@ -8,6 +8,7 @@ use App\Models\Pedido;
 use App\Models\DetallePedido;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PedidoController extends Controller
 {
@@ -19,6 +20,25 @@ public function index()
         'detalles.pack',
         'usuario'
     ])->orderBy('created_at', 'desc')->get();
+
+    return response()->json($pedidos);
+}
+
+public function userPedidos(Request $request)
+{
+    $userId = auth()->id();
+
+    if (!$userId) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    $pedidos = Pedido::with([
+        'detalles.producto',
+        'detalles.pack'
+    ])
+    ->where('usuari_id', $userId)
+    ->orderBy('created_at', 'desc')
+    ->get();
 
     return response()->json($pedidos);
 }
@@ -102,4 +122,18 @@ public function store(Request $request)
         'pedido_id' => $pedido->id
     ]);
 }
+
+public function downloadPdf($id)
+{
+    $pedido = Pedido::with([
+        'detalles.producto',
+        'detalles.pack'
+    ])->findOrFail($id);
+
+    $pdf = PDF::loadView('pedidos.pdf', [
+        'pedido' => $pedido
+    ]);
+
+    return $pdf->download("pedido-{$pedido->id}.pdf");
+}   
 }

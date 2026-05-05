@@ -99,45 +99,46 @@ export default function CartPage() {
 
   // 🧾 CHECKOUT (FIXED + SAFE USER)
   const handleCheckout = async () => {
-    try {
-      if (!user?.id) {
-        alert("Debes iniciar sesión");
-        return;
-      }
-
-      const res = await fetch("/api/pedido", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          usuari_id: user.id,
-          cart: cart.map(({ id, quantity, isPack }) => ({
-            id,
-            quantity,
-            isPack,
-          })),
-          direccio: "Dirección del usuario",
-          telefon: "123456789",
-          email: "test@email.com",
-        }),
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        throw new Error(data?.message || "Error al crear pedido");
-      }
-
-      alert("Pedido creado correctamente");
-      setCart([]);
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
+  try {
+    if (!user?.id) {
+      alert("Debes iniciar sesión");
+      return;
     }
-  };
+
+    const res = await fetch("/api/pedido", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        usuari_id: user.id,
+        cart: cart.map(({ id, quantity, isPack }) => ({
+          id,
+          quantity,
+          isPack,
+        })),
+        direccio: "Dirección del usuario",
+        telefon: "123456789",
+        email: "test@email.com",
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.message || "Error al crear pedido");
+    }
+
+    // ✅ REDIRECT TO PAYPAL WITH NEW PEDIDO
+    window.location.href = `/paypal/pay/${data.pedido_id}`;
+
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
 
   // ⏳ LOADING STATE (UI preserved)
   if (loading) {
