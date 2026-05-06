@@ -34,7 +34,7 @@ export default function CartPage() {
 
   // 📦 PRODUCTS
   useEffect(() => {
-    fetch("/api/productos", {
+    fetch("/api/frontend/productos", {
       credentials: "include",
       headers: { Accept: "application/json" },
     })
@@ -50,6 +50,9 @@ export default function CartPage() {
 
       const enriched = cartData.map(item => {
         const product = products.find(p => p.id === item.id);
+        const imagen = product?.imatges && product.imatges.length > 0
+          ? `/storage/${product.imatges[0].path}`
+          : null;
 
         return {
           id: item.id,
@@ -57,7 +60,7 @@ export default function CartPage() {
           isPack: item.isPack ?? false,
           nombre: product?.nombre || "Producto",
           precio: product?.precio || 0,
-          imagen: product?.imagen || null,
+          imagen,
         };
       });
 

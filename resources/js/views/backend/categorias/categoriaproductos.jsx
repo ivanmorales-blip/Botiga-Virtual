@@ -44,7 +44,7 @@ export default function CategoriaProductos() {
     try {
       data = JSON.parse(text);
     } catch {
-      console.error("❌ Not JSON response");
+      console.error(" Not JSON response");
       setProductos([]);
       return;
     }
@@ -139,8 +139,8 @@ export default function CategoriaProductos() {
                   onClick={() => openProduct(prod)}
                 >
                   <div className="product-image-placeholder">
-                    {prod.imagen ? (
-                      <img src={prod.imagen} alt={prod.nombre} />
+                    {prod.imatges && prod.imatges.length > 0 ? (
+                      <img src={`/storage/${prod.imatges[0].path}`} alt={prod.nombre} />
                     ) : (
                       "📦"
                     )}
@@ -181,8 +181,8 @@ export default function CategoriaProductos() {
 
             <div className="popup-left">
               <div className="product-image-placeholder-large">
-                {selectedProduct.imagen ? (
-                  <img src={selectedProduct.imagen} alt={selectedProduct.nombre} />
+                {selectedProduct.imatges && selectedProduct.imatges.length > 0 ? (
+                  <img src={`/storage/${selectedProduct.imatges[0].path}`} alt={selectedProduct.nombre} />
                 ) : (
                   "📦"
                 )}

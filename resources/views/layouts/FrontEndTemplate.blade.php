@@ -34,11 +34,11 @@
                 @auth
                     @if(Auth::user()->admin)
                         <a href="{{ route('admin.dashboard') }}" class="btn btn--secondary header__login">
-                            👤 {{ Auth::user()->nombre }}
+                            {{ Auth::user()->nombre }}
                         </a>
                     @else
                         <a href="{{ route('profile.edit') }}" class="btn btn--secondary header__login">
-                            👤 {{ Auth::user()->nombre }}
+                             {{ Auth::user()->nombre }}
                         </a>
                     @endif
 

@@ -13,9 +13,10 @@ export default function FrontPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [qty, setQty] = useState(1);
+  const [popupImageIndex, setPopupImageIndex] = useState(0);
 
   useEffect(() => {
-    fetch("/api/productos")
+    fetch("/api/frontend/productos")
       .then(res => res.json())
       .then(data => setProducts(data.filter(p => p.estat === 1)));
 
@@ -35,40 +36,51 @@ export default function FrontPage() {
 
   const openProduct = (product) => {
     setSelectedProduct(product);
+    setPopupImageIndex(0);
     setQty(1);
   };
 
   const closeProduct = () => setSelectedProduct(null);
 
-  const ProductCard = ({ p }) => (
-    <div className="product-card" onClick={() => openProduct(p)}>
-      <div className="product-image-placeholder">📦</div>
-      <div className="product-name">{p.nombre}</div>
-      <div className="product-price">{p.precio} €</div>
+  const ProductCard = ({ p }) => {
+    const imagen = p.imatges && p.imatges.length > 0
+      ? `/storage/${p.imatges[0].path}`
+      : null;
 
-      {p.stock >= 1 ? (
-        <div className="stock in-stock">En stock</div>
-      ) : (
-        <div className="stock out-of-stock">Agotado</div>
-      )}
+    return (
+      <div className="product-card" onClick={() => openProduct(p)}>
+        <div className="product-image-placeholder">
+          {imagen
+            ? <img src={imagen} alt={p.nombre} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            : "📦"
+          }
+        </div>
+        <div className="product-name">{p.nombre}</div>
+        <div className="product-price">{p.precio} €</div>
 
-      <button
-        className="buy-button"
-        onClick={async (e) => {
-          e.stopPropagation();
-          await addToCart(p.id, 1, false);
-          alert("Producto añadido");
-        }}
-      >
-        Comprar
-      </button>
-    </div>
-  );
+        {p.stock >= 1 ? (
+          <div className="stock in-stock">En stock</div>
+        ) : (
+          <div className="stock out-of-stock">Agotado</div>
+        )}
+
+        <button
+          className="buy-button"
+          onClick={async (e) => {
+            e.stopPropagation();
+            await addToCart(p.id, 1, false);
+            alert("Producto añadido");
+          }}
+        >
+          Comprar
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="frontpage-container">
 
-      {/* SEARCH + FILTER UI (unchanged) */}
       <div className="search-container">
         <div className="search-bar">
           <input
@@ -80,20 +92,17 @@ export default function FrontPage() {
         </div>
       </div>
 
-      {/* RECENTS */}
       <div className="divider"><h2>Productes Recents</h2></div>
       <div className="products-grid">
         {recentProducts.map(p => <ProductCard key={p.id} p={p} />)}
       </div>
 
-      {/* DESTACATS */}
       <div className="divider"><h2>Productes Destacats</h2></div>
       <div className="products-grid">
         {products.filter(p => p.destacat === 1)
           .map(p => <ProductCard key={p.id} p={p} />)}
       </div>
 
-      {/* CATEGORIES */}
       {categories.map(cat => (
         <div key={cat.id}>
           <div className="divider"><h2>{cat.tipo}</h2></div>
@@ -105,20 +114,49 @@ export default function FrontPage() {
         </div>
       ))}
 
-      {/* POPUP */}
       {selectedProduct && (
         <div className="product-popup-overlay" onClick={closeProduct}>
           <div className="product-popup" onClick={(e) => e.stopPropagation()}>
 
             <div className="popup-left">
-              <div className="product-image-placeholder-large">📦</div>
+              {selectedProduct.imatges && selectedProduct.imatges.length > 0 ? (
+                <div style={{ position: "relative", background: "#f9fafb", borderRadius: "12px", overflow: "hidden" }}>
+                  <img
+                    src={`/storage/${selectedProduct.imatges[popupImageIndex].path}`}
+                    alt={selectedProduct.nombre}
+                    style={{ width: "100%", height: "220px", objectFit: "contain", padding: "16px" }}
+                  />
+                  {selectedProduct.imatges.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setPopupImageIndex(i => (i - 1 + selectedProduct.imatges.length) % selectedProduct.imatges.length)}
+                        style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.9)", border: "none", borderRadius: "50%", width: "32px", height: "32px", cursor: "pointer", fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}
+                      >‹</button>
+                      <button
+                        onClick={() => setPopupImageIndex(i => (i + 1) % selectedProduct.imatges.length)}
+                        style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.9)", border: "none", borderRadius: "50%", width: "32px", height: "32px", cursor: "pointer", fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}
+                      >›</button>
+                      <div style={{ display: "flex", justifyContent: "center", gap: "6px", padding: "8px 0" }}>
+                        {selectedProduct.imatges.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setPopupImageIndex(i)}
+                            style={{ width: i === popupImageIndex ? "20px" : "8px", height: "8px", borderRadius: "999px", border: "none", cursor: "pointer", background: i === popupImageIndex ? "#f97316" : "#d1d5db", transition: "all 0.3s" }}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="product-image-placeholder-large">📦</div>
+              )}
             </div>
 
             <div className="popup-right">
               <h2>{selectedProduct.nombre}</h2>
               <div>{selectedProduct.precio} €</div>
 
-              {/* ✅ quantity ONLY here */}
               <input
                 type="number"
                 min="1"
