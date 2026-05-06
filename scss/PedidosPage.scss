@@ -46,6 +46,7 @@
     padding: 0.5rem 1rem;
     border-radius: 10px;
     border: 1px solid #ccc;
+    background: white;
   }
 }
 
@@ -71,16 +72,26 @@
 
   select {
     border-radius: 8px;
-    padding: 0.4rem;
-  }
-}
+    border: 1px solid #ccc;
 
-/* STATUS COLORS */
-.status {
-  &.En\ process { background: #fff3cd; }
-  &.Enviat { background: #cfe2ff; }
-  &.Completat { background: #d1e7dd; }
-  &.Cancelat { background: #f8d7da; }
+    padding: 0.45rem 2rem 0.45rem 0.6rem; /* extra right space for arrow */
+    line-height: 1.2;
+    font-size: 0.9rem;
+
+    background-color: #fff;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    cursor: pointer;
+
+    /* custom arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='gray' viewBox='0 0 20 20'%3E%3Cpath d='M5.25 7.5L10 12.25 14.75 7.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 1rem;
+  }
 }
 
 /* CLIENT */

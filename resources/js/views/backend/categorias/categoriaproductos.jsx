@@ -35,12 +35,10 @@ export default function CategoriaProductos() {
     const query = params.toString();
     const url = query ? `/api/productos?${query}` : `/api/productos`;
 
-    console.log("Fetching:", url);
 
     const res = await fetch(url);
     const text = await res.text();
 
-    console.log("RAW RESPONSE:", text);
 
     let data;
     try {

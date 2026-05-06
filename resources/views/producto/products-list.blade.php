@@ -3,5 +3,5 @@
 @section('content')
 <div id="app" data-page="products-list"></div> {{-- mount point for React --}}
 @viteReactRefresh
-@vite(['resources/js/app.jsx', 'resources/css/app.scss'])
+    @vite(['resources/css/app.scss', 'resources/js/app.jsx'])
 @endsection

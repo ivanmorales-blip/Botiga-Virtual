@@ -66,17 +66,14 @@ public function updateStatus(Request $request, $id)
 
 public function store(Request $request)
 {
-    $userId = $request->usuari_id;
-
-    if (!$userId) {
-        return response()->json([
-            'message' => 'Missing user id'
-        ], 422);
+    if (!auth()->check()) {
+        return response()->json(['error' => 'Unauthorized'], 401);
     }
 
+    $userId = auth()->id();
     $cart = $request->cart ?? [];
 
-    if (!is_array($cart) || count($cart) === 0) {
+    if (!is_array($cart) || empty($cart)) {
         return response()->json(['error' => 'Cart empty'], 400);
     }
 
@@ -85,11 +82,7 @@ public function store(Request $request)
     foreach ($cart as $item) {
         $product = \App\Models\Producto::find($item['id']);
 
-        if (!$product) {
-            return response()->json([
-                'error' => 'Product not found: ' . $item['id']
-            ], 400);
-        }
+        if (!$product) continue;
 
         $total += $product->precio * $item['quantity'];
     }
@@ -97,7 +90,7 @@ public function store(Request $request)
     $pedido = Pedido::create([
         'data' => now(),
         'total' => $total,
-        'usuari_id' => $userId, // ✔ FROM FRONTEND
+        'usuari_id' => $userId,
         'estat' => 'En process',
         'direccio' => $request->direccio ?? 'N/A',
         'telefon' => $request->telefon ?? null,
