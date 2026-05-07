@@ -24,11 +24,13 @@ class PedidoController extends Controller
 
     public function userPedidos(Request $request)
     {
-        $userId = session('user_id');
+        $userId = session()->get('user_id');
 
-        if (!$userId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+if (!$userId) {
+    return response()->json([
+        'message' => 'Unauthorized (no session user_id)'
+    ], 401);
+}
 
         $pedidos = Pedido::with([
             'detalles.producto',
@@ -63,57 +65,88 @@ class PedidoController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $userId = session('user_id');
+{
 
-        if (!$userId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+    \Log::info('SESSION DEBUG', [
+    'session' => session()->all(),
+    'user_id' => session('user_id'),
+]);
 
-        $cart = $request->cart ?? [];
+    $userId = session('user_id');
 
-        if (!is_array($cart) || empty($cart)) {
-            return response()->json(['error' => 'Cart empty'], 400);
-        }
+    if (!$userId) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
 
-        $total = 0;
+    $cart = $request->cart ?? [];
 
-        foreach ($cart as $item) {
+    if (!is_array($cart) || empty($cart)) {
+        return response()->json(['error' => 'Cart empty'], 400);
+    }
+
+    $total = 0;
+
+    // 🧠 FIRST PASS: calculate total correctly
+    foreach ($cart as $item) {
+
+        if ($item['isPack']) {
+            $pack = \App\Models\Pack::find($item['id']);
+            if (!$pack) continue;
+
+            $total += $pack->preu * $item['quantity'];
+        } else {
             $product = \App\Models\Producto::find($item['id']);
-
             if (!$product) continue;
 
             $total += $product->precio * $item['quantity'];
         }
+    }
 
-        $pedido = Pedido::create([
-            'data' => now(),
-            'total' => $total,
-            'usuari_id' => $userId,
-            'estat' => 'En process',
-            'direccio' => $request->direccio ?? 'N/A',
-            'telefon' => $request->telefon ?? null,
-            'email' => $request->email ?? null,
-        ]);
+    // 🧾 CREATE ORDER
+    $pedido = Pedido::create([
+        'data' => now(),
+        'total' => $total,
+        'usuari_id' => $userId,
+        'estat' => 'En process',
+        'direccio' => $request->direccio ?? 'N/A',
+        'telefon' => $request->telefon ?? null,
+        'email' => $request->email ?? null,
+    ]);
 
-        foreach ($cart as $item) {
+    // 📦 SECOND PASS: store items correctly
+    foreach ($cart as $item) {
+
+        if ($item['isPack']) {
+            $pack = \App\Models\Pack::find($item['id']);
+            if (!$pack) continue;
+
+            DetallePedido::create([
+                'pedido_id' => $pedido->id,
+                'producto_id' => null,
+                'pack_id' => $pack->id,
+                'quantitat' => $item['quantity'],
+                'preuindividual' => $pack->preu,
+            ]);
+
+        } else {
             $product = \App\Models\Producto::find($item['id']);
             if (!$product) continue;
 
             DetallePedido::create([
                 'pedido_id' => $pedido->id,
-                'producto_id' => $item['isPack'] ? null : $item['id'],
-                'pack_id' => $item['isPack'] ? $item['id'] : null,
+                'producto_id' => $product->id,
+                'pack_id' => null,
                 'quantitat' => $item['quantity'],
                 'preuindividual' => $product->precio,
             ]);
         }
-
-        return response()->json([
-            'message' => 'Pedido creado',
-            'pedido_id' => $pedido->id
-        ]);
     }
+
+    return response()->json([
+        'message' => 'Pedido creado',
+        'pedido_id' => $pedido->id
+    ]);
+}
 
     public function downloadPdf($id)
     {

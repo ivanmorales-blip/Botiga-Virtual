@@ -38,68 +38,6 @@ export const addToCart = (productId, quantity = 1, isPack = false) => {
     return null;
   }
 };
-// export const addToCart = async (productId, quantity = 1, isPack = false) => {
-//   try {
-//     console.log(productId);
-//     console.log(quantity);
-    
-//     const res = await fetch("/api/cart/add", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Accept": "application/json"
-//       },
-//       credentials: "include",
-//       body: JSON.stringify({
-//         id: productId,
-//         quantity,
-//         isPack
-//       })
-//     });
-    
-
-//     if (!res.ok) {
-//       const error = await res.text();
-//       throw new Error(error);
-//     }
-
-//     return await res.json();
-
-//   } catch (err) {
-//     console.error("Error adding to cart:", err);
-//     return null;
-//   }
-// };
-
-/**
- * GET CART CONTENT
- */
-// export const getCart = async () => {
-//   try {
-//     const res = await fetch("/api/cart", {
-//       method: "GET",
-//       headers: {
-//         "Accept": "application/json"
-//       },
-//       credentials: "include"
-//     });
-
-//     if (!res.ok) {
-//       const errorText = await res.text();
-//       throw new Error(`Get cart failed: ${errorText}`);
-//     }
-
-//     const data = await res.json();
-
-//     return Array.isArray(data)
-//       ? data
-//       : (data.cart ?? []);
-
-//   } catch (err) {
-//     console.error("getCart error:", err);
-//     return [];
-//   }
-// };
 
 /**
  * GET CART CONTENT (sessionStorage)

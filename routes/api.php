@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\SolucionsController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\TipoCaracteristicasController;
+use App\Http\Controllers\CatalogController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -32,23 +34,19 @@ Route::get('/frontend/categorias', [CategoriaController::class, 'indexWithProduc
 
 Route::middleware(['auth'])->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | CART
-    |--------------------------------------------------------------------------
-    */
+});
+
     Route::get('/cart', [CarritoController::class, 'get']);
     Route::post('/cart/add', [CarritoController::class, 'add']);
     Route::post('/cart/remove', [CarritoController::class, 'remove']);
     Route::post('/cart/update', [CarritoController::class, 'update']);
+    Route::post('/cart/clear', [CarritoController::class, 'clear']);
 
     /*
     |--------------------------------------------------------------------------
     | PEDIDOS (USER)
     |--------------------------------------------------------------------------
     */
-
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -86,3 +84,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/tipos-caracteristicas', [TipoCaracteristicasController::class, 'index']);
     Route::post('/tipos-caracteristicas', [TipoCaracteristicasController::class, 'store']);
+
+Route::get('/catalog-item', [CatalogController::class, 'getItem']);
+Route::post('/catalog-items', [CatalogController::class, 'getItems']); // optional but recommended

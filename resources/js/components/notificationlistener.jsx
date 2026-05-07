@@ -31,7 +31,7 @@ export default function NotificationListener() {
         </button>
       </div>
 
-          <style jsx>{`
+          <style>{`
         .success-popup-overlay {
           position: fixed;
           top: 0;

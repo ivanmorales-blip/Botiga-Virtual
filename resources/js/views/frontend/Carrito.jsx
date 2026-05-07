@@ -1,90 +1,141 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { getCart, removeFromCart, updateCart } from "../../utils/cart.js";
-import { getCsrfToken } from "../../utils/csrf.js";
 import "../../../../scss/Carrito.scss";
 
 export default function CartPage() {
   const [cart, setCart] = useState([]);
   const [products, setProducts] = useState([]);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 👤 USER ID FROM LARAVEL SESSION
-  const userId = window.userId;
+  // 👤 USER
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const res = await fetch("/auth/user-bridge", {
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        });
+
+        setUser(res.ok ? await res.json() : null);
+      } catch {
+        setUser(null);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   // 📦 PRODUCTS
   useEffect(() => {
-    fetch("/api/frontend/productos", {
-      credentials: "include",
-      headers: { Accept: "application/json" },
-    })
-      .then(res => res.json())
-      .then(data => setProducts(Array.isArray(data) ? data : []))
-      .catch(() => setProducts([]));
+    const loadProducts = async () => {
+      try {
+        const res = await fetch("/api/productos", {
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        });
+
+        const data = await res.json();
+        setProducts(Array.isArray(data) ? data : []);
+      } catch {
+        setProducts([]);
+      }
+    };
+
+    loadProducts();
   }, []);
 
-  // 🛒 LOAD CART
-  const loadCart = async () => {
-    try {
-      const cartData = await getCart();
+  // 🧠 LOAD CART + ENRICH
+const loadCart = useCallback(async () => {
+  try {
+    const rawCart = await getCart();
 
-      const enriched = cartData.map(item => {
-        const product = products.find(p => p.id === item.id);
-        const imagen = product?.imatges && product.imatges.length > 0
-          ? `/storage/${product.imatges[0].path}`
-          : null;
+    const enriched = await Promise.all(
+      rawCart.map(async (item) => {
+        const res = await fetch(
+          `/api/catalog-item?id=${item.id}&isPack=${item.isPack ? 1 : 0}`,
+          {
+            credentials: "include",
+            headers: { Accept: "application/json" },
+          }
+        );
+
+        const data = await res.json();
 
         return {
           id: item.id,
-          quantity: item.quantity ?? 1,
-          isPack: item.isPack ?? false,
-          nombre: product?.nombre || "Producto",
-          precio: product?.precio || 0,
-          imagen,
-        };
-      });
+          isPack: item.isPack,
+          quantity: item.quantity,
 
-      setCart(enriched);
-    } catch (err) {
-      console.error("Cart error:", err);
-      setCart([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+          // 👇 ALWAYS from backend now
+          nombre: data.nombre,
+          precio: data.precio,
+          imagen: data.imagen
+            ? `/storage/${data.imagen}`
+            : null,
+        };
+      })
+    );
+
+    setCart(enriched);
+  } catch (err) {
+    console.error("Cart load error:", err);
+    setCart([]);
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   useEffect(() => {
-    if (products.length) loadCart();
-  }, [products]);
+    if (products.length > 0) loadCart();
+  }, [products, loadCart]);
 
-  // 🗑 REMOVE
-  const handleRemove = async (id) => {
-    await removeFromCart(id);
-    setCart(prev => prev.filter(i => i.id !== id));
-  };
-
-  // 🔄 UPDATE
-  const handleUpdate = async (id, qty) => {
-    const safe = Math.max(1, parseInt(qty) || 1);
-
-    await updateCart(id, safe);
-
-    setCart(prev =>
-      prev.map(i => (i.id === id ? { ...i, quantity: safe } : i))
-    );
-  };
-
-  // 💰 TOTAL
+  // 🧮 TOTAL
   const total = cart.reduce(
     (sum, item) => sum + item.quantity * item.precio,
     0
   );
 
-  // 🧾 CHECKOUT
+  // 🗑 REMOVE
+  const handleRemove = async (id, isPack) => {
+    await removeFromCart(id, isPack);
+
+    setCart((prev) =>
+      prev.filter(
+        (item) => !(item.id === id && item.isPack === isPack)
+      )
+    );
+  };
+
+  // 🔄 UPDATE
+  const handleUpdate = async (id, isPack, qty) => {
+    const safeQty = Math.max(1, parseInt(qty) || 1);
+
+    await updateCart(id, safeQty, isPack);
+
+    setCart((prev) =>
+      prev.map((item) =>
+        item.id === id && item.isPack === isPack
+          ? { ...item, quantity: safeQty }
+          : item
+      )
+    );
+  };
+
+  // 💳 CHECKOUT
   const handleCheckout = async () => {
   try {
-    if (!userId) {
+    if (!user?.id) {
       alert("Debes iniciar sesión");
       return;
+    }
+
+    const csrfToken = document
+      .querySelector('meta[name="csrf-token"]')
+      ?.getAttribute("content");
+
+    if (!csrfToken) {
+      throw new Error("CSRF token not found in page");
     }
 
     const res = await fetch("/pedido", {
@@ -92,11 +143,11 @@ export default function CartPage() {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-CSRF-TOKEN": getCsrfToken(),
+        "Accept": "application/json",
+        "X-CSRF-TOKEN": csrfToken,
       },
       body: JSON.stringify({
-        usuari_id: userId,
+        usuari_id: user.id,
         cart: cart.map(({ id, quantity, isPack }) => ({
           id,
           quantity,
@@ -111,18 +162,16 @@ export default function CartPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data?.message || "Error al crear pedido");
+      throw new Error(data?.message || data?.error || "Error al crear pedido");
     }
 
     window.location.href = `/paypal/pay/${data.pedido_id}`;
-
   } catch (err) {
-    console.error(err);
+    console.error("Checkout error:", err);
     alert(err.message);
   }
 };
-
-  // ⏳ LOADING STATE
+  // ⏳ LOADING
   if (loading) {
     return <div className="cart-page">Cargando carrito...</div>;
   }
@@ -136,9 +185,11 @@ export default function CartPage() {
       ) : (
         <>
           <div className="cart-list">
-            {cart.map(item => (
-              <div key={`${item.id}-${item.isPack}`} className="cart-item">
-
+            {cart.map((item) => (
+              <div
+                key={`${item.id}-${item.isPack}`}
+                className="cart-item"
+              >
                 <div className="cart-info">
                   {item.imagen ? (
                     <img src={item.imagen} alt={item.nombre} />
@@ -146,7 +197,10 @@ export default function CartPage() {
                     <span>📦</span>
                   )}
 
-                  <span>{item.nombre}</span>
+                  <span>
+                    {item.isPack ? "📦 PACK - " : ""}
+                    {item.nombre}
+                  </span>
                 </div>
 
                 <span>{item.precio} €</span>
@@ -156,11 +210,19 @@ export default function CartPage() {
                   min="1"
                   value={item.quantity}
                   onChange={(e) =>
-                    handleUpdate(item.id, e.target.value)
+                    handleUpdate(
+                      item.id,
+                      item.isPack,
+                      e.target.value
+                    )
                   }
                 />
 
-                <button onClick={() => handleRemove(item.id)}>
+                <button
+                  onClick={() =>
+                    handleRemove(item.id, item.isPack)
+                  }
+                >
                   Eliminar
                 </button>
               </div>

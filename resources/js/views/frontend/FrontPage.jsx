@@ -111,70 +111,128 @@ export default function FrontPage() {
       ))}
 
       {selectedProduct && (
-        <div className="product-popup-overlay" onClick={closeProduct}>
-          <div className="product-popup" onClick={(e) => e.stopPropagation()}>
+  <div className="product-popup-overlay" onClick={closeProduct}>
+    <div className="product-popup" onClick={(e) => e.stopPropagation()}>
 
-            <div className="popup-left">
-              {selectedProduct.imatges && selectedProduct.imatges.length > 0 ? (
-                <div style={{ position: "relative", background: "#f9fafb", borderRadius: "12px", overflow: "hidden" }}>
-                  <img
-                    src={`/storage/${selectedProduct.imatges[popupImageIndex].path}`}
-                    alt={selectedProduct.nombre}
-                    style={{ width: "100%", height: "220px", objectFit: "contain", padding: "16px" }}
-                  />
-                  {selectedProduct.imatges.length > 1 && (
-                    <>
-                      <button
-                        onClick={() => setPopupImageIndex(i => (i - 1 + selectedProduct.imatges.length) % selectedProduct.imatges.length)}
-                        style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.9)", border: "none", borderRadius: "50%", width: "32px", height: "32px", cursor: "pointer", fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}
-                      >‹</button>
-                      <button
-                        onClick={() => setPopupImageIndex(i => (i + 1) % selectedProduct.imatges.length)}
-                        style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.9)", border: "none", borderRadius: "50%", width: "32px", height: "32px", cursor: "pointer", fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}
-                      >›</button>
-                      <div style={{ display: "flex", justifyContent: "center", gap: "6px", padding: "8px 0" }}>
-                        {selectedProduct.imatges.map((_, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setPopupImageIndex(i)}
-                            style={{ width: i === popupImageIndex ? "20px" : "8px", height: "8px", borderRadius: "999px", border: "none", cursor: "pointer", background: i === popupImageIndex ? "#f97316" : "#d1d5db", transition: "all 0.3s" }}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
+      {/* LEFT: CAROUSEL */}
+      <div className="popup-left">
+        {selectedProduct.imatges?.length > 0 ? (
+          <div className="popup-carousel">
+
+            <img
+              src={`/storage/${selectedProduct.imatges[popupImageIndex].path}`}
+              className="popup-main-image"
+              alt={selectedProduct.nombre}
+            />
+
+            {selectedProduct.imatges.length > 1 && (
+              <>
+                <button
+                  className="carousel-btn left"
+                  onClick={() =>
+                    setPopupImageIndex(
+                      i => (i - 1 + selectedProduct.imatges.length) % selectedProduct.imatges.length
+                    )
+                  }
+                >
+                  ‹
+                </button>
+
+                <button
+                  className="carousel-btn right"
+                  onClick={() =>
+                    setPopupImageIndex(
+                      i => (i + 1) % selectedProduct.imatges.length
+                    )
+                  }
+                >
+                  ›
+                </button>
+
+                <div className="carousel-dots">
+                  {selectedProduct.imatges.map((_, i) => (
+                    <button
+                      key={i}
+                      className={`dot ${i === popupImageIndex ? "active" : ""}`}
+                      onClick={() => setPopupImageIndex(i)}
+                    />
+                  ))}
                 </div>
-              ) : (
-                <div className="product-image-placeholder-large">📦</div>
-              )}
-            </div>
+              </>
+            )}
 
-            <div className="popup-right">
-              <h2>{selectedProduct.nombre}</h2>
-              <div>{selectedProduct.precio} €</div>
-
-              <input
-                type="number"
-                min="1"
-                value={qty}
-                onChange={(e) => setQty(parseInt(e.target.value) || 1)}
-              />
-
-              <button
-                className="buy-button"
-                onClick={async () => {
-                  await addToCart(selectedProduct.id, qty, false);
-                  notify("success", "Producto añadido al carrito");
-                }}
-              >
-                Comprar
-              </button>
-            </div>
-
-            <button className="popup-close" onClick={closeProduct}>✖</button>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="product-image-placeholder-large">📦</div>
+        )}
+      </div>
+
+      {/* RIGHT: INFO */}
+      <div className="popup-right">
+
+        <h2 className="popup-title">{selectedProduct.nombre}</h2>
+
+        <div className="popup-price">{selectedProduct.precio} €</div>
+
+        <p className={`popup-stock ${selectedProduct.stock >= 1 ? "in-stock" : "out-of-stock"}`}>
+          {selectedProduct.stock >= 1 ? "En stock" : "Agotado"}
+        </p>
+
+        {/* DESCRIPTION */}
+        {selectedProduct.descripcion && (
+          <div className="popup-box">
+            <strong>Descripció</strong>
+            <p>{selectedProduct.descripcion}</p>
+          </div>
+        )}
+
+        {/* CATEGORY */}
+        {selectedProduct.categoria && (
+          <div className="popup-box">
+            <strong>Categoria</strong>
+            <p>{selectedProduct.categoria.tipo}</p>
+          </div>
+        )}
+
+        {/* CHARACTERISTICS */}
+        {selectedProduct.caracteristicas?.length > 0 && (
+          <div className="popup-box">
+            <strong>Característiques</strong>
+            <ul>
+              {selectedProduct.caracteristicas.map(c => (
+                <li key={c.id}>
+                  {c.tipo?.tipo} {c.descripcio}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* QTY */}
+        <input
+          type="number"
+          min="1"
+          value={qty}
+          onChange={(e) => setQty(parseInt(e.target.value) || 1)}
+          className="popup-qty"
+        />
+
+        <button
+          className="buy-button"
+          onClick={async () => {
+            await addToCart(selectedProduct.id, qty, false);
+            notify("success", "Producto añadido al carrito");
+          }}
+        >
+          Comprar
+        </button>
+
+      </div>
+
+      <button className="popup-close" onClick={closeProduct}>✖</button>
+    </div>
+  </div>
+)}
     </div>
   );
 }

@@ -45,6 +45,8 @@ class CarritoController extends Controller
         return response()->json(session()->get('cart', []));
     }
 
+    
+
     public function remove(Request $request)
     {
         $cart = session()->get('cart', []);
