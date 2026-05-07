@@ -159,66 +159,60 @@ public function index(Request $request)
 
 
        public function update(Request $request, $id)
-   {
-       $producto = Producto::findOrFail($id);
+{
+    $producto = Producto::findOrFail($id);
 
+    $producto->update([
+        'nombre' => $request->nombre,
+        'codi' => $request->codi,
+        'precio' => $request->precio,
+        'stock' => $request->stock,
+        'descripcion' => $request->descripcion,
+        'categoria_id' => $request->categoria_id,
+        'marca' => $request->marca,
+        'destacat' => $request->destacat ?? false
+    ]);
 
-       $producto->update([
-           'nombre' => $request->nombre,
-           'codi' => $request->codi ?: null,
-           'precio' => $request->precio,
-           'stock' => $request->stock,
-           'descripcion' => $request->descripcion,
-           'categoria_id' => $request->categoria_id,
-           'marca' => $request->marca,
-           'destacat' => $request->destacat ?? false
-       ]);
+    if ($request->has('caracteristicas')) {
+        $producto->caracteristicas()->sync($request->caracteristicas);
+    }
 
+    if ($request->has('imatges_a_borrar')) {
+        foreach ($request->imatges_a_borrar as $imatgeId) {
+            $imatge = ProductoImatge::find($imatgeId);
+            if ($imatge) {
+                \Storage::disk('public')->delete($imatge->path);
+                $imatge->delete();
+            }
+        }
+    }
 
-       if ($request->has('caracteristicas')) {
-           $producto->caracteristicas()->sync($request->caracteristicas);
-       }
+    if ($request->hasFile('imagen')) {
+        $path = $request->file('imagen')->store('productos', 'public');
 
+        ProductoImatge::create([
+            'nom' => $request->file('imagen')->getClientOriginalName(),
+            'path' => $path,
+            'producto_id' => $producto->id
+        ]);
+    }
 
-       // Borrar imágenes marcadas
-       if ($request->has('imatges_a_borrar')) {
-           foreach ($request->imatges_a_borrar as $imatgeId) {
-               $imatge = ProductoImatge::find($imatgeId);
-               if ($imatge) {
-                   \Storage::disk('public')->delete($imatge->path);
-                   $imatge->delete();
-               }
-           }
-       }
+    if ($request->hasFile('imagenes')) {
+        foreach ($request->file('imagenes') as $img) {
+            $path = $img->store('productos', 'public');
 
+            ProductoImatge::create([
+                'nom' => $img->getClientOriginalName(),
+                'path' => $path,
+                'producto_id' => $producto->id
+            ]);
+        }
+    }
 
-       // Añadir nuevas imágenes
-       if ($request->hasFile('imagen')) {
-           $path = $request->file('imagen')->store('productos', 'public');
-           ProductoImatge::create([
-               'nom' => $request->file('imagen')->getClientOriginalName(),
-               'path' => $path,
-               'producto_id' => $producto->id
-           ]);
-       }
-
-
-       if ($request->hasFile('imagenes')) {
-           foreach ($request->file('imagenes') as $img) {
-               $path = $img->store('productos', 'public');
-               ProductoImatge::create([
-                   'nom' => $img->getClientOriginalName(),
-                   'path' => $path,
-                   'producto_id' => $producto->id
-               ]);
-           }
-       }
-
-
-       return response()->json([
-           'message' => 'Producte actualitzat correctament'
-       ]);
-   }
+    return response()->json([
+        'message' => 'Producte actualitzat correctament'
+    ]);
+}
 
 
    public function deactivate($id)

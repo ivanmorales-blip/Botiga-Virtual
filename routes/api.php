@@ -21,7 +21,10 @@ use App\Http\Controllers\CatalogController;
 
 Route::get('/productos', [ProductoController::class, 'index']);
 Route::post('/productos', [ProductoController::class, 'store']);
+Route::post('/productos/{id}', [ProductoController::class, 'update']);
 Route::get('/productos/recent', [ProductoController::class, 'recent']);
+Route::patch('/productos/{id}/deactivate', [ProductoController::class, 'deactivate']);
+Route::patch('/productos/{id}/activate', [ProductoController::class, 'activate']);
 
 Route::get('/frontend/productos', [ProductoController::class, 'indexWithRelations']);
 Route::get('/frontend/productos/{id}', [ProductoController::class, 'showWithRelations']);
@@ -79,7 +82,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/pedido/{id}/status', [PedidoController::class, 'updateStatus']);
     Route::apiResource('categorias', CategoriaController::class);
     Route::apiResource('packs', PackController::class);
-    
+Route::patch('/packs/{id}/toggle', [PackController::class, 'toggleActive']);
     Route::apiResource('solucions', SolucionsController::class);
     Route::apiResource('caracteristicas', CaracteristicaController::class);
     Route::patch('/categorias/{id}/deactivate', [CategoriaController::class, 'deactivate']);

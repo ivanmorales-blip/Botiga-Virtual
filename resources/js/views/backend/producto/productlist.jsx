@@ -68,13 +68,29 @@ export default function ProductsList() {
   }, {});
 
   const toggleActive = async (product) => {
-    try {
-      await fetch(`/api/productos/${product.id}/${product.estat ? "deactivate" : "activate"}`, { method: "POST" });
-      loadProducts();
-    } catch (err) {
-      console.error(err);
+  try {
+    const endpoint = product.estat
+      ? `/api/productos/${product.id}/deactivate`
+      : `/api/productos/${product.id}/activate`;
+
+    const res = await fetch(endpoint, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
     }
-  };
+
+    loadProducts();
+  } catch (err) {
+    console.error("Toggle error:", err);
+  }
+};
 
   const startEdit = (product) => {
     setEditingId(product.id);
@@ -151,47 +167,58 @@ export default function ProductsList() {
   };
 
   const saveEdit = async (id) => {
-    try {
-      const formData = new FormData();
+  try {
+    const formData = new FormData();
 
-      formData.append("nombre", editedFields.nombre || "");
-      formData.append("precio", editedFields.precio || "");
-      formData.append("stock", editedFields.stock || "");
-      formData.append("descripcion", editedFields.descripcion || "");
-      formData.append("categoria_id", editedFields.categoria_id || "");
-      formData.append("marca", editedFields.marca || "");
-      formData.append("destacat", editedFields.destacat ? "1" : "0");
-      formData.append("codi", editedFields.codi || "");
-      // _method eliminado
+    Object.entries({
+      nombre: editedFields.nombre || "",
+      precio: editedFields.precio || "",
+      stock: editedFields.stock || "",
+      descripcion: editedFields.descripcion || "",
+      categoria_id: editedFields.categoria_id || "",
+      marca: editedFields.marca || "",
+      destacat: editedFields.destacat ? "1" : "0",
+      codi: editedFields.codi || "",
+    }).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
 
-      (editedFields.caracteristicas || []).forEach((cid) => {
-        formData.append("caracteristicas[]", cid);
-      });
+    (editedFields.caracteristicas || []).forEach((cid) => {
+      formData.append("caracteristicas[]", cid);
+    });
 
-      (editedFields.imatges_a_borrar || []).forEach(imatgeId => {
-        formData.append("imatges_a_borrar[]", imatgeId);
-      });
+    (editedFields.imatges_a_borrar || []).forEach((imgId) => {
+      formData.append("imatges_a_borrar[]", imgId);
+    });
 
-      (editedFields.imatges_noves || []).forEach((file, i) => {
-        formData.append(i === 0 ? "imagen" : "imagenes[]", file);
-      });
+    (editedFields.imatges_noves || []).forEach((file, i) => {
+      formData.append(i === 0 ? "imagen" : "imagenes[]", file);
+    });
 
-      const res = await fetch(`/api/productos/${id}`, { method: "POST", body: formData });
-      const data = await safeJson(res);
+    const res = await fetch(`/api/productos/${id}`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
-      if (!res.ok) {
-        console.error("Update error:", data);
-        alert("Error updating product");
-        return;
-      }
+    const data = await res.json();
 
-      cancelEdit();
-      loadProducts();
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+    if (!res.ok) {
+      console.error("❌ Server error:", data);
+      alert(data.message || data.error || "Error updating product");
+      return;
     }
-  };
+
+    loadProducts();
+    cancelEdit();
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+};
 
   const filteredProducts = products.filter((p) =>
     p.nombre.toLowerCase().includes(search.toLowerCase())

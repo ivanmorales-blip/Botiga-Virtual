@@ -24,15 +24,27 @@ export default function Packs() {
   }, []);
 
   const toggleActive = async (pack) => {
-    try {
-      await fetch(`/api/packs/${pack.id}/toggle`, {
-        method: "POST",
-      });
-      loadPacks();
-    } catch (err) {
-      console.error(err);
+  try {
+    const res = await fetch(`/api/packs/${pack.id}/toggle`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      throw new Error(data?.message || "Error toggling pack");
     }
-  };
+
+    // refresh list after toggle
+    loadPacks();
+  } catch (err) {
+    console.error("Toggle error:", err.message);
+  }
+};
 
   return (
     <div className="p-8 min-h-screen bg-gray-50">
