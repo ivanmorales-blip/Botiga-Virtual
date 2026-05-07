@@ -24,6 +24,7 @@ import CartPage from "./views/frontend/Carrito";
 import CartCounter from "../js/utils/cartcounter.jsx";
 import ProfilePage from "../js/views/frontend/Profile.jsx";
 import PedidoManager from "../js/views/backend/Pedido/GestionPedidos.jsx";
+import ConfiguracionsPanel from "./views/backend/configuracions/configuracionsPanell.jsx";
 
 /* -----------------------------
    GLOBAL WRAPPER (IMPORTANT FIX)
@@ -114,6 +115,10 @@ if (rootElement) {
 
     case "pedidos-gestion":
       root.render(<App Page={PedidoManager} />);
+      break;
+    
+    case "configuracions-panel":
+      root.render(<ConfiguracionsPanel />);
       break;
 
     default:

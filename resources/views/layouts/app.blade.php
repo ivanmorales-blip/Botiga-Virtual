@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,6 +108,15 @@
                         </svg>
                     </span>
                     <span class="sidebar__text">Solucions</span>
+                </a>
+
+                <a href="{{ route('admin.configuracions') }}" class="sidebar__link">
+                    <span class="sidebar__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                            <path d="M12 .75a8.25 8.25 0 1 0 0 16.5A8.25 8.25 0 0 0 12 .75ZM9.013 11.998a3 3 0 1 1 5.974 0 3 3 0 0 1-5.974 0Z" />
+                        </svg>
+                    </span>
+                    <span class="sidebar__text">Configuració</span>
                 </a>
 
             </nav>

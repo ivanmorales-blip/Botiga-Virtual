@@ -81,6 +81,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/packs-react', fn () => view('packs.packslista-react'))
         ->name('packs.react.list');
+
+    Route::get('/configuracions', fn () => view('configuracions.configuracions')) 
+        ->name('admin.configuracions');
 });
 
 /*

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PackController;
 use App\Http\Controllers\Api\SolucionsController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\Api\PedidoController;
+use App\Http\Controllers\Api\ConfiguracioController;
 use App\Http\Controllers\Api\TipoCaracteristicasController;
 use App\Http\Controllers\CatalogController;
 
@@ -25,6 +26,8 @@ Route::get('/productos/recent', [ProductoController::class, 'recent']);
 Route::get('/frontend/productos', [ProductoController::class, 'indexWithRelations']);
 Route::get('/frontend/productos/{id}', [ProductoController::class, 'showWithRelations']);
 Route::get('/frontend/categorias', [CategoriaController::class, 'indexWithProducts']);
+
+Route::get('/configuracions', [ConfiguracioController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
@@ -61,12 +64,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     | PRODUCT MANAGEMENT
     |--------------------------------------------------------------------------
     */
-    Route::apiResource('categorias', CategoriaController::class);
-    Route::apiResource('packs', PackController::class);
-    
-    Route::apiResource('solucions', SolucionsController::class);
+
+
 });
 
+    Route::put('/configuracions/{clau}', [ConfiguracioController::class, 'update']);
 
     /*
     |--------------------------------------------------------------------------
