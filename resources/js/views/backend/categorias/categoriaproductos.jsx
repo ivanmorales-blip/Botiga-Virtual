@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../../../../scss/CategoriaProductos.scss";
+import { notify } from "../../../utils/notification.js";
 import { addToCart } from "../../../utils/cart.js";
 
 export default function CategoriaProductos() {
@@ -158,7 +159,7 @@ export default function CategoriaProductos() {
                     onClick={async (e) => {
                       e.stopPropagation();
                       await addToCart(prod.id, 1, false);
-                      alert("Producto añadido");
+                      notify("success", "Producto añadido al carrito");
                     }}
                   >
                     Comprar
@@ -228,7 +229,7 @@ export default function CategoriaProductos() {
                 className="buy-button"
                 onClick={async () => {
                   await addToCart(selectedProduct.id, qty, false);
-                  alert("Producto añadido");
+                  notify("success", "Producto añadido al carrito");
                 }}
               >
                 Comprar

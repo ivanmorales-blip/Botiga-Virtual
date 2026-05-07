@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PackController;
 use App\Http\Controllers\Api\SolucionsController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\Api\PedidoController;
+use App\Http\Controllers\Api\TipoCaracteristicasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,8 +46,7 @@ Route::middleware(['auth'])->group(function () {
     | PEDIDOS (USER)
     |--------------------------------------------------------------------------
     */
-    Route::post('/pedido', [PedidoController::class, 'store']);
-    Route::get('/my-pedidos', [PedidoController::class, 'userPedidos']);
+
 });
 
 /*
@@ -76,3 +76,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     */
     Route::get('/pedidos', [PedidoController::class, 'index']);
     Route::put('/pedido/{id}/status', [PedidoController::class, 'updateStatus']);
+    Route::apiResource('categorias', CategoriaController::class);
+    Route::apiResource('packs', PackController::class);
+    
+    Route::apiResource('solucions', SolucionsController::class);
+    Route::apiResource('caracteristicas', CaracteristicaController::class);
+    Route::patch('/categorias/{id}/deactivate', [CategoriaController::class, 'deactivate']);
+
+    Route::get('/tipos-caracteristicas', [TipoCaracteristicasController::class, 'index']);
+    Route::post('/tipos-caracteristicas', [TipoCaracteristicasController::class, 'store']);

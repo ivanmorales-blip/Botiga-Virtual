@@ -1,11 +1,14 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 
-import '../../scss/FrontPage.scss'
-import '../../scss/FrontEndTemplate.scss'
-import '../../scss/CategoriaProductos.scss'
-import '../../scss/Admintemplate.scss'
+import '../../scss/FrontPage.scss';
+import '../../scss/FrontEndTemplate.scss';
+import '../../scss/CategoriaProductos.scss';
+import '../../scss/Admintemplate.scss';
 
+import NotificationListener from "./components/notificationlistener.jsx";
+
+/* PAGES */
 import CategoriaProductos from "./views/backend/categorias/categoriaproductos";
 import Categoria from "./views/backend/categorias/categoria";
 import Packs from "./views/backend/packs/packs";
@@ -21,6 +24,18 @@ import CartPage from "./views/frontend/Carrito";
 import CartCounter from "../js/utils/cartcounter.jsx";
 import ProfilePage from "../js/views/frontend/Profile.jsx";
 import PedidoManager from "../js/views/backend/Pedido/GestionPedidos.jsx";
+
+/* -----------------------------
+   GLOBAL WRAPPER (IMPORTANT FIX)
+------------------------------ */
+function App({ Page, props }) {
+  return (
+    <>
+      <NotificationListener />
+      <Page {...props} />
+    </>
+  );
+}
 
 /* CART COUNTER */
 function mountCartCounter() {
@@ -44,64 +59,67 @@ if (rootElement) {
   const id = rootElement.dataset.id;
 
   switch (page) {
+
     case "packs-list":
-      root.render(<Packs />);
+      root.render(<App Page={Packs} />);
       break;
 
     case "packs-create":
-      root.render(<PackCreate />);
+      root.render(<App Page={PackCreate} />);
       break;
 
     case "packs-edit":
-      root.render(<PackEdit id={id} />);
+      root.render(<App Page={PackEdit} props={{ id }} />);
       break;
 
     case "categoria":
-      root.render(<Categoria />);
+      root.render(<App Page={Categoria} />);
       break;
 
     case "products-list":
-      root.render(<ProductList />);
+      root.render(<App Page={ProductList} />);
       break;
 
     case "products-create":
-      root.render(<ProductCreate />);
+      root.render(<App Page={ProductCreate} />);
       break;
 
     case "caracteristicas-list":
-      root.render(<CaracteristicasList />);
+      root.render(<App Page={CaracteristicasList} />);
       break;
 
     case "FrontPage":
-      root.render(<FrontPage />);
+      root.render(<App Page={FrontPage} />);
       break;
 
     case "categoria-productos":
-      root.render(<CategoriaProductos />);
+      root.render(<App Page={CategoriaProductos} />);
       break;
 
     case "Solucionlist":
-      root.render(<Solutionlist />);
+      root.render(<App Page={Solutionlist} />);
       break;
 
     case "SolucionCreate":
-      root.render(<SolutionCreate />);
+      root.render(<App Page={SolutionCreate} />);
       break;
 
     case "cart":
-      root.render(<CartPage />);
+      root.render(<App Page={CartPage} />);
       break;
 
     case "profile":
-      root.render(<ProfilePage />);
+      root.render(<App Page={ProfilePage} />);
       break;
 
     case "pedidos-gestion":
-      root.render(<PedidoManager/>)
+      root.render(<App Page={PedidoManager} />);
       break;
 
     default:
-      root.render(<div>Page not found</div>);
+      root.render(
+        <App Page={() => <div>Page not found</div>} />
+      );
   }
 } else {
   console.error("React mount point #app not found!");

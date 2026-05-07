@@ -31,7 +31,7 @@ export default function CaracteristicasList() {
       setCaracteristicas(dataC);
 
       // Fetch tipos
-      const resT = await fetch("/api/caracteristicas/tipos");
+      const resT = await fetch("/api/tipos-caracteristicas");
       if (!resT.ok) throw new Error("Error loading tipos");
       const dataT = await resT.json();
       setTipos(dataT);

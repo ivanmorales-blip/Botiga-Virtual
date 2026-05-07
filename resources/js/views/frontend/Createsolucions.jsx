@@ -1,15 +1,15 @@
 import "../../../../scss/solucions.scss";
 import React, { useState } from "react";
+import { notify } from "../../utils/notification.js";
 
 export default function CreateSolucions() {
   const [descripcio, setDescripcio] = useState("");
   const [correu, setCorreu] = useState("");
   const [telefon, setTelefon] = useState("");
-  const [estat, setEstat] = useState("pendent");
   const [files, setFiles] = useState([]);
+
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const handleFiles = (e) => {
     setFiles(Array.from(e.target.files));
@@ -23,6 +23,7 @@ export default function CreateSolucions() {
     formData.append("correu_electronic", correu);
     formData.append("telefon", telefon);
     formData.append("estat", "pendent");
+
     files.forEach((file) => formData.append("attachments[]", file));
 
     setLoading(true);
@@ -34,20 +35,26 @@ export default function CreateSolucions() {
         body: formData,
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const errData = await res.json();
-        setErrors(errData.errors || ["Error al enviar"]);
-      } else {
-        await res.json();
-        setDescripcio("");
-        setCorreu("");
-        setTelefon("");
-        setFiles([]);
-        setShowSuccessPopup(true); 
+        setErrors(data.errors || ["Error al enviar"]);
+        notify("error", "Error al enviar la solució");
+        return;
       }
+
+      // ✅ SUCCESS STATE RESET
+      setDescripcio("");
+      setCorreu("");
+      setTelefon("");
+      setFiles([]);
+
+      // 🎉 GLOBAL NOTIFICATION
+      notify("success", "La solució s'ha enviat correctament!");
     } catch (err) {
       console.error("Error uploading:", err);
       setErrors(["Error de connexió"]);
+      notify("error", "Error de connexió");
     } finally {
       setLoading(false);
     }
@@ -114,53 +121,6 @@ export default function CreateSolucions() {
           {loading ? "Creant..." : "Crear"}
         </button>
       </form>
-
-      {showSuccessPopup && (
-        <div className="success-popup-overlay" onClick={() => setShowSuccessPopup(false)}>
-          <div className="success-popup" onClick={(e) => e.stopPropagation()}>
-            <p>La solució s'ha enviat correctament!</p>
-            <button onClick={() => setShowSuccessPopup(false)}>Tancar</button>
-          </div>
-        </div>
-      )}
-
-      <style jsx>{`
-        .success-popup-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-        }
-
-        .success-popup {
-          background: #fff;
-          padding: 2rem;
-          border-radius: 1rem;
-          text-align: center;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .success-popup button {
-          margin-top: 1rem;
-          padding: 0.5rem 1rem;
-          background: #f97316;
-          color: white;
-          border: none;
-          border-radius: 0.5rem;
-          cursor: pointer;
-          font-weight: bold;
-        }
-
-        .success-popup button:hover {
-          background: #ea580c;
-        }
-      `}</style>
     </div>
   );
 }

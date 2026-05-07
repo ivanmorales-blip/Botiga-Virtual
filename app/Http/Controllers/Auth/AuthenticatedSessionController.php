@@ -28,6 +28,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        session(['user_id' => Auth::id()]);
+
         return redirect()->intended(route('home', absolute: false));
     }
 
@@ -37,6 +39,8 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
+
+        $request->session()->forget('user_id');
 
         $request->session()->invalidate();
 

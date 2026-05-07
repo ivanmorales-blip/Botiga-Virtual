@@ -1,36 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { getCart, removeFromCart, updateCart } from "../../utils/cart.js";
+import { getCsrfToken } from "../../utils/csrf.js";
 import "../../../../scss/Carrito.scss";
 
 export default function CartPage() {
   const [cart, setCart] = useState([]);
   const [products, setProducts] = useState([]);
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 👤 GET USER (Laravel session)
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const res = await fetch("/auth/user-bridge", {
-          credentials: "include",
-          headers: { Accept: "application/json" },
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-        } else {
-          setUser(null);
-        }
-      } catch (err) {
-        console.warn("User not logged in");
-        setUser(null);
-      }
-    };
-
-    loadUser();
-  }, []);
+  // 👤 USER ID FROM LARAVEL SESSION
+  const userId = window.userId;
 
   // 📦 PRODUCTS
   useEffect(() => {
@@ -100,23 +79,24 @@ export default function CartPage() {
     0
   );
 
-  // 🧾 CHECKOUT (FIXED + SAFE USER)
+  // 🧾 CHECKOUT
   const handleCheckout = async () => {
   try {
-    if (!user?.id) {
+    if (!userId) {
       alert("Debes iniciar sesión");
       return;
     }
 
-    const res = await fetch("/api/pedido", {
+    const res = await fetch("/pedido", {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "X-CSRF-TOKEN": getCsrfToken(),
       },
       body: JSON.stringify({
-        usuari_id: user.id,
+        usuari_id: userId,
         cart: cart.map(({ id, quantity, isPack }) => ({
           id,
           quantity,
@@ -134,7 +114,6 @@ export default function CartPage() {
       throw new Error(data?.message || "Error al crear pedido");
     }
 
-    // ✅ REDIRECT TO PAYPAL WITH NEW PEDIDO
     window.location.href = `/paypal/pay/${data.pedido_id}`;
 
   } catch (err) {
@@ -143,7 +122,7 @@ export default function CartPage() {
   }
 };
 
-  // ⏳ LOADING STATE (UI preserved)
+  // ⏳ LOADING STATE
   if (loading) {
     return <div className="cart-page">Cargando carrito...</div>;
   }
@@ -166,6 +145,7 @@ export default function CartPage() {
                   ) : (
                     <span>📦</span>
                   )}
+
                   <span>{item.nombre}</span>
                 </div>
 

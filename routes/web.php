@@ -48,6 +48,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/pedido/{id}/pdf', [PedidoController::class, 'downloadPdf'])
         ->name('pedido.pdf');
+
+        Route::post('/pedido', [PedidoController::class, 'store']);
+    Route::get('/my-pedidos', [PedidoController::class, 'userPedidos']);
 });
 
 /*

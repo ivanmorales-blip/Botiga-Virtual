@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../../../scss/FrontPage.scss";
+import { notify } from "../../utils/notification.js"
 import { addToCart } from "../../utils/cart.js";
 
 export default function FrontPage() {
@@ -69,7 +70,7 @@ export default function FrontPage() {
           onClick={async (e) => {
             e.stopPropagation();
             await addToCart(p.id, 1, false);
-            alert("Producto añadido");
+            notify("success", "Producto añadido al carrito");
           }}
         >
           Comprar
@@ -168,7 +169,7 @@ export default function FrontPage() {
                 className="buy-button"
                 onClick={async () => {
                   await addToCart(selectedProduct.id, qty, false);
-                  alert("Producto añadido");
+                  notify("success", "Producto añadido al carrito");
                 }}
               >
                 Comprar
