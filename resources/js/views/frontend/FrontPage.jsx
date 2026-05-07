@@ -93,11 +93,6 @@ export default function FrontPage() {
         </div>
       </div>
 
-      <div className="divider"><h2>Productes Recents</h2></div>
-      <div className="products-grid">
-        {recentProducts.map(p => <ProductCard key={p.id} p={p} />)}
-      </div>
-
       <div className="divider"><h2>Productes Destacats</h2></div>
       <div className="products-grid">
         {products.filter(p => p.destacat === 1)

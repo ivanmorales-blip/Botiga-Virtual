@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\TipoCaracteristicasController;
 */
 
 Route::get('/productos', [ProductoController::class, 'index']);
+Route::post('/productos', [ProductoController::class, 'store']);
 Route::get('/productos/recent', [ProductoController::class, 'recent']);
 
 Route::get('/frontend/productos', [ProductoController::class, 'indexWithRelations']);

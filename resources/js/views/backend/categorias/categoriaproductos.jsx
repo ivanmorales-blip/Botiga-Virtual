@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../../../../scss/CategoriaProductos.scss";
+import "../../../../../scss/_productos.scss";
 import { notify } from "../../../utils/notification.js";
 import { addToCart } from "../../../utils/cart.js";
 
@@ -25,44 +26,31 @@ export default function CategoriaProductos() {
   }, []);
 
   const loadProductos = async (categoriaId = "", caracteristicasIds = []) => {
-  try {
-    const params = new URLSearchParams();
-
-    if (categoriaId) params.append("categoria", categoriaId);
-    caracteristicasIds.forEach(id =>
-      params.append("caracteristica[]", id)
-    );
-
-    const query = params.toString();
-    const url = query ? `/api/productos?${query}` : `/api/productos`;
-
-
-    const res = await fetch(url);
-    const text = await res.text();
-
-
-    let data;
     try {
-      data = JSON.parse(text);
-    } catch {
-      console.error(" Not JSON response");
-      setProductos([]);
-      return;
-    }
+      const params = new URLSearchParams();
 
-    setProductos(Array.isArray(data) ? data : []);
-  } catch (err) {
-    console.error("Error loading productos:", err);
-    setProductos([]);
-  }
-};
+      if (categoriaId) params.append("categoria", categoriaId);
+      caracteristicasIds.forEach(id =>
+        params.append("caracteristica[]", id)
+      );
+
+      const url = params.toString()
+        ? `/api/productos?${params.toString()}`
+        : `/api/productos`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      setProductos(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error loading productos:", err);
+      setProductos([]);
+    }
+  };
 
   useEffect(() => {
     loadProductos(selectedCategoria, selectedCaracteristicas);
   }, [selectedCategoria, selectedCaracteristicas]);
-
-  // ✅ IMPORTANT: no frontend filtering
-  const productosFiltrados = productos;
 
   const handleCaracteristicaChange = (id) => {
     const numericId = Number(id);
@@ -131,41 +119,53 @@ export default function CategoriaProductos() {
 
         {/* PRODUCTS */}
         <div className="productos">
-          {productosFiltrados.length > 0 ? (
+          {productos.length > 0 ? (
             <div className="productos-grid">
-              {productosFiltrados.map(prod => (
-                <div
-                  key={prod.id}
-                  className="producto-card"
-                  onClick={() => openProduct(prod)}
-                >
-                  <div className="product-image-placeholder">
-                    {prod.imatges && prod.imatges.length > 0 ? (
-                      <img src={`/storage/${prod.imatges[0].path}`} alt={prod.nombre} />
-                    ) : (
-                      "📦"
-                    )}
-                  </div>
 
-                  <h3>{prod.nombre}</h3>
-                  <p className="precio">{prod.precio} €</p>
+              {productos.map(prod => {
+                const img =
+                  prod.imatges?.length > 0
+                    ? `/storage/${prod.imatges[0].path}`
+                    : null;
 
-                  <p className={`stock ${prod.stock >= 1 ? "in-stock" : "out-of-stock"}`}>
-                    {prod.stock >= 1 ? "En stock" : "Agotado"}
-                  </p>
-
-                  <button
-                    className="buy-button"
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      await addToCart(prod.id, 1, false);
-                      notify("success", "Producto añadido al carrito");
-                    }}
+                return (
+                  <div
+                    key={prod.id}
+                    className="product-card"
+                    onClick={() => openProduct(prod)}
                   >
-                    Comprar
-                  </button>
-                </div>
-              ))}
+                    <div className="product-image-placeholder">
+                      {img ? (
+                        <img src={img} alt={prod.nombre} />
+                      ) : (
+                        "📦"
+                      )}
+                    </div>
+
+                    <div className="product-name">{prod.nombre}</div>
+
+                    <div className="product-price">
+                      {prod.precio} €
+                    </div>
+
+                    <div className={`stock ${prod.stock >= 1 ? "in-stock" : "out-of-stock"}`}>
+                      {prod.stock >= 1 ? "En stock" : "Agotado"}
+                    </div>
+
+                    <button
+                      className="buy-button"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        await addToCart(prod.id, 1, false);
+                        notify("success", "Producto añadido al carrito");
+                      }}
+                    >
+                      Comprar
+                    </button>
+                  </div>
+                );
+              })}
+
             </div>
           ) : (
             <p className="no-productos">
@@ -182,8 +182,11 @@ export default function CategoriaProductos() {
 
             <div className="popup-left">
               <div className="product-image-placeholder-large">
-                {selectedProduct.imatges && selectedProduct.imatges.length > 0 ? (
-                  <img src={`/storage/${selectedProduct.imatges[0].path}`} alt={selectedProduct.nombre} />
+                {selectedProduct.imatges?.length > 0 ? (
+                  <img
+                    src={`/storage/${selectedProduct.imatges[0].path}`}
+                    alt={selectedProduct.nombre}
+                  />
                 ) : (
                   "📦"
                 )}
@@ -191,13 +194,18 @@ export default function CategoriaProductos() {
             </div>
 
             <div className="popup-right">
-              <h2 className="popup-name">{selectedProduct.nombre}</h2>
+
+              <h2 className="popup-name">
+                {selectedProduct.nombre}
+              </h2>
 
               <p className={`stock ${selectedProduct.stock >= 1 ? "in-stock" : "out-of-stock"}`}>
                 {selectedProduct.stock >= 1 ? "En stock" : "Agotado"}
               </p>
 
-              <div className="popup-price">{selectedProduct.precio} €</div>
+              <div className="popup-price">
+                {selectedProduct.precio} €
+              </div>
 
               <input
                 type="number"
@@ -234,9 +242,13 @@ export default function CategoriaProductos() {
               >
                 Comprar
               </button>
+
             </div>
 
-            <button className="popup-close" onClick={closeProduct}>✖</button>
+            <button className="popup-close" onClick={closeProduct}>
+              ✖
+            </button>
+
           </div>
         </div>
       )}
