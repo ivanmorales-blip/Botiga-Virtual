@@ -57,12 +57,10 @@ class CatalogController extends Controller
         }
 
         // 📦 PRODUCT
-        $product = Producto::find($id);
-
+        // 📦 PRODUCT
+        $product = Producto::with('imatges')->find($id);
         if (!$product) {
-            return response()->json([
-                'message' => 'Product not found'
-            ], 404);
+            return response()->json(['message' => 'Product not found'], 404);
         }
 
         return response()->json([
@@ -70,7 +68,9 @@ class CatalogController extends Controller
             'type' => 'product',
             'nombre' => $product->nombre,
             'precio' => (float) $product->precio,
-            'imagen' => $product->imagen,
+            'imagen' => $product->imatges->first()
+                ? $product->imatges->first()->path
+                : null,
         ]);
     }
 
@@ -109,15 +109,14 @@ class CatalogController extends Controller
                     ];
                 }
             } else {
-                $product = Producto::find($id);
-
+                $product = Producto::with('imatges')->find($id);
                 if ($product) {
                     $result[] = [
                         'id' => $product->id,
                         'type' => 'product',
                         'nombre' => $product->nombre,
                         'precio' => (float) $product->precio,
-                        'imagen' => $product->imagen,
+                        'imagen' => $product->imatges->first()?->path,
                     ];
                 }
             }
