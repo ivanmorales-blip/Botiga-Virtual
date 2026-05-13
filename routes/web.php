@@ -82,9 +82,22 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/packs-react', fn () => view('packs.packslista-react'))
         ->name('packs.react.list');
 
+    Route::get('/packs-react/{id}/edit', fn ($id) =>
+    view('packs.packedit-react', ['id' => $id])
+)->name('packs.react.edit');
+
     Route::get('/configuracions', fn () => view('configuracions.configuracions')) 
         ->name('admin.configuracions');
+
+    Route::get('/products-react/create', fn () => view('producto.product-create'))
+    ->name('products.react.create');
+
+
 });
+
+
+    Route::get('/packs-react/create', fn () => view('packs.packcreate-react'))
+    ->name('packs.react.create');
 
 /*
 |--------------------------------------------------------------------------
@@ -92,36 +105,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
-// Products
-Route::get('/products-react', fn () => view('producto.products-list'))
-    ->name('products.react.public');
-
-Route::get('/products-react/create', fn () => view('producto.product-create'))
-    ->name('products.react.create');
-
-// Packs
-Route::get('/packs-react', fn () => view('packs.packslista-react'))
-    ->name('packs.react.public');
-
-Route::get('/packs-react/create', fn () => view('packs.packcreate-react'))
-    ->name('packs.react.create');
-
-Route::get('/packs-react/{id}/edit', fn ($id) =>
-    view('packs.packedit-react', ['id' => $id])
-)->name('packs.react.edit');
-
-// Categories
-Route::get('/categorias-react', fn () => view('categorias.categorias-react'))
-    ->name('categorias.react.public');
-
 Route::get('/categorias-productos', fn () =>
     view('CategoriaProductos.categoriasproductos-react')
 )->name('categorias.productos');
 
-// Características
-Route::get('/caracteristicas-react', fn () =>
-    view('caracteristicas.caracteristicalist-react')
-)->name('caracteristicas.react.public');
+
 
 // Soluciones create (THIS WAS MISSING PROPERLY)
 Route::view('/solucions/create', 'formularisolucions.create')
