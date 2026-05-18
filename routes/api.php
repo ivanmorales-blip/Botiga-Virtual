@@ -82,7 +82,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/pedido/{id}/status', [PedidoController::class, 'updateStatus']);
     Route::apiResource('categorias', CategoriaController::class);
     Route::apiResource('packs', PackController::class);
-Route::patch('/packs/{id}/toggle', [PackController::class, 'toggleActive']);
+    Route::patch('/packs/{id}/toggle', [PackController::class, 'toggleActive']);
     Route::apiResource('solucions', SolucionsController::class);
     Route::apiResource('caracteristicas', CaracteristicaController::class);
     Route::patch('/categorias/{id}/deactivate', [CategoriaController::class, 'deactivate']);
@@ -90,5 +90,5 @@ Route::patch('/packs/{id}/toggle', [PackController::class, 'toggleActive']);
     Route::get('/tipos-caracteristicas', [TipoCaracteristicasController::class, 'index']);
     Route::post('/tipos-caracteristicas', [TipoCaracteristicasController::class, 'store']);
 
-Route::get('/catalog-item', [CatalogController::class, 'getItem']);
-Route::post('/catalog-items', [CatalogController::class, 'getItems']); // optional but recommended
+    Route::get('/catalog-item', [CatalogController::class, 'getItem']);
+    Route::post('/catalog-items', [CatalogController::class, 'getItems']); // optional but recommended

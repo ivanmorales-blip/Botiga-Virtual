@@ -34,7 +34,7 @@ export default function CategoriaProductos() {
   useEffect(() => {
     loadProductos();
     loadPacks();
-  }, [selectedCategoria, selectedCaracteristicas]);
+  }, []);
 
   const loadProductos = async () => {
     const res = await fetch("/api/productos");
@@ -42,7 +42,7 @@ export default function CategoriaProductos() {
 
     // ✅ FILTER ACTIVE ONLY
     const active = Array.isArray(data)
-      ? data.filter(p => Number(p.estat) === 1)
+      ? data.filter((p) => Number(p.estat) === 1)
       : [];
 
     setProductos(active);
@@ -54,7 +54,7 @@ export default function CategoriaProductos() {
 
     // ✅ FILTER ACTIVE ONLY
     const active = Array.isArray(data)
-      ? data.filter(p => Number(p.estat) === 1)
+      ? data.filter((p) => Number(p.estat) === 1)
       : [];
 
     setPacks(active);
@@ -66,15 +66,42 @@ export default function CategoriaProductos() {
     nombre: pack.nom,
     precio: pack.preu,
     descripcion: pack.Descripcio,
+    categoria_id: pack.categoria_id,
+    caracteristicas: pack.caracteristicas || [],
+    stock: pack.stock || 0,
     isPack: true,
     productes: pack.productes,
-    imatges: pack.images?.map((i) => ({ path: i.image_path })) || [],
+    imatges:
+      pack.images?.map((i) => ({
+        path: i.image_path,
+      })) || [],
   });
 
+  // ✅ MERGE PRODUCTS + PACKS
   const allItems = [
     ...productos,
     ...packs.map(normalizePack),
   ];
+
+  // ✅ APPLY FILTERS
+  const filteredItems = allItems.filter((item) => {
+
+    // CATEGORY FILTER
+    const matchCategoria =
+      !selectedCategoria ||
+      Number(item.categoria_id) === Number(selectedCategoria);
+
+    // CHARACTERISTICS FILTER
+    const matchCaracteristicas =
+      selectedCaracteristicas.length === 0 ||
+      selectedCaracteristicas.every((selectedId) =>
+        item.caracteristicas?.some(
+          (c) => Number(c.id) === Number(selectedId)
+        )
+      );
+
+    return matchCategoria && matchCaracteristicas;
+  });
 
   const openProduct = (item) => {
     setSelectedProduct(item);
@@ -86,6 +113,7 @@ export default function CategoriaProductos() {
 
   const handleCaracteristicaChange = (id) => {
     const num = Number(id);
+
     setSelectedCaracteristicas((prev) =>
       prev.includes(num)
         ? prev.filter((c) => c !== num)
@@ -117,11 +145,13 @@ export default function CategoriaProductos() {
 
         {/* FILTERS */}
         <div className="filters">
+
           <select
             value={selectedCategoria}
             onChange={(e) => setSelectedCategoria(e.target.value)}
           >
             <option value="">Todas las categorías</option>
+
             {categorias.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.tipo}
@@ -130,18 +160,24 @@ export default function CategoriaProductos() {
           </select>
 
           <div className="caracteristicas">
+
             {Object.entries(
               caracteristicas.reduce((acc, car) => {
                 const key = car.tipo?.tipo || "Otros";
+
                 acc[key] = acc[key] || [];
                 acc[key].push(car);
+
                 return acc;
               }, {})
             ).map(([tipo, list]) => (
+
               <div key={tipo}>
                 <h2>{tipo}</h2>
+
                 {list.map((c) => (
                   <label key={c.id}>
+
                     <input
                       type="checkbox"
                       checked={selectedCaracteristicas.includes(Number(c.id))}
@@ -149,18 +185,24 @@ export default function CategoriaProductos() {
                         handleCaracteristicaChange(c.id)
                       }
                     />
+
                     {c.descripcio}
+
                   </label>
                 ))}
               </div>
+
             ))}
           </div>
         </div>
 
         {/* PRODUCTS */}
         <div className="productos">
+
           <div className="productos-grid">
-            {allItems.map((item) => {
+
+            {filteredItems.map((item) => {
+
               const img = item.imatges?.[0]
                 ? `/storage/${item.imatges[0].path}`
                 : null;
@@ -173,8 +215,13 @@ export default function CategoriaProductos() {
                   }`}
                   onClick={() => openProduct(item)}
                 >
+
                   <div className="product-image-placeholder">
-                    {img ? <img src={img} alt={item.nombre} /> : "📦"}
+                    {img ? (
+                      <img src={img} alt={item.nombre} />
+                    ) : (
+                      "📦"
+                    )}
                   </div>
 
                   <div className="product-name">
@@ -195,82 +242,118 @@ export default function CategoriaProductos() {
                   >
                     Comprar
                   </button>
+
                 </div>
               );
             })}
+
           </div>
         </div>
       </div>
 
-      {/* POPUP (unchanged) */}
+      {/* POPUP */}
       {selectedProduct && (
-        <div className="product-popup-overlay" onClick={closeProduct}>
-          <div className="product-popup" onClick={(e) => e.stopPropagation()}>
-      
+        <div
+          className="product-popup-overlay"
+          onClick={closeProduct}
+        >
+          <div
+            className="product-popup"
+            onClick={(e) => e.stopPropagation()}
+          >
+
             {/* LEFT: CAROUSEL */}
             <div className="popup-left">
+
               {selectedProduct.imatges?.length > 0 ? (
+
                 <div className="popup-carousel">
-      
+
                   <img
                     src={`/storage/${selectedProduct.imatges[popupImageIndex].path}`}
                     className="popup-main-image"
                     alt={selectedProduct.nombre}
                   />
-      
+
                   {selectedProduct.imatges.length > 1 && (
                     <>
                       <button
                         className="carousel-btn left"
                         onClick={() =>
                           setPopupImageIndex(
-                            i => (i - 1 + selectedProduct.imatges.length) % selectedProduct.imatges.length
+                            (i) =>
+                              (i - 1 + selectedProduct.imatges.length) %
+                              selectedProduct.imatges.length
                           )
                         }
                       >
                         ‹
                       </button>
-      
+
                       <button
                         className="carousel-btn right"
                         onClick={() =>
                           setPopupImageIndex(
-                            i => (i + 1) % selectedProduct.imatges.length
+                            (i) =>
+                              (i + 1) %
+                              selectedProduct.imatges.length
                           )
                         }
                       >
                         ›
                       </button>
-      
+
                       <div className="carousel-dots">
                         {selectedProduct.imatges.map((_, i) => (
                           <button
                             key={i}
-                            className={`dot ${i === popupImageIndex ? "active" : ""}`}
-                            onClick={() => setPopupImageIndex(i)}
+                            className={`dot ${
+                              i === popupImageIndex
+                                ? "active"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              setPopupImageIndex(i)
+                            }
                           />
                         ))}
                       </div>
                     </>
                   )}
-      
+
                 </div>
+
               ) : (
-                <div className="product-image-placeholder-large">📦</div>
+                <div className="product-image-placeholder-large">
+                  📦
+                </div>
               )}
+
             </div>
-      
+
             {/* RIGHT: INFO */}
             <div className="popup-right">
-      
-              <h2 className="popup-title">{selectedProduct.nombre}</h2>
-      
-              <div className="popup-price">{selectedProduct.precio} €</div>
-      
-              <p className={`popup-stock ${selectedProduct.stock >= 1 ? "in-stock" : "out-of-stock"}`}>
-                {selectedProduct.stock >= 1 ? "En stock" : "Agotado"}
+
+              <h2 className="popup-title">
+                {selectedProduct.nombre}
+              </h2>
+
+              <div className="popup-price">
+                {selectedProduct.precio} €
+              </div>
+
+              <p
+                className={`popup-stock ${
+                  selectedProduct.stock >= 1
+                    ? "in-stock"
+                    : "out-of-stock"
+                }`}
+              >
+                {selectedProduct.stock >= 1
+                  ? "En stock"
+                  : "Agotado"}
               </p>
-      
+
               {/* DESCRIPTION */}
               {selectedProduct.descripcion && (
                 <div className="popup-box">
@@ -278,7 +361,7 @@ export default function CategoriaProductos() {
                   <p>{selectedProduct.descripcion}</p>
                 </div>
               )}
-      
+
               {/* CATEGORY */}
               {selectedProduct.categoria && (
                 <div className="popup-box">
@@ -286,46 +369,68 @@ export default function CategoriaProductos() {
                   <p>{selectedProduct.categoria.tipo}</p>
                 </div>
               )}
-      
+
               {/* CHARACTERISTICS */}
               {selectedProduct.caracteristicas?.length > 0 && (
                 <div className="popup-box">
+
                   <strong>Característiques</strong>
+
                   <ul>
-                    {selectedProduct.caracteristicas.map(c => (
+                    {selectedProduct.caracteristicas.map((c) => (
                       <li key={c.id}>
                         {c.tipo?.tipo} {c.descripcio}
                       </li>
                     ))}
                   </ul>
+
                 </div>
               )}
-      
+
               {/* QTY */}
               <input
                 type="number"
                 min="1"
                 value={qty}
-                onChange={(e) => setQty(parseInt(e.target.value) || 1)}
+                onChange={(e) =>
+                  setQty(parseInt(e.target.value) || 1)
+                }
                 className="popup-qty"
               />
-      
+
               <button
                 className="buy-button"
                 onClick={async () => {
-                  await addToCart(selectedProduct.id, qty, false);
-                  notify("success", "Producto añadido al carrito");
+                  await addToCart(
+                    selectedProduct.id,
+                    qty,
+                    selectedProduct.isPack || false
+                  );
+
+                  notify(
+                    "success",
+                    selectedProduct.isPack
+                      ? "Pack añadido al carrito"
+                      : "Producto añadido al carrito"
+                  );
                 }}
               >
                 Comprar
               </button>
-      
+
             </div>
-      
-            <button className="popup-close" onClick={closeProduct}>✖</button>
+
+            <button
+              className="popup-close"
+              onClick={closeProduct}
+            >
+              ✖
+            </button>
+
           </div>
         </div>
       )}
-          </div>
-        );
-      }
+
+    </div>
+  );
+}

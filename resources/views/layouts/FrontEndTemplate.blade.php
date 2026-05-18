@@ -22,7 +22,7 @@
 
         <div class="header__right">
             <a href="{{ route('categorias.productos') }}" class="btn btn--secondary">
-                Productes
+                Productes y Packs
             </a>
 
             <a href="{{ route('solucions.create') }}" class="btn btn--primary">
