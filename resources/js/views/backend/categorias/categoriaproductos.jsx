@@ -19,7 +19,6 @@ export default function CategoriaProductos() {
   const [qty, setQty] = useState(1);
   const [popupImageIndex, setPopupImageIndex] = useState(0);
 
-  // 📦 LOAD STATIC DATA
   useEffect(() => {
     fetch("/api/categorias")
       .then((r) => r.json())
@@ -30,7 +29,6 @@ export default function CategoriaProductos() {
       .then(setCaracteristicas);
   }, []);
 
-  // 📦 LOAD PRODUCTS / PACKS
   useEffect(() => {
     loadProductos();
     loadPacks();
@@ -40,7 +38,6 @@ export default function CategoriaProductos() {
     const res = await fetch("/api/productos");
     const data = await res.json();
 
-    // ✅ FILTER ACTIVE ONLY
     const active = Array.isArray(data)
       ? data.filter((p) => Number(p.estat) === 1)
       : [];
@@ -52,7 +49,6 @@ export default function CategoriaProductos() {
     const res = await fetch("/api/packs");
     const data = await res.json();
 
-    // ✅ FILTER ACTIVE ONLY
     const active = Array.isArray(data)
       ? data.filter((p) => Number(p.estat) === 1)
       : [];
@@ -60,7 +56,6 @@ export default function CategoriaProductos() {
     setPacks(active);
   };
 
-  // 🧠 NORMALIZE PACK
   const normalizePack = (pack) => ({
     id: pack.id,
     nombre: pack.nom,
@@ -77,21 +72,17 @@ export default function CategoriaProductos() {
       })) || [],
   });
 
-  // ✅ MERGE PRODUCTS + PACKS
   const allItems = [
     ...productos,
     ...packs.map(normalizePack),
   ];
 
-  // ✅ APPLY FILTERS
   const filteredItems = allItems.filter((item) => {
 
-    // CATEGORY FILTER
     const matchCategoria =
       !selectedCategoria ||
       Number(item.categoria_id) === Number(selectedCategoria);
 
-    // CHARACTERISTICS FILTER
     const matchCaracteristicas =
       selectedCaracteristicas.length === 0 ||
       selectedCaracteristicas.every((selectedId) =>
@@ -146,10 +137,7 @@ export default function CategoriaProductos() {
         {/* FILTERS */}
         <div className="filters">
 
-          <select
-            value={selectedCategoria}
-            onChange={(e) => setSelectedCategoria(e.target.value)}
-          >
+          <select value={selectedCategoria} onChange={(e) => setSelectedCategoria(e.target.value)}>
             <option value="">Todas las categorías</option>
 
             {categorias.map((c) => (
