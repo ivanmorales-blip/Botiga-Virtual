@@ -147,3 +147,113 @@
     text-align: center;
   }
 }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Better keyboard accessibility */
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid #333;
+  outline-offset: 2px;
+}
+
+/* Installation section */
+.installation-section {
+  margin: 24px 0;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.installation-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.installation-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #6b7280;
+}
+
+.installation-label {
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  color: #374151;
+}
+
+.installation-address {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 8px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.installation-info {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.installation-warning {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Error box */
+.cart-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.cart-error-message {
+  margin: 0;
+  flex: 1;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+.cart-error-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ef4444;
+  padding: 0;
+  font-size: 16px;
+}
+
+/* Checkout */
+.cart-summary {
+  margin-bottom: 8px;
+}
+
+.checkout-btn {
+  margin-top: 1rem;
+}

@@ -89,155 +89,277 @@ export default function Profile() {
   /* =========================
      RENDER
   ========================= */
-  return (
-    <div className="profile-page">
-      <div className="profile-card">
+return (
+  <div className="profile-page">
+    <div className="profile-card">
 
-        <h2 className="profile-title">Mi perfil</h2>
+      <h1 className="profile-title">
+        Mi perfil
+      </h1>
 
-        {error && <div className="error">{error}</div>}
-
-        {/* =========================
-            PERSONAL INFO
-        ========================= */}
-        <div className="profile-section">
-          <h3>Información personal</h3>
-
-          <input
-            value={tempUser?.nombre || ""}
-            onChange={(e) => updateField("nombre", e.target.value)}
-            disabled={!editing}
-            placeholder="Nombre"
-          />
-
-          <input
-            value={tempUser?.apellidos || ""}
-            onChange={(e) => updateField("apellidos", e.target.value)}
-            disabled={!editing}
-            placeholder="Apellidos"
-          />
+      {error && (
+        <div
+          className="error"
+          role="alert"
+          aria-live="assertive"
+        >
+          {error}
         </div>
+      )}
 
-        {/* =========================
-            CONTACT INFO
-        ========================= */}
-        <div className="profile-section">
-          <h3>Contacto</h3>
+      {/* PERSONAL INFO */}
+      <section
+        className="profile-section"
+        aria-labelledby="personal-info-heading"
+      >
+        <h2 id="personal-info-heading">
+          Información personal
+        </h2>
 
-          <input
-            value={tempUser?.telefono || ""}
-            onChange={(e) => updateField("telefono", e.target.value)}
-            disabled={!editing}
-            placeholder="Teléfono"
-          />
+        <label
+          htmlFor="nombre"
+          className="sr-only"
+        >
+          Nombre
+        </label>
 
-          <input
-            value={tempUser?.email || ""}
-            onChange={(e) => updateField("email", e.target.value)}
-            disabled={!editing}
-            placeholder="Email"
-          />
-        </div>
+        <input
+          id="nombre"
+          value={tempUser?.nombre || ""}
+          onChange={(e) =>
+            updateField("nombre", e.target.value)
+          }
+          disabled={!editing}
+          placeholder="Nombre"
+          autoComplete="given-name"
+        />
 
-        {/* =========================
-            ADDRESS
-        ========================= */}
-        <div className="profile-section">
-          <h3>Dirección</h3>
+        <label
+          htmlFor="apellidos"
+          className="sr-only"
+        >
+          Apellidos
+        </label>
 
-          <input
-            value={tempUser?.direccion || ""}
-            onChange={(e) => updateField("direccion", e.target.value)}
-            disabled={!editing}
-            placeholder="Dirección"
-          />
-        </div>
+        <input
+          id="apellidos"
+          value={tempUser?.apellidos || ""}
+          onChange={(e) =>
+            updateField("apellidos", e.target.value)
+          }
+          disabled={!editing}
+          placeholder="Apellidos"
+          autoComplete="family-name"
+        />
+      </section>
 
-        {/* =========================
-            ACTIONS
-        ========================= */}
-        <div className="profile-actions">
+      {/* CONTACT INFO */}
+      <section
+        className="profile-section"
+        aria-labelledby="contact-info-heading"
+      >
+        <h2 id="contact-info-heading">
+          Contacto
+        </h2>
 
-          {!editing ? (
-            <button
-              onClick={() => setEditing(true)}
-              className="profile-btn"
-            >
-              Editar perfil
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={save}
-                disabled={saving}
-                className="profile-btn" 
-              >
-                {saving ? "Guardando..." : "Guardar cambios"}
-              </button>
+        <label
+          htmlFor="telefono"
+          className="sr-only"
+        >
+          Teléfono
+        </label>
 
-              <button
-                onClick={cancelEdit}
-                className="profile-btn secondary"
-              >
-                Cancelar
-              </button>
-            </>
-          )}
+        <input
+          id="telefono"
+          type="tel"
+          value={tempUser?.telefono || ""}
+          onChange={(e) =>
+            updateField("telefono", e.target.value)
+          }
+          disabled={!editing}
+          placeholder="Teléfono"
+          autoComplete="tel"
+        />
 
-          <button onClick={logout} className="logout-btn">
-            Cerrar sesión
+        <label
+          htmlFor="email"
+          className="sr-only"
+        >
+          Email
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          value={tempUser?.email || ""}
+          onChange={(e) =>
+            updateField("email", e.target.value)
+          }
+          disabled={!editing}
+          placeholder="Email"
+          autoComplete="email"
+        />
+      </section>
+
+      {/* ADDRESS */}
+      <section
+        className="profile-section"
+        aria-labelledby="address-heading"
+      >
+        <h2 id="address-heading">
+          Dirección
+        </h2>
+
+        <label
+          htmlFor="direccion"
+          className="sr-only"
+        >
+          Dirección
+        </label>
+
+        <input
+          id="direccion"
+          value={tempUser?.direccion || ""}
+          onChange={(e) =>
+            updateField("direccion", e.target.value)
+          }
+          disabled={!editing}
+          placeholder="Dirección"
+          autoComplete="street-address"
+        />
+      </section>
+
+      {/* ACTIONS */}
+      <div
+        className="profile-actions"
+        role="group"
+        aria-label="Acciones de perfil"
+      >
+        {!editing ? (
+          <button
+            onClick={() => setEditing(true)}
+            className="profile-btn"
+            aria-label="Editar perfil"
+          >
+            Editar perfil
           </button>
+        ) : (
+          <>
+            <button
+              onClick={save}
+              disabled={saving}
+              className="profile-btn"
+              aria-busy={saving}
+            >
+              {saving
+                ? "Guardando..."
+                : "Guardar cambios"}
+            </button>
 
-        </div>
+            <button
+              onClick={cancelEdit}
+              className="profile-btn secondary"
+            >
+              Cancelar
+            </button>
+          </>
+        )}
 
-        {/* =========================
-            PEDIDOS (READ ONLY)
-        ========================= */}
-        <div className="profile-section pedidos-section">
-          <h3>Mis pedidos</h3>
+        <button
+          onClick={logout}
+          className="logout-btn"
+          aria-label="Cerrar sesión"
+        >
+          Cerrar sesión
+        </button>
+      </div>
 
-          {pedidos.length === 0 ? (
-            <p>No tienes pedidos aún.</p>
-          ) : (
-            pedidos.map((pedido) => (
-              <div key={pedido.id} className="pedido-item">
+      {/* PEDIDOS */}
+      <section
+        className="profile-section pedidos-section"
+        aria-labelledby="orders-heading"
+      >
+        <h2 id="orders-heading">
+          Mis pedidos
+        </h2>
 
+        {pedidos.length === 0 ? (
+          <p role="status">
+            No tienes pedidos aún.
+          </p>
+        ) : (
+          <div
+            role="list"
+            aria-label="Lista de pedidos"
+          >
+            {pedidos.map((pedido) => (
+              <article
+                key={pedido.id}
+                className="pedido-item"
+                role="listitem"
+              >
                 <div className="pedido-top">
-                  <a href={`/pedido/${pedido.id}/pdf`} className="pdf-btn" target="_blank">
+
+                  <a
+                    href={`/pedido/${pedido.id}/pdf`}
+                    className="pdf-btn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Descargar factura del pedido ${pedido.id}`}
+                  >
                     Descargar Factura
                   </a>
-                  <div>
-                    <strong>Pedido #{pedido.id}</strong>
+
+                  <div className="pedido-heading">
+                    Pedido #{pedido.id}
                   </div>
 
-                  <span className={`estado ${pedido.estat}`}>
+                  <span
+                    className={`estado ${pedido.estat}`}
+                    aria-label={`Estado del pedido: ${pedido.estat}`}
+                  >
                     {pedido.estat}
                   </span>
                 </div>
 
-                <div className="pedido-products">
+                <div
+                  className="pedido-products"
+                  role="list"
+                  aria-label={`Productos del pedido ${pedido.id}`}
+                >
                   {pedido.detalles.map((detalle, i) => (
-                    <div key={i} className="producto-line">
+                    <div
+                      key={i}
+                      className="producto-line"
+                      role="listitem"
+                    >
                       <span>
                         {detalle.producto
                           ? detalle.producto.nombre
                           : detalle.pack?.nombre || "Pack"}
                       </span>
-                      <span>x{detalle.quantitat}</span>
+
+                      <span>
+                        x{detalle.quantitat}
+                      </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="pedido-total">
+                <div
+                  className="pedido-total"
+                  aria-label={`Total del pedido ${pedido.total} euros`}
+                >
                   Total: {pedido.total}€
                 </div>
 
-              </div>
-            ))
-          )}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
 
-      </div>
     </div>
-  );
+  </div>
+);
 }

@@ -182,3 +182,188 @@
   background: #ddd;
   color: #333;
 }
+
+
+/* GLOBAL SAFETY FIX (prevents overflow issues everywhere) */
+* {
+  box-sizing: border-box;
+}
+
+/* Page wrapper */
+.profile-page {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+/* Card */
+.profile-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Title */
+.profile-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-align: center;
+  color: #ea580c;
+  margin-bottom: 1.5rem;
+}
+
+/* Sections */
+.profile-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.profile-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #374151;
+}
+
+/* Inputs */
+.profile-section input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  }
+}
+
+/* Button */
+.profile-btn {
+  background: #ea580c;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.85rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.logout-btn {
+  margin-top: 0.75rem;
+  background: #ef4444;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+/* Error */
+.error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pedidos-section {
+  margin-top: clamp(1rem, 2vw, 2rem);
+}
+
+.pedido-item {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: clamp(0.8rem, 1.5vw, 1.2rem);
+  margin-bottom: 1rem;
+  background: #fafafa;
+}
+
+.pedido-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+/* STATUS COLORS */
+.estado {
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+
+  &.En\ process { background: #fff3cd; }
+  &.Enviat { background: #cfe2ff; }
+  &.Completat { background: #d1e7dd; }
+  &.Cancelat { background: #f8d7da; }
+}
+
+.pedido-products {
+  .producto-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    padding: 2px 0;
+  }
+}
+
+.pdf-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  background: #111827;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #1f2937;
+  }
+}
+
+.profile-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  position: relative;
+}
+
+/* logout small top-right */
+.logout-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  background: #f44336;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* secondary button */
+.profile-btn.secondary {
+  background: #ddd;
+  color: #333;
+}

@@ -127,7 +127,6 @@ export default function CartPage() {
     );
   };
 
-  // 💳 CHECKOUT
   const handleCheckout = async () => {
     try {
       if (!user?.id) {
@@ -189,105 +188,214 @@ export default function CartPage() {
   }
 
   return (
-    <div className="cart-page">
-      <h1>Carrito</h1>
+<div className="cart-page">
+  <h1>Carrito</h1>
 
-      {cart.length === 0 ? (
-        <p>El carrito está vacío</p>
-      ) : (
-        <>
-          <div className="cart-list">
-            {cart.map((item) => (
-              <div key={`${item.id}-${item.isPack}`} className="cart-item">
-                <div className="cart-info">
-                  {item.imagen ? (
-                    <img src={item.imagen} alt={item.nombre} />
-                  ) : (
-                    <span>📦</span>
-                  )}
-                  <span>
-                    {item.isPack ? "📦 PACK - " : ""}
-                    {item.nombre}
-                  </span>
-                </div>
-                <span>{item.precio} €</span>
-                <input
-                  type="number"
-                  min="1"
-                  value={item.quantity}
-                  onChange={(e) => handleUpdate(item.id, item.isPack, e.target.value)}
+  {cart.length === 0 ? (
+    <p role="status">El carrito está vacío</p>
+  ) : (
+    <>
+      <div
+        className="cart-list"
+        role="list"
+        aria-label="Productos del carrito"
+      >
+        {cart.map((item) => (
+          <div
+            key={`${item.id}-${item.isPack}`}
+            className="cart-item"
+            role="listitem"
+          >
+            <div className="cart-info">
+              {item.imagen ? (
+                <img
+                  src={item.imagen}
+                  alt={`${item.isPack ? "Pack" : "Producto"} ${item.nombre}`}
                 />
-                <button onClick={() => handleRemove(item.id, item.isPack)}>
-                  Eliminar
-                </button>
-              </div>
-            ))}
-          </div>
+              ) : (
+                <span aria-hidden="true">📦</span>
+              )}
 
-          {/* INSTALACIÓ */}
-          <div style={{ margin: "24px 0", padding: "20px", background: "#fafafa", borderRadius: "12px", border: "1px solid #e5e7eb" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-              <input
-                type="checkbox"
-                id="installacio"
-                checked={vullInstallacio}
-                onChange={e => setVullInstallacio(e.target.checked)}
-                style={{ width: "18px", height: "18px", cursor: "pointer", accentColor: "#6b7280" }}
-              />
-              <label htmlFor="installacio" style={{ fontWeight: "600", fontSize: "16px", cursor: "pointer", color: "#374151" }}>
-                Vull el servei d'instal·lació
-              </label>
+              <span>
+                {item.isPack ? "📦 PACK - " : ""}
+                {item.nombre}
+              </span>
             </div>
 
-            {vullInstallacio && (
-              <>
-                <input
-                  type="text"
-                  placeholder="Carrer, número, pis, codi postal i ciutat"
-                  value={adrecessInstallacio}
-                  onChange={e => { setAdrecessInstallacio(e.target.value); setMissatgeError(""); }}
-                  style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #e5e7eb", marginBottom: "8px", fontSize: "14px", background: "#fff" }}
-                />
-                {installacioAConsultar ? (
-                  <p style={{ color: "#6b7280", fontWeight: "600", fontSize: "14px", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <GoAlert size={25} />
-                    El cost d'instal·lació per a imports superiors a 1.000€ és a consultar.
-                  </p>
-                ) : (
-                  <p style={{ color: "#6b7280", fontSize: "14px" }}>
-                    Cost d'instal·lació: <strong style={{ color: "#374151" }}>{costInstallacio}€</strong>
-                  </p>
-                )}
-              </>
-            )}
-          </div>
+            <span
+              className="price"
+              aria-label={`Precio de ${item.nombre}`}
+            >
+              {item.precio} €
+            </span>
 
-          {/* RESUM */}
-          <div className="cart-total">
-            <div style={{ textAlign: "right", marginBottom: "8px" }}>
-              <strong style={{ fontSize: "18px" }}>
-                Total: {installacioAConsultar
-                  ? `${(subtotal + costEnviament).toFixed(2)} € + instal·lació a consultar`
-                  : `${total.toFixed(2)} €`}
-              </strong>
-            </div>
-            {missatgeError && (
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", padding: "16px", background: "#fef2f2", borderRadius: "8px", border: "1px solid #fecaca", marginBottom: "12px" }}>
-                <GoAlert size={20} style={{ color: "#ef4444", flexShrink: 0, marginTop: "2px" }} />
-                <p style={{ margin: 0, fontSize: "13px", color: "#b91c1c", flex: 1 }}>
-                  {missatgeError}
-                </p>
-                <button onClick={() => setMissatgeError("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", fontSize: "16px", padding: 0 }}>
-                  ✕
-                </button>
-              </div>
-            )}
-            <button onClick={handleCheckout}>
-              Finalizar compra
+            <label
+              htmlFor={`quantity-${item.id}-${item.isPack}`}
+              className="sr-only"
+            >
+              Cantidad de {item.nombre}
+            </label>
+
+            <input
+              id={`quantity-${item.id}-${item.isPack}`}
+              type="number"
+              min="1"
+              inputMode="numeric"
+              value={item.quantity}
+              onChange={(e) =>
+                handleUpdate(item.id, item.isPack, e.target.value)
+              }
+            />
+
+            <button
+              onClick={() =>
+                handleRemove(item.id, item.isPack)
+              }
+              aria-label={`Eliminar ${item.nombre} del carrito`}
+            >
+              Eliminar
             </button>
           </div>
-        </>
-      )}
-    </div>
+        ))}
+      </div>
+
+      <section
+        className="installation-section"
+        aria-labelledby="installation-heading"
+      >
+        <h2
+          id="installation-heading"
+          className="sr-only"
+        >
+          Servei d'instal·lació
+        </h2>
+
+        <div className="installation-toggle">
+          <input
+            type="checkbox"
+            id="installacio"
+            className="installation-checkbox"
+            checked={vullInstallacio}
+            onChange={(e) =>
+              setVullInstallacio(e.target.checked)
+            }
+          />
+
+          <label
+            htmlFor="installacio"
+            className="installation-label"
+          >
+            Vull el servei d'instal·lació
+          </label>
+        </div>
+
+        {vullInstallacio && (
+          <>
+            <label
+              htmlFor="installation-address"
+              className="sr-only"
+            >
+              Adreça d'instal·lació
+            </label>
+
+            <input
+              id="installation-address"
+              type="text"
+              className="installation-address"
+              placeholder="Carrer, número, pis, codi postal i ciutat"
+              value={adrecessInstallacio}
+              onChange={(e) => {
+                setAdrecessInstallacio(e.target.value);
+                setMissatgeError("");
+              }}
+              aria-describedby="installation-info"
+            />
+
+            {installacioAConsultar ? (
+              <p
+                id="installation-info"
+                className="installation-warning"
+                role="status"
+              >
+                <GoAlert
+                  size={25}
+                  aria-hidden="true"
+                />
+                El cost d'instal·lació per a imports superiors
+                a 1.000€ és a consultar.
+              </p>
+            ) : (
+              <p
+                id="installation-info"
+                className="installation-info"
+              >
+                Cost d'instal·lació:
+                <strong> {costInstallacio}€</strong>
+              </p>
+            )}
+          </>
+        )}
+      </section>
+
+      <section
+        className="cart-total"
+        aria-labelledby="order-summary"
+      >
+        <h2
+          id="order-summary"
+          className="sr-only"
+        >
+          Resum de la compra
+        </h2>
+
+        <div
+          className="cart-summary"
+          aria-live="polite"
+        >
+          <strong>
+            Total:{" "}
+            {installacioAConsultar
+              ? `${(subtotal + costEnviament).toFixed(
+                  2
+                )} € + instal·lació a consultar`
+              : `${total.toFixed(2)} €`}
+          </strong>
+        </div>
+
+        {missatgeError && (
+          <div
+            className="cart-error"
+            role="alert"
+          >
+            <GoAlert
+              size={20}
+              aria-hidden="true"
+            />
+
+            <p className="cart-error-message">
+              {missatgeError}
+            </p>
+
+            <button
+              className="cart-error-close"
+              onClick={() => setMissatgeError("")}
+              aria-label="Tancar missatge d'error"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        <button
+          className="checkout-btn"
+          onClick={handleCheckout}
+          aria-label="Finalitzar la compra"
+        >
+          Finalizar compra
+        </button>
+      </section>
+    </>
+  )}
+</div>
   );
 }

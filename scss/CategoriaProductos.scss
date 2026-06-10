@@ -210,3 +210,51 @@
     flex-direction: column;
   }
 }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+button,
+input,
+select,
+.product-card {
+  &:focus-visible {
+    outline: 3px solid #ea580c;
+    outline-offset: 2px;
+  }
+}
+
+.product-card {
+  &:focus-visible {
+    box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.25);
+  }
+}
+
+.buy-button {
+  background: #ea580c;
+  color: white;
+}
+
+.product-popup {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dot {
+  min-width: 12px;
+  min-height: 12px;
+
+  &:focus-visible {
+    outline: 2px solid #ea580c;
+    outline-offset: 2px;
+  }
+}

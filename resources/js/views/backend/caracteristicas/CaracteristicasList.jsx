@@ -139,40 +139,91 @@ const handleCreate = async () => {
 
 return (
   <div className="p-8 min-h-screen">
-
-    <h1 className="text-3xl font-bold mb-6 text-orange-500 text-center">
+    <h1 className="text-3xl font-bold mb-6 text-orange-600 text-center">
       Llista de Característiques
     </h1>
 
     <div className="flex justify-center mb-6">
-      <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cerca per descripció..." className="border px-4 py-2 rounded w-80 shadow-sm"/>
+      <div>
+        <label htmlFor="search-caracteristiques" className="sr-only">
+          Cerca per descripció
+        </label>
+        <input
+          id="search-caracteristiques"
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cerca per descripció..."
+          className="border px-4 py-2 rounded w-80 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-500"
+        />
+      </div>
     </div>
 
     <div className="flex gap-8 mb-6 items-start justify-end">
 
       <div className="flex flex-col gap-4 items-start">
         {!showCreateCaracteristica ? (
-          <button className="bg-orange-500 text-white px-4 py-2 rounded" onClick={() => setShowCreateCaracteristica(true)}>
+          <button
+            type="button"
+            className="bg-orange-600 text-white px-4 py-2 rounded"
+            onClick={() => setShowCreateCaracteristica(true)}
+          >
             Nova característica
           </button>
         ) : (
-          <div className="flex gap-2">
-            <input type="text" value={newDescripcion} onChange={(e) => setNewDescripcion(e.target.value)} placeholder="Nova característica" className="border px-4 py-2 rounded w-64 shadow-sm"/>
+          <div className="flex gap-2" role="group" aria-label="Crear característica">
 
-            <select value={editingTipoId || ""} onChange={(e) => setEditingTipoId(e.target.value)} className="border px-3 py-2 rounded">
-              <option value="">Selecciona tipus</option>
-              {tipos.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.tipo}
-                </option>
-              ))}
-            </select>
+            <div>
+              <label htmlFor="new-caracteristica" className="sr-only">
+                Nova característica
+              </label>
+              <input
+                id="new-caracteristica"
+                type="text"
+                value={newDescripcion}
+                onChange={(e) => setNewDescripcion(e.target.value)}
+                placeholder="Nova característica"
+                className="border px-4 py-2 rounded w-64 shadow-sm"
+              />
+            </div>
 
-            <button onClick={handleCreate} disabled={creating || !editingTipoId || !newDescripcion.trim()} className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded">
+            <div>
+              <label htmlFor="new-tipo" className="sr-only">
+                Selecciona tipus
+              </label>
+              <select
+                id="new-tipo"
+                value={editingTipoId || ""}
+                onChange={(e) => setEditingTipoId(e.target.value)}
+                className="border px-3 py-2 rounded"
+              >
+                <option value="">Selecciona tipus</option>
+                {tipos.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.tipo}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleCreate}
+              disabled={creating || !editingTipoId || !newDescripcion.trim()}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded disabled:opacity-50"
+            >
               {creating ? "Creant..." : "Crear"}
             </button>
 
-            <button className="bg-gray-400 text-white px-4 py-2 rounded" onClick={() => {setShowCreateCaracteristica(false); setNewDescripcion(""); setEditingTipoId(null);}}>
+            <button
+              type="button"
+              className="bg-gray-500 text-white px-4 py-2 rounded"
+              onClick={() => {
+                setShowCreateCaracteristica(false);
+                setNewDescripcion("");
+                setEditingTipoId(null);
+              }}
+            >
               Cancelar
             </button>
           </div>
@@ -181,38 +232,101 @@ return (
 
       <div className="flex flex-col gap-4 items-start">
         {!showCreateTipo ? (
-          <button className="bg-orange-500 text-white px-4 py-2 rounded" onClick={() => setShowCreateTipo(true)}>
-            Nou tipus de caracteristica
+          <button
+            type="button"
+            className="bg-orange-600 text-white px-4 py-2 rounded"
+            onClick={() => setShowCreateTipo(true)}
+          >
+            Nou tipus de característica
           </button>
         ) : (
-          <div className="flex gap-2">
-            <input type="text" value={newTipo} onChange={(e) => setNewTipo(e.target.value)} placeholder="Nou tipus" className="border px-3 py-2 rounded w-64"/>
+          <div className="flex gap-2" role="group" aria-label="Crear tipus">
 
-            <button onClick={handleCreateTipo} disabled={creatingTipo || !newTipo.trim()} className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded">
+            <div>
+              <label htmlFor="new-tipo-name" className="sr-only">
+                Nom del tipus
+              </label>
+              <input
+                id="new-tipo-name"
+                type="text"
+                value={newTipo}
+                onChange={(e) => setNewTipo(e.target.value)}
+                placeholder="Nou tipus"
+                className="border px-3 py-2 rounded w-64"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleCreateTipo}
+              disabled={creatingTipo || !newTipo.trim()}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50"
+            >
               {creatingTipo ? "Creant tipus..." : "Crear tipus"}
             </button>
 
-            <button className="bg-gray-400 text-white px-4 py-2 rounded" onClick={() => {setShowCreateTipo(false); setNewTipo("");}}>
+            <button
+              type="button"
+              className="bg-gray-500 text-white px-4 py-2 rounded"
+              onClick={() => {
+                setShowCreateTipo(false);
+                setNewTipo("");
+              }}
+            >
               Cancelar
             </button>
           </div>
         )}
       </div>
-
     </div>
 
     {loading ? (
-      <div className="text-center text-gray-500">Carregant...</div>
+      <div
+        className="text-center text-gray-600"
+        aria-live="polite"
+      >
+        Carregant...
+      </div>
     ) : filtered.length === 0 ? (
-      <div className="text-center text-gray-500">No hi ha característiques</div>
+      <div
+        className="text-center text-gray-600"
+        aria-live="polite"
+      >
+        No hi ha característiques
+      </div>
     ) : (
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div
+        className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        role="list"
+      >
         {filtered.map((c) => (
-          <div key={c.id} className="bg-white rounded-xl shadow border p-4 flex flex-col justify-between hover:shadow-lg transition">
+          <article
+            key={c.id}
+            role="listitem"
+            className="bg-white rounded-xl shadow border p-4 flex flex-col justify-between hover:shadow-lg transition"
+          >
             {editingId === c.id ? (
               <>
-                <input type="text" value={editingDescripcion} onChange={(e) => setEditingDescripcion(e.target.value)} className="border px-2 py-1 rounded mb-2"/>
-                <select value={editingTipo || ""} onChange={(e) => setEditingTipo(e.target.value)} className="border px-2 py-1 rounded mb-2">
+                <label htmlFor={`desc-${c.id}`} className="sr-only">
+                  Descripció
+                </label>
+                <input
+                  id={`desc-${c.id}`}
+                  type="text"
+                  value={editingDescripcion}
+                  onChange={(e) => setEditingDescripcion(e.target.value)}
+                  className="border px-2 py-1 rounded mb-2"
+                />
+
+                <label htmlFor={`tipo-${c.id}`} className="sr-only">
+                  Tipus
+                </label>
+                <select
+                  id={`tipo-${c.id}`}
+                  value={editingTipo || ""}
+                  onChange={(e) => setEditingTipo(e.target.value)}
+                  className="border px-2 py-1 rounded mb-2"
+                >
                   <option value="">Selecciona tipus</option>
                   {tipos.map((t) => (
                     <option key={t.id} value={t.id}>
@@ -220,27 +334,51 @@ return (
                     </option>
                   ))}
                 </select>
-                <button onClick={() => handleUpdate(c.id)} className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm">
+
+                <button
+                  type="button"
+                  onClick={() => handleUpdate(c.id)}
+                  className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm"
+                >
                   Guardar
                 </button>
               </>
             ) : (
               <>
-                <span className="text-gray-700 font-medium mb-2">{c.descripcio}</span>
-                <span className="text-gray-500 text-sm mb-2">
+                <h2 className="text-gray-800 font-medium mb-2">
+                  {c.descripcio}
+                </h2>
+
+                <p className="text-gray-600 text-sm mb-2">
                   Tipus: {c.tipo?.tipo || "Sense tipus"}
-                </span>
+                </p>
+
                 <div className="flex justify-between mt-2">
-                  <button onClick={() => { setEditingId(c.id); setEditingDescripcion(c.descripcio); setEditingTipo(c.tipo_id);}} className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm">
+                  <button
+                    type="button"
+                    aria-label={`Editar ${c.descripcio}`}
+                    onClick={() => {
+                      setEditingId(c.id);
+                      setEditingDescripcion(c.descripcio);
+                      setEditingTipo(c.tipo_id);
+                    }}
+                    className="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded text-sm"
+                  >
                     Editar
                   </button>
-                  <button onClick={() => handleDelete(c.id)} className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm">
+
+                  <button
+                    type="button"
+                    aria-label={`Eliminar ${c.descripcio}`}
+                    onClick={() => handleDelete(c.id)}
+                    className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm"
+                  >
                     Eliminar
                   </button>
                 </div>
               </>
             )}
-          </div>
+          </article>
         ))}
       </div>
     )}
